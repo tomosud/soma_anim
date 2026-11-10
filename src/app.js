@@ -1,0 +1,471 @@
+// SOMA Anim: pose-to-pose animation on UE5 Manny with a BNS style rig.
+import * as T from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
+import * as M from './m4.js';
+import { BnsRig } from './rig.js';
+import { SomaRig, MotionDB } from './motiondb.js';
+import { SomaToManny } from './retarget.js';
+import { RigFitter } from './fit.js';
+import { Naturalizer } from './natural.js';
+import { Inbetweener } from './inbetween.js';
+import { Project } from './project.js';
+import { loadManny, makeMannequin } from './character.js';
+import { Timeline } from './timeline.js';
+
+const $ = id => document.getElementById(id);
+const status = t => { $('status').textContent = t; };
+const FOOT_PINS = ['L_Foot_trans', 'R_Foot_trans', 'L_Foot_rot', 'R_Foot_rot', 'L_Toe_rot', 'R_Toe_rot'];
+const LABEL = {
+  Hip_trans: '腰', Hip2_rot: '腰の向き', Spine_trans: '胸', Spine_rot: '胸のひねり', Neck_rot: '首', Head_rot: '頭の傾き', Head_trans: '視線',
+  Shoulder_rot: '肩', elbow_pv: '肘の向き', Hand_trans: '手', Hand_rot: '手首', knee_pv: '膝の向き', Foot_trans: '足', Foot_rot: '足首', Toe_rot: 'つま先',
+};
+const label = n => { const m = n.match(/^([LR])_(.+)$/); const base = m ? m[2] : n; return LABEL[base] ? `${m ? (m[1] === 'L' ? '左' : '右') : ''}${LABEL[base]}` : n; };
+
+// ---------------------------------------------------------------- scene
+const canvas = $('gl');
+const renderer = new T.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(2, devicePixelRatio));
+renderer.shadowMap.enabled = true;
+const scene = new T.Scene();
+scene.background = new T.Color(0x1b1d21);
+const camera = new T.PerspectiveCamera(35, 1, 5, 5000);
+camera.position.set(260, 150, 330);
+const orbit = new OrbitControls(camera, canvas);
+orbit.target.set(0, 95, 0);
+orbit.update();
+scene.add(new T.HemisphereLight(0xdde6f5, 0x30343a, 1.5));
+const sun = new T.DirectionalLight(0xffffff, 2.2);
+sun.position.set(150, 320, 200);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -300, right: 300, top: 300, bottom: -300, near: 10, far: 900 });
+scene.add(sun);
+const floor = new T.Mesh(new T.PlaneGeometry(4000, 4000), new T.ShadowMaterial({ opacity: 0.35 }));
+floor.rotation.x = -Math.PI / 2;
+floor.receiveShadow = true;
+scene.add(floor);
+const grid = new T.GridHelper(1000, 20, 0x4a515c, 0x2c3037);
+scene.add(grid);
+
+function resize() {
+  const r = canvas.parentElement.getBoundingClientRect();
+  if (!r.width || !r.height) return;
+  renderer.setSize(r.width, r.height, false);
+  camera.aspect = r.width / r.height;
+  camera.updateProjectionMatrix();
+  dirty = true;
+}
+let dirty = true;
+new ResizeObserver(resize).observe(canvas.parentElement);
+orbit.addEventListener('change', () => { dirty = true; });
+
+// ---------------------------------------------------------------- state
+let rig, project, character, nat = null, inb = null, timeline;
+let frame = 0, selected = null, playing = false, clipboard = null;
+let working = null; // pose being edited (not yet a key)
+const ctlView = new Map();
+const proxy = new T.Object3D();
+scene.add(proxy);
+const gizmo = new TransformControls(camera, canvas);
+gizmo.setSize(0.8);
+scene.add(gizmo.getHelper());
+const ghosts = [0x4fb0ff, 0xffa24a].map(color => {
+  const l = new T.LineSegments(new T.BufferGeometry(), new T.LineBasicMaterial({ color, transparent: true, opacity: 0.45, depthTest: false }));
+  l.renderOrder = 5; l.frustumCulled = false; scene.add(l);
+  return l;
+});
+
+const COLORS = { L: 0x4f9dff, R: 0xff5d5d, C: 0xffd24a };
+
+function buildControls() {
+  for (const c of rig.controls) {
+    if (c.group === 'world') continue;
+    const g = new T.Group();
+    g.matrixAutoUpdate = false;
+    const mat = new T.LineBasicMaterial({ color: COLORS[c.side] ?? 0xffffff, depthTest: false, transparent: true, opacity: 0.9 });
+    for (const s of c.shapes) {
+      const pts = s.cvs_local.flat();
+      const geo = new T.BufferGeometry();
+      geo.setAttribute('position', new T.Float32BufferAttribute(pts, 3));
+      const line = s.form === 'periodic' ? new T.LineLoop(geo, mat) : new T.Line(geo, mat);
+      line.renderOrder = 10; line.frustumCulled = false;
+      g.add(line);
+    }
+    scene.add(g);
+    ctlView.set(c.name, { g, mat, c, cvs: c.shapes.map(s => s.cvs_local) });
+  }
+}
+
+function refreshControlLook() {
+  const key = project.keyAt(frame);
+  const pins = key ? key.pins : new Set();
+  for (const [name, v] of ctlView) {
+    const finger = v.c.group === 'finger';
+    v.g.visible = $('showCtl').checked && (!finger || $('showFinger').checked);
+    v.mat.color.setHex(name === selected ? 0xffffff : pins.has(name) ? 0x6fe3a0 : COLORS[v.c.side]);
+    v.mat.opacity = name === selected ? 1 : 0.85;
+  }
+}
+
+/** Everything that follows the rig. */
+function syncView() {
+  character?.userData.update(rig);
+  for (const [name, v] of ctlView) v.g.matrix.fromArray(rig.controlWorld(name));
+  dirty = true;
+}
+
+function syncProxy() {
+  if (!selected) return;
+  const w = rig.controlWorld(selected);
+  proxy.position.set(w[12], w[13], w[14]);
+  proxy.quaternion.setFromRotationMatrix(new T.Matrix4().fromArray(M.rotation(w)));
+  proxy.updateMatrixWorld(true);
+}
+
+// ---------------------------------------------------------------- pose flow
+/** The pose shown at the current frame. */
+function currentPose() { return working ?? project.pose(frame); }
+
+function showFrame(f, keepWorking = false) {
+  frame = Math.max(0, Math.min(project.length, Math.round(f)));
+  if (!keepWorking) working = null;
+  rig.setVector(currentPose()).evaluate();
+  syncView(); syncProxy(); refreshPanel(); refreshGhosts();
+  $('frame').value = frame;
+  timeline.draw();
+}
+
+function rebake() {
+  project.bake(inb);
+  try { localStorage.setItem('soma_anim.project', project.snapshot()); } catch { /* private window */ }
+  refreshGhosts();
+}
+
+function effectivePins(key) {
+  const p = new Set(key.pins);
+  if ($('lockFeet').checked) for (const n of FOOT_PINS) p.add(n);
+  return p;
+}
+
+/** The rig holds an edited pose: make it the key of this frame. */
+function commit(touched, { natural = $('auto').checked } = {}) {
+  project.pushUndo();
+  const key = project.setKey(frame, rig.getVector());
+  for (const n of touched) key.pins.add(n);
+  if (natural && nat) {
+    const r = nat.naturalize(key.v, effectivePins(key), +$('strength').value);
+    key.v = r.vector;
+    showMatch(r.match);
+  }
+  working = null;
+  rebake();
+  showFrame(frame);
+}
+
+function showMatch(m) {
+  $('match').textContent = m ? `参考: ${m.clip} f${m.frame}${m.mirrored ? '（反転）' : ''}` : '';
+}
+
+function naturalizeNow() {
+  if (!nat) return;
+  project.pushUndo();
+  const key = project.setKey(frame, currentPose());
+  const r = nat.naturalize(key.v, effectivePins(key), 1);
+  key.v = r.vector;
+  showMatch(r.match);
+  working = null;
+  rebake(); showFrame(frame);
+}
+
+// ---------------------------------------------------------------- gizmo
+function select(name) {
+  selected = name && ctlView.has(name) ? name : null;
+  if (!selected) { gizmo.detach(); refreshPanel(); refreshControlLook(); dirty = true; return; }
+  const c = rig.controlByName.get(selected);
+  if (c.group === 'finger' && !$('showFinger').checked) { $('showFinger').checked = true; }
+  syncProxy();
+  gizmo.attach(proxy);
+  const tr = c.hasT;
+  gizmo.setMode(tr ? 'translate' : 'rotate');
+  const local = !tr || c.channels.length < 3;
+  gizmo.setSpace(local ? 'local' : 'world');
+  const p = tr ? 't' : 'r';
+  gizmo.showX = c.channels.includes(p + 'x'); gizmo.showY = c.channels.includes(p + 'y'); gizmo.showZ = c.channels.includes(p + 'z');
+  refreshPanel(); refreshControlLook();
+  dirty = true;
+}
+
+gizmo.addEventListener('dragging-changed', e => {
+  orbit.enabled = !e.value;
+  if (e.value) { working = rig.getVector(); } else if (selected) { commit([selected]); }
+});
+
+gizmo.addEventListener('objectChange', () => {
+  if (!selected) return;
+  const c = rig.controlByName.get(selected), n = c.node;
+  proxy.updateMatrixWorld(true);
+  if (c.hasT) {
+    const t = M.sub(M.xpoint(proxy.position.toArray(), M.inv(n.parent.world)), n.restT);
+    for (const ch of c.channels) if (ch[0] === 't') rig.set(selected + '.' + ch, t['xyz'.indexOf(ch[1])]);
+  } else {
+    const w = M.rotOnly(proxy.matrixWorld.elements);
+    if (M.det3(n.world) < 0) { w[8] = -w[8]; w[9] = -w[9]; w[10] = -w[10]; }
+    const l = M.rotation(M.mul(w, M.inv(M.rotOnly(n.parent.world))));
+    const e = M.toEuler(l, n.order);
+    for (const ch of c.channels) if (ch[0] === 'r') rig.set(selected + '.' + ch, e['xyz'.indexOf(ch[1])]);
+  }
+  rig.evaluate();
+  working = rig.getVector();
+  syncView(); refreshChannels();
+});
+gizmo.addEventListener('change', () => { dirty = true; });
+
+// picking: the control whose curve passes nearest the pointer
+let down = null;
+canvas.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY }; });
+canvas.addEventListener('pointerup', e => {
+  if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 4 || gizmo.dragging || gizmo.axis) { down = null; return; }
+  down = null;
+  const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+  const v = new T.Vector3();
+  let best = null, bd = 10;
+  for (const [name, view] of ctlView) {
+    if (!view.g.visible) continue;
+    const w = rig.controlWorld(name);
+    for (const cvs of view.cvs) {
+      const pts = cvs.map(p => { const q = M.xpoint(p, w); v.set(q[0], q[1], q[2]).project(camera); return v.z > 1 ? null : [(v.x + 1) / 2 * r.width, (1 - v.y) / 2 * r.height]; });
+      for (let i = 0; i < pts.length; i++) {
+        const a = pts[i], b = pts[(i + 1) % pts.length];
+        if (!a || !b) continue;
+        const d = segDist(mx, my, a, b);
+        if (d < bd) { bd = d; best = name; }
+      }
+    }
+  }
+  select(best);
+});
+function segDist(x, y, a, b) {
+  const dx = b[0] - a[0], dy = b[1] - a[1], l = dx * dx + dy * dy;
+  const t = l ? Math.max(0, Math.min(1, ((x - a[0]) * dx + (y - a[1]) * dy) / l)) : 0;
+  return Math.hypot(x - a[0] - dx * t, y - a[1] - dy * t);
+}
+
+// ---------------------------------------------------------------- panel
+function refreshChannels() {
+  if (!selected) return;
+  for (const inp of $('channels').querySelectorAll('input')) if (document.activeElement !== inp) inp.value = (+rig.get(inp.dataset.key).toFixed(2));
+}
+
+function refreshPanel() {
+  const key = project.keyAt(frame);
+  $('selName').textContent = selected ? `${label(selected)}  (${selected})` : '（未選択：コントロールの線をクリック）';
+  const box = $('channels');
+  box.textContent = '';
+  if (selected) {
+    const c = rig.controlByName.get(selected);
+    for (const ch of c.channels) {
+      const l = document.createElement('span'); l.textContent = ch;
+      const inp = document.createElement('input');
+      inp.type = 'number'; inp.step = ch[0] === 't' ? 1 : 5; inp.dataset.key = selected + '.' + ch;
+      inp.value = +rig.get(inp.dataset.key).toFixed(2);
+      inp.addEventListener('change', () => { rig.set(inp.dataset.key, +inp.value || 0); rig.evaluate(); commit([selected]); });
+      box.append(l, inp);
+    }
+  }
+  const pins = $('pins');
+  pins.textContent = '';
+  if (key) for (const n of key.pins) {
+    const s = document.createElement('span');
+    s.className = 'chip'; s.textContent = label(n) + ' ×'; s.title = n + ' のピンを外す';
+    s.onclick = () => { project.pushUndo(); key.pins.delete(n); rebake(); showFrame(frame); };
+    pins.append(s);
+  }
+  for (const d of $('list').children) {
+    d.classList.toggle('sel', d.dataset.name === selected);
+    d.classList.toggle('pin', !!key && key.pins.has(d.dataset.name));
+  }
+  $('delKey').disabled = !key;
+  $('addKey').classList.toggle('on', !!key);
+  refreshControlLook();
+}
+
+function buildList() {
+  const list = $('list');
+  for (const c of rig.controls) {
+    if (c.group !== 'body') continue;
+    const d = document.createElement('div');
+    d.dataset.name = c.name; d.textContent = label(c.name); d.title = c.name;
+    d.onclick = () => select(c.name);
+    list.append(d);
+  }
+}
+
+// ---------------------------------------------------------------- ghosts
+const BONES = [];
+function refreshGhosts() {
+  if (!rig) return;
+  const prev = [...project.keys].reverse().find(k => k.frame < frame), next = project.keys.find(k => k.frame > frame);
+  const saved = rig.getVector();
+  [prev, next].forEach((k, i) => {
+    const g = ghosts[i];
+    g.visible = !!k && $('showGhost').checked && !playing;
+    if (!g.visible) return;
+    rig.setVector(k.v).evaluate();
+    const pts = [];
+    for (const [a, b] of BONES) { const p = rig.jointWorld(a), q = rig.jointWorld(b); pts.push(p[12], p[13], p[14], q[12], q[13], q[14]); }
+    g.geometry.setAttribute('position', new T.Float32BufferAttribute(pts, 3));
+  });
+  rig.setVector(saved).evaluate();
+  dirty = true;
+}
+
+// ---------------------------------------------------------------- actions
+const actions = {
+  addKey() { project.pushUndo(); project.setKey(frame, currentPose()); working = null; rebake(); showFrame(frame); },
+  delKey() { if (!project.keyAt(frame)) return; project.pushUndo(); project.removeKey(frame); rebake(); showFrame(frame); },
+  copy() { const k = project.keyAt(frame); clipboard = { v: currentPose().slice(), pins: [...(k?.pins ?? [])] }; flash('copy'); },
+  paste(mirror = false) {
+    if (!clipboard) return;
+    project.pushUndo();
+    const v = mirror ? rig.mirrorVector(clipboard.v) : clipboard.v;
+    project.setKey(frame, v, clipboard.pins.map(n => (mirror ? rig.mirrorName(n) : n)));
+    working = null; rebake(); showFrame(frame);
+  },
+  mirror() {
+    project.pushUndo();
+    const k = project.keyAt(frame);
+    project.setKey(frame, rig.mirrorVector(currentPose()), [...(k?.pins ?? [])].map(n => rig.mirrorName(n)));
+    working = null; rebake(); showFrame(frame);
+  },
+  undo() { if (project.undo()) { working = null; rebake(); showFrame(frame); } },
+  redo() { if (project.redo()) { working = null; rebake(); showFrame(frame); } },
+  play() { playing = !playing; $('play').textContent = playing ? '⏸' : '▶'; last = 0; acc = 0; refreshGhosts(); },
+  prevKey() { const k = [...project.keys].reverse().find(k => k.frame < frame); showFrame(k ? k.frame : 0); },
+  nextKey() { const k = project.keys.find(k => k.frame > frame); if (k) showFrame(k.frame); },
+  resetSel() {
+    if (!selected) return;
+    for (const ch of rig.controlByName.get(selected).channels) rig.set(selected + '.' + ch, 0);
+    rig.evaluate(); commit([selected], { natural: false });
+  },
+  resetAll() { project.pushUndo(); project.setKey(frame, project.zero(), []); working = null; rebake(); showFrame(frame); },
+  unpin() { const k = project.keyAt(frame); if (!k) return; project.pushUndo(); k.pins.clear(); rebake(); showFrame(frame); },
+};
+function flash(id) { const b = $(id); b.classList.add('on'); setTimeout(() => b.classList.remove('on'), 250); }
+
+function download(name, text) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+  a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+function bindUI() {
+  for (const id of ['addKey', 'delKey', 'copy', 'mirror', 'undo', 'redo', 'play', 'prevKey', 'nextKey', 'resetSel', 'resetAll', 'unpin']) $(id).onclick = () => actions[id]();
+  $('paste').onclick = () => actions.paste(false);
+  $('pasteMirror').onclick = () => actions.paste(true);
+  $('naturalize').onclick = naturalizeNow;
+  $('first').onclick = () => showFrame(0);
+  $('frame').onchange = e => showFrame(+e.target.value || 0);
+  $('length').onchange = e => { project.pushUndo(); project.length = Math.max(10, Math.min(2000, +e.target.value || 90)); rebake(); showFrame(Math.min(frame, project.length)); };
+  $('mode').onchange = e => { project.pushUndo(); project.mode = e.target.value; rebake(); showFrame(frame); };
+  $('strength').oninput = e => { $('strengthV').textContent = Math.round(e.target.value * 100) + '%'; };
+  for (const id of ['showCtl', 'showFinger', 'showGhost']) $(id).onchange = () => { refreshControlLook(); refreshGhosts(); dirty = true; };
+  $('showMesh').onchange = e => { if (character) character.visible = e.target.checked; dirty = true; };
+  $('save').onclick = () => download('soma_anim_project.json', JSON.stringify(project.toJSON(), null, 1));
+  $('export').onclick = () => download('soma_anim_bake.json', JSON.stringify(project.toBake()));
+  $('load').onclick = () => $('file').click();
+  $('file').onchange = async e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    try { const d = JSON.parse(await f.text()); project.pushUndo(); project.fromJSON(d); afterLoad(); } catch (err) { alert('開けませんでした: ' + err.message); }
+    e.target.value = '';
+  };
+  for (const b of document.querySelectorAll('[data-pick]')) b.onclick = () => {
+    const names = rig.spec.selector_sets[b.dataset.pick];
+    const i = names.indexOf(selected);
+    select(names[(i + 1) % names.length]);
+  };
+  addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+    const k = e.key.toLowerCase(), mod = e.ctrlKey || e.metaKey;
+    const run = f => { e.preventDefault(); f(); };
+    if (k === ' ') run(actions.play);
+    else if (mod && k === 'z') run(e.shiftKey ? actions.redo : actions.undo);
+    else if (mod && k === 'y') run(actions.redo);
+    else if (mod && k === 'c') run(actions.copy);
+    else if (mod && k === 'v') run(() => actions.paste(e.shiftKey));
+    else if (k === 'k') run(actions.addKey);
+    else if (k === 'delete' || k === 'backspace') run(actions.delKey);
+    else if (k === 'm') run(actions.mirror);
+    else if (k === 'n') run(naturalizeNow);
+    else if (k === 'arrowleft') run(() => showFrame(frame - 1));
+    else if (k === 'arrowright') run(() => showFrame(frame + 1));
+    else if (k === ',') run(actions.prevKey);
+    else if (k === '.') run(actions.nextKey);
+    else if (k === 'escape') run(() => select(null));
+  });
+}
+
+function afterLoad() {
+  $('length').value = project.length; $('mode').value = project.mode;
+  working = null; rebake(); showFrame(Math.min(frame, project.length));
+}
+
+// ---------------------------------------------------------------- loop
+let last = 0, acc = 0;
+function tick(t) {
+  requestAnimationFrame(tick);
+  if (playing) {
+    if (last) acc += (t - last) / 1000;
+    last = t;
+    const step = Math.floor(acc * project.fps);
+    if (step > 0) { acc -= step / project.fps; showFrame((frame + step) % (project.length + 1)); }
+  }
+  if (dirty) { dirty = false; renderer.render(scene, camera); }
+}
+
+// ---------------------------------------------------------------- start
+async function start() {
+  const spec = await fetch('assets/bns_rig.json').then(r => r.json());
+  rig = new BnsRig(spec);
+  project = new Project(rig);
+  const skip = /^(ik_|interaction|center_of_mass)/;
+  for (const j of rig.joints) if (rig.jointIndex.has(j.parent) && j.parent !== 'root' && !skip.test(j.name)) BONES.push([j.parent, j.name]);
+  buildControls(); buildList();
+  timeline = new Timeline($('timeline'), project, {
+    frame: () => frame,
+    seek: f => { if (playing) actions.play(); showFrame(f); },
+    moved: () => { rebake(); showFrame(frame); },
+    beforeMove: () => project.pushUndo(),
+  });
+  bindUI();
+  try { const s = localStorage.getItem('soma_anim.project'); if (s) project.fromJSON(JSON.parse(s)); } catch { /* start empty */ }
+  if (!project.keys.length) project.setKey(0, project.zero());
+  resize(); afterLoad();
+  requestAnimationFrame(tick);
+  $('hint').textContent = 'コントロールの線をクリックして選び、矢印や輪をドラッグ。K: キー / Space: 再生 / M: 左右反転 / N: 自然なポーズに';
+
+  status('キャラクターを読み込み中…');
+  // ?mesh=0 shows the capsule mannequin (what a copy without assets/manny.* shows)
+  try { if (new URLSearchParams(location.search).get('mesh') === '0') throw Error('off'); character = await loadManny('assets/manny'); } catch { character = makeMannequin(rig); }
+  scene.add(character);
+  syncView();
+
+  status('参考モーションを読み込み中…（約 20 MB）');
+  try {
+    const soma = new SomaRig(await fetch('assets/soma_rig.json').then(r => r.json()));
+    const db = await MotionDB.load(soma, 'assets/motiondb');
+    const re = new SomaToManny(rig, soma), fitter = new RigFitter(rig);
+    nat = new Naturalizer(rig, db, re, fitter);
+    inb = new Inbetweener(rig, db, re, fitter);
+    db.track();
+    rebake(); showFrame(frame);
+    status(`参考モーション ${db.clips.length} クリップ`);
+  } catch (e) {
+    console.error(e);
+    status('参考モーションを読み込めませんでした（単純な補間で動きます）');
+  }
+  window.app = { rig, project, actions, select, showFrame, commit, naturalizeNow, render: () => renderer.render(scene, camera), get frame() { return frame; }, get nat() { return nat; }, get inb() { return inb; } };
+}
+start().catch(e => { console.error(e); status('起動に失敗: ' + e.message); });

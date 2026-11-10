@@ -1,0 +1,11 @@
+{
+  "name": "soma_anim",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Pose-to-pose animation tool: UE5 Manny with a BNS style rig, natural posing and motion matched in-betweens",
+  "scripts": {
+    "serve": "node tools/serve.mjs",
+    "test": "node --test tests/"
+  }
+}

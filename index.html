@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SOMA Anim</title>
+<link rel="stylesheet" href="src/style.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<header>
+  <h1>SOMA Anim</h1>
+  <span class="sub">キーポーズ → 自然なポーズ → モーションマッチングで中割り（Manny + BNS リグ）</span>
+  <span class="grow"></span>
+  <button id="undo" title="元に戻す (Ctrl+Z)">↶</button>
+  <button id="redo" title="やり直す (Ctrl+Y)">↷</button>
+  <button id="save" title="プロジェクトを保存 (.json)">保存</button>
+  <button id="load" title="プロジェクトを開く">開く</button>
+  <button id="export" title="全フレームのコントロール値を書き出す（Maya 用）">Maya 用に書き出し</button>
+  <input id="file" type="file" accept=".json" hidden>
+</header>
+
+<main>
+  <div id="view"><canvas id="gl"></canvas><div id="status">読み込み中…</div><div id="hint"></div></div>
+
+  <aside>
+    <section>
+      <h2>ポーズの自動補正</h2>
+      <label class="row"><input id="auto" type="checkbox" checked> 動かしたら自然なポーズに直す</label>
+      <label class="row"><input id="lockFeet" type="checkbox" checked> 足は今の位置に留める</label>
+      <label class="row">強さ <input id="strength" type="range" min="0" max="1" step="0.05" value="1"><span id="strengthV">100%</span></label>
+      <div class="buttons">
+        <button id="naturalize" title="今のポーズを参考モーションの一番近い姿勢に寄せる (N)">今のポーズを自然に</button>
+        <button id="unpin" title="手で決めた扱いのコントロールを解除する">ピンを全部外す</button>
+      </div>
+      <div id="pins" class="chips"></div>
+      <div id="match" class="note"></div>
+    </section>
+
+    <section>
+      <h2>コントロール</h2>
+      <div id="selName" class="selname">（未選択）</div>
+      <div id="channels"></div>
+      <div class="buttons">
+        <button id="resetSel">選択をリセット</button>
+        <button id="resetAll">全身をリセット</button>
+      </div>
+      <div class="pick">
+        <button data-pick="All_Trans_ctrl">移動系</button>
+        <button data-pick="All_Rot_ctrl">回転系</button>
+      </div>
+      <div id="list" class="list"></div>
+    </section>
+
+    <section>
+      <h2>表示</h2>
+      <label class="row"><input id="showCtl" type="checkbox" checked> コントロール</label>
+      <label class="row"><input id="showFinger" type="checkbox"> 指のコントロール</label>
+      <label class="row"><input id="showMesh" type="checkbox" checked> メッシュ</label>
+      <label class="row"><input id="showGhost" type="checkbox" checked> 前後のキーを薄く表示</label>
+    </section>
+  </aside>
+</main>
+
+<footer>
+  <div class="bar">
+    <button id="first" title="先頭へ">⏮</button>
+    <button id="prevKey" title="前のキー (,)">◀◆</button>
+    <button id="play" title="再生 / 停止 (Space)">▶</button>
+    <button id="nextKey" title="次のキー (.)">◆▶</button>
+    <span class="frame">フレーム <input id="frame" type="number" min="0" value="0"> / <input id="length" type="number" min="10" max="2000" value="90"></span>
+    <span class="sep"></span>
+    <button id="addKey" title="今のポーズをキーにする (K)">◆ キー</button>
+    <button id="delKey" title="このフレームのキーを消す (Delete)">削除</button>
+    <button id="copy" title="ポーズをコピー (Ctrl+C)">コピー</button>
+    <button id="paste" title="貼り付け (Ctrl+V)">貼り付け</button>
+    <button id="pasteMirror" title="左右反転して貼り付け (Ctrl+Shift+V)">反転貼り付け</button>
+    <button id="mirror" title="このポーズを左右反転 (M)">左右反転</button>
+    <span class="grow"></span>
+    <label>中割り <select id="mode"><option value="mm">モーションマッチング</option><option value="ease">単純な補間</option></select></label>
+  </div>
+  <canvas id="timeline"></canvas>
+</footer>
+
+<script type="module" src="src/app.js"></script>
+</body>
+</html>
