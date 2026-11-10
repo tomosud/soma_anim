@@ -23,7 +23,7 @@ export const SCENARIOS = {
   'arms swap': [[0, { 'R_Hand_trans.ty': 60, 'R_Hand_trans.tz': 20 }, ['R_Hand_trans']], [30, { 'L_Hand_trans.ty': 60, 'L_Hand_trans.tz': 20 }, ['L_Hand_trans']]],
 };
 
-export const METHODS = { ease: { mode: 'ease' }, mm: { mode: 'mm' }, mb: { mode: 'mb', flow: false }, 'mb flow': { mode: 'mb', flow: true } };
+export const METHODS = { ease: { mode: 'ease' }, mb: { mode: 'mb', flow: false }, 'mb flow': { mode: 'mb', flow: true } };
 
 const COLS = [['slideSpeed', 'slide cm/s', 1], ['slideMax', 'worst', 0], ['airLongest', 'air f', 0], ['sink', 'sink', 1], ['hipRise', 'hip+', 0], ['hipDrop', 'hip-', 0],
   ['stray', 'stray', 0], ['strayRel', 'rel', 2], ['refMean', 'ref', 0], ['refMax', 'refMax', 0], ['accel', 'acc', 1], ['kink', 'kink', 1]];

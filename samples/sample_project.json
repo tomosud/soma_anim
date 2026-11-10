@@ -5,6 +5,7 @@
  "fps": 30,
  "length": 75,
  "mode": "mb",
+ "flow": false,
  "keys": [
   {
    "frame": 0,

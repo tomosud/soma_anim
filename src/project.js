@@ -6,7 +6,7 @@ export class Project {
     this.rig = rig;
     this.fps = 30;
     this.length = 90;
-    this.mode = 'mb'; // 'mb' = MotionBricks, 'mm' = motion matching, 'ease' = plain interpolation
+    this.mode = 'mb'; // 'mb' = MotionBricks, 'ease' = plain interpolation
     this.flow = false; // MotionBricks: pass through the keys (true) or arrive and hold (false)
     this.todo = [];
     this.tries = new Map();
@@ -67,15 +67,10 @@ export class Project {
         prevId = id;
       } else prevId = '';
       if (!seg) {
-        // (a stretch MotionBricks is still making is shown eased, not with a different motion that then changes)
-        const mode = inb && this.mode !== 'ease' && !pending ? 'mm' : 'ease';
-        const id = mode + '|' + len + '|' + sig(a.v) + '|' + sig(b.v);
+        // (what MotionBricks has not made, or cannot make, is eased)
+        const id = 'ease|' + len + '|' + sig(a.v) + '|' + sig(b.v);
         seg = this.cache.get(id);
-        if (!seg && inb) {
-          seg = mode === 'mm' ? inb.generate(a.v, b.v, len) : null;
-          if (!seg) seg = inb.interpolate(a.v, b.v, len);
-          this.cache.set(id, seg);
-        }
+        if (!seg && inb) { seg = inb.interpolate(a.v, b.v, len); this.cache.set(id, seg); }
         if (!seg) seg = { frames: plain(a.v, b.v, len), match: null };
         used.add(id);
       }
@@ -123,7 +118,7 @@ export class Project {
 
   fromJSON(d) {
     if (d.format !== 'soma_anim') throw Error('soma_anim のファイルではありません');
-    this.fps = d.fps || 30; this.length = d.length || 90; this.mode = d.mode || 'mb'; this.flow = !!d.flow;
+    this.fps = d.fps || 30; this.length = d.length || 90; this.mode = d.mode === 'ease' ? 'ease' : 'mb'; this.flow = !!d.flow;
     this.keys = d.keys.map(k => ({ frame: k.frame, pins: new Set(k.pins || []), v: this.rig.vectorFromValues(k.values) }));
     this.sort();
   }

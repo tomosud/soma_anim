@@ -8,6 +8,7 @@ import { RigFitter } from '../src/fit.js';
 import { Naturalizer } from '../src/natural.js';
 import { Inbetweener } from '../src/inbetween.js';
 import { Project } from '../src/project.js';
+import { writeFbx } from '../src/fbx.js';
 
 const read = p => readFileSync(new URL(p, import.meta.url));
 const rig = new BnsRig(JSON.parse(read('../assets/bns_rig.json')));
@@ -36,4 +37,5 @@ const bake = p.toBake();
 const joints = ['pelvis', 'spine_05', 'head', 'hand_l', 'hand_r', 'lowerarm_l', 'foot_l', 'foot_r', 'calf_r', 'index_03_l', 'ball_r'];
 bake.check = { joints, positions: bake.frames.map(v => { rig.setVector(v).evaluate(); return joints.map(j => rig.jointWorld(j).slice(12, 15).map(x => +x.toFixed(4))); }) };
 writeFileSync('samples/sample_bake.json', JSON.stringify(bake));
+writeFileSync('samples/sample.fbx', writeFbx(rig, p.baked, p.fps));
 console.log('frames', bake.frames.length);

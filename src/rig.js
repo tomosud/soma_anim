@@ -116,7 +116,10 @@ export class BnsRig {
     for (const n of necks) n.neckTwist = { aim, share: 0.4 / necks.length };
 
     // bind skeleton: same local values as the drv skeleton
-    this.joints = spec.bind_skeleton.map(j => ({ name: j.name, parent: j.parent, drv: this.byName.get(j.driven_by || 'drv_' + j.name), rest: j.world_matrix }));
+    this.joints = spec.bind_skeleton.map(j => {
+      const jo = j.joint_orient || [0, 0, 0], has = jo.some(x => Math.abs(x) > 1e-9);
+      return { name: j.name, parent: j.parent, drv: this.byName.get(j.driven_by || 'drv_' + j.name), rest: j.world_matrix, orientEuler: jo, orient: has ? M.euler(jo, 'xyz') : null };
+    });
     this.jointIndex = new Map(this.joints.map((j, i) => [j.name, i]));
     this.scale = this.byName.get('drv_head').restWorld[13] / 162.6;
     this.exprValue = new Map();

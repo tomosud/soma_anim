@@ -12,6 +12,8 @@ import { Inbetweener } from './inbetween.js';
 import { Project, newScene } from './project.js';
 import { MotionBricks } from './motionbricks.js';
 import { loadState, saveState } from './store.js';
+import { FootReset, FOOT_CONTROLS } from './feet.js';
+import { writeFbx } from './fbx.js';
 import { loadManny, makeMannequin } from './character.js';
 import { Timeline } from './timeline.js';
 
@@ -75,7 +77,7 @@ new ResizeObserver(resize).observe(canvas.parentElement);
 orbit.addEventListener('change', () => { dirty = true; });
 
 // ---------------------------------------------------------------- state
-let rig, project, character, nat = null, inb = null, mb = null, timeline;
+let rig, project, character, nat = null, inb = null, mb = null, timeline, footReset;
 let frame = 0, selected = null, playing = false, clipboard = null;
 let working = null; // pose being edited (not yet a key)
 const ctlView = new Map();
@@ -159,7 +161,7 @@ function rebake() {
     project.fill(inb, mb, error => {
       // (a stretch landed: show it, unless the animator is in the middle of a drag)
       if (gizmo.dragging) timeline.draw(); else showFrame(frame, !!working);
-      if (error) status('MotionBricks の生成に失敗しました（その区間はモーションマッチング）: ' + error);
+      if (error) status('MotionBricks の生成に失敗しました（その区間は単純な補間）: ' + error);
       else if (!project.todo.length) status(mbLine());
     });
   }
@@ -191,7 +193,7 @@ function wantMotionBricks() {
     else if (p.phase === 'cache') show('MotionBricks のモデルを読み込み中…（保存済みのものを使用）', null, false);
     else if (p.phase === 'session') show('MotionBricks を準備中…', null, false);
   }).then(() => { wait(null); status(mbLine()); rebake(); if (!gizmo.dragging && !working) showFrame(frame); })
-    .catch(e => { console.error(e); wait(null); status('MotionBricks を使えませんでした（モーションマッチングで中割りします）: ' + e.message); });
+    .catch(e => { console.error(e); wait(null); status('MotionBricks を使えませんでした（単純な補間で中割りします）: ' + e.message); });
 }
 
 function effectivePins(key) {
@@ -397,14 +399,14 @@ const actions = {
   paste(mirror = false) {
     if (!clipboard) return;
     project.pushUndo();
-    const v = mirror ? rig.mirrorVector(clipboard.v) : clipboard.v;
+    const v = keepPlace(mirror ? rig.mirrorVector(clipboard.v) : clipboard.v.slice());
     project.setKey(frame, v, clipboard.pins.map(n => (mirror ? rig.mirrorName(n) : n)));
     working = null; rebake(); showFrame(frame);
   },
   mirror() {
     project.pushUndo();
     const k = project.keyAt(frame);
-    project.setKey(frame, rig.mirrorVector(currentPose()), [...(k?.pins ?? [])].map(n => rig.mirrorName(n)));
+    project.setKey(frame, keepPlace(rig.mirrorVector(currentPose())), [...(k?.pins ?? [])].map(n => rig.mirrorName(n)));
     working = null; rebake(); showFrame(frame);
   },
   undo() { if (project.undo()) { afterLoad(); wantMotionBricks(); } },
@@ -420,6 +422,22 @@ const actions = {
   resetAll() { project.pushUndo(); project.setKey(frame, project.zero(), []); working = null; rebake(); showFrame(frame); },
   unpin() { const k = project.keyAt(frame); if (!k) return; project.pushUndo(); k.pins.clear(); rebake(); showFrame(frame); },
 };
+/** A pose brought from elsewhere takes the place and facing (the whole-body control) of the frame it lands on. */
+function keepPlace(v) {
+  const here = currentPose();
+  rig.channelKeys.forEach((k, i) => { if (k.startsWith('world_ctl.')) v[i] = here[i]; });
+  return v;
+}
+
+/** Feet flat on the floor (this key, or every key). */
+function resetFeet(all = false) {
+  project.pushUndo();
+  const keys = all ? project.keys : [project.setKey(frame, currentPose())];
+  for (const k of keys) { k.v = footReset.apply(k.v); for (const n of FOOT_CONTROLS) k.pins.add(n); }
+  working = null; rebake(); showFrame(frame);
+  flash(all ? 'feetAll' : 'feet');
+}
+
 function flash(id) { const b = $(id); b.classList.add('on'); setTimeout(() => b.classList.remove('on'), 250); }
 
 function download(name, text) {
@@ -449,6 +467,9 @@ function bindUI() {
   $('showMesh').onchange = e => { if (character) character.visible = e.target.checked; dirty = true; };
   $('save').onclick = () => download('soma_anim_project.json', JSON.stringify(project.toJSON(), null, 1));
   $('export').onclick = () => download('soma_anim_bake.json', JSON.stringify(project.toBake()));
+  $('exportFbx').onclick = () => { const text = writeFbx(rig, project.baked, project.fps); showFrame(frame, !!working); download('soma_anim.fbx', text); };
+  $('feet').onclick = () => resetFeet(false);
+  $('feetAll').onclick = () => resetFeet(true);
   $('load').onclick = () => $('file').click();
   $('file').onchange = async e => {
     const f = e.target.files[0];
@@ -475,6 +496,7 @@ function bindUI() {
     else if (k === 'm') run(actions.mirror);
     else if (k === 'n') run(naturalizeNow);
     else if (k === 'r') run(regenerate);
+    else if (k === 'g') run(() => resetFeet(false));
     else if (k === 'arrowleft') run(() => showFrame(frame - 1));
     else if (k === 'arrowright') run(() => showFrame(frame + 1));
     else if (k === ',') run(actions.prevKey);
@@ -516,6 +538,7 @@ async function start() {
   const spec = await fetch(asset('assets/bns_rig.json')).then(r => r.json());
   rig = new BnsRig(spec);
   project = new Project(rig);
+  footReset = new FootReset(rig);
   const skip = /^(ik_|interaction|center_of_mass)/;
   for (const j of rig.joints) if (rig.jointIndex.has(j.parent) && j.parent !== 'root' && !skip.test(j.name)) BONES.push([j.parent, j.name]);
   buildControls(); buildList();

@@ -92,3 +92,47 @@ test('whole-body control: poses move with it, in-betweens still meet the keys', 
   rig.setVector(n.vector).evaluate();
   assert.ok(M.dist(jp('pelvis'), pb) < 40);
 });
+
+test('foot reset: flat on the floor, where they were', async () => {
+  const { FootReset } = await import('../src/feet.js');
+  const fr = new FootReset(rig);
+  const rest = n => rig.joints[rig.jointIndex.get(n)].rest[13];
+  for (const values of [
+    { 'L_Foot_trans.ty': 12, 'L_Foot_rot.rx': 30, 'L_Foot_rot.rz': -20, 'R_Foot_trans.ty': -6, 'R_Foot_rot.ry': 25, 'R_Toe_rot.rz': 30 },
+    { 'Hip_trans.ty': 20, 'L_Foot_trans.tz': 40, 'R_Foot_trans.tx': -30, 'L_Foot_rot.rx': -40 },
+    { 'world_ctl.tx': 100, 'world_ctl.ry': 70, 'L_Foot_trans.ty': 9, 'R_Foot_rot.rz': 35, 'L_knee_pv.tx': 60 },
+  ]) {
+    const v = rig.vectorFromValues(values);
+    rig.setVector(v).evaluate();
+    const before = ['foot_l', 'foot_r'].map(jp);
+    rig.setVector(fr.apply(v)).evaluate();
+    for (const [i, s] of ['l', 'r'].entries()) {
+      const f = jp('foot_' + s), b = jp('ball_' + s);
+      assert.ok(Math.abs(f[1] - rest('foot_' + s)) < 0.05, `ankle height ${f[1]}`);
+      assert.ok(Math.abs(b[1] - rest('ball_' + s)) < 0.3, `ball height ${b[1]}`);
+      assert.ok(Math.hypot(f[0] - before[i][0], f[2] - before[i][2]) < 0.05, 'stays in place');
+      // the knee bends the way the foot points
+      const k = jp('calf_' + s), h = jp('thigh_' + s), d = M.norm([b[0] - f[0], 0, b[2] - f[2]]);
+      const mid = M.lerp(h, f, 0.5);
+      assert.ok(M.dot(M.sub(k, mid), d) > -0.5, 'knee forward');
+    }
+  }
+});
+
+test('fbx: the file holds the animation of every bone', async () => {
+  const { writeFbx, sampleJoints } = await import('../src/fbx.js');
+  const A = new Float64Array(rig.channelKeys.length), B = rig.vectorFromValues({ 'R_Hand_trans.ty': 50, 'Hip_trans.ty': -20, 'world_ctl.tz': 30 });
+  const text = writeFbx(rig, [A, ...inb.interpolate(A, B, 6).frames, B], 30);
+  assert.equal((text.match(/Model: \d+, "Model::/g) || []).length, 89);
+  assert.equal((text.match(/AnimationCurve: /g) || []).length, 89 * 6);
+  assert.ok(text.includes('KeyTime: *7'));
+  // local samples rebuild the world matrices
+  rig.setVector(B).evaluate();
+  const S = sampleJoints(rig), world = {};
+  rig.joints.forEach((j, i) => {
+    const l = M.compose(M.mul(M.euler(S[i].slice(3), 'xyz'), M.euler(j.orientEuler, 'xyz')), S[i].slice(0, 3));
+    world[j.name] = world[j.parent] ? M.mul(l, world[j.parent]) : l;
+    const w = rig.jointWorld(j.name);
+    for (let k = 0; k < 16; k++) assert.ok(Math.abs(world[j.name][k] - w[k]) < 1e-3, j.name);
+  });
+});
