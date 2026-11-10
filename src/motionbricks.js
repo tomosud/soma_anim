@@ -79,13 +79,16 @@ function decode(soma, motions, tokens, align) {
  * Move the first frame onto `start` and the last onto `end`, each correction fading across the motion (local
  * rotations).  end = null: only the start is corrected (a stretch that goes on into the next one).
  */
-function correctEndpoints(soma, frames, start, end) {
+function correctEndpoints(soma, frames, start, end, endRoot = null) {
   const n = frames.length;
   if (n < 2) return frames;
   const local = p => { const out = []; for (let j = 0; j < NJ; j++) { const q = soma.rot(p, j); out.push(soma.parents[j] < 0 ? q : qmul(qinv(soma.rot(p, soma.parents[j])), q)); } return out; };
   const L0 = local(frames[0]), L1 = local(frames[n - 1]), C = local(start), T = end ? local(end) : L1;
   const dS = C.map((c, j) => qmul(c, qinv(L0[j]))), dE = T.map((t, j) => qmul(t, qinv(L1[j])));
-  const rS = M.sub(start.root, frames[0].root), rE = end ? M.sub(end.root, frames[n - 1].root) : [0, 0, 0];
+  // (endRoot: only the place of the hips on the ground is brought to that pose's - a walk kept on its schedule)
+  const rS = M.sub(start.root, frames[0].root);
+  let rE = end ? M.sub(end.root, frames[n - 1].root) : [0, 0, 0];
+  if (!end && endRoot) rE = [endRoot.root[0] - frames[n - 1].root[0], 0, endRoot.root[2] - frames[n - 1].root[2]];
   return frames.map((fr, i) => {
     const w = i / (n - 1), L = local(fr), q = new Float32Array(NJ * 4);
     const out = { root: M.add(fr.root, M.add(M.scl(rS, 1 - w), M.scl(rE, w))), q, contact: fr.contact };
@@ -181,7 +184,11 @@ export class MotionBricks {
     // gap is filled exactly (left to itself the model dashes there and waits).
     const ha = soma.heading(soma.positions(a)), hb = soma.heading(soma.positions(b));
     const timed = flow || dist > 0.3 || Math.abs(Math.atan2(Math.sin(hb - ha), Math.cos(hb - ha))) > 0.5;
-    const pieces = timed ? Math.max(1, Math.ceil(n / 57)) : 1;
+    // Going somewhere is made the way the model was trained to walk: short plans (about 0.6 s) that follow
+    // one another, each continuing from the frames before it and aiming at the reference motion a little ahead.
+    // One long plan from standing to standing comes out as a dash and a wait.
+    const rolling = timed && n >= 30;
+    const pieces = rolling ? Math.max(2, Math.round(n / 19)) : timed ? Math.max(1, Math.ceil(n / 57)) : 1;
     // Way points of a long walk: frames of the reference stretch that goes from A to B (a body in mid stride,
     // carried onto the line between the keys).  The pose between two standing keys would be a stop on the way.
     let way = null;
@@ -191,7 +198,7 @@ export class MotionBricks {
       rig.setVector(held).evaluate();
       if (st) {
         const p0 = st.placed[0].root, p1 = st.placed[n].root;
-        way = u => { const q = st.placed[Math.round(u * n)]; return { root: [q.root[0] + (1 - u) * (a.root[0] - p0[0]) + u * (b.root[0] - p1[0]), q.root[1], q.root[2] + (1 - u) * (a.root[2] - p0[2]) + u * (b.root[2] - p1[2])], q: q.q }; };
+        way = u => { u = Math.min(1, u); const q = st.placed[Math.round(u * n)]; return { root: [q.root[0] + (1 - u) * (a.root[0] - p0[0]) + u * (b.root[0] - p1[0]), q.root[1], q.root[2] + (1 - u) * (a.root[2] - p0[2]) + u * (b.root[2] - p1[2])], q: q.q }; };
       }
     }
     let frames = [], ctx = context ?? [a, a, a, a], ms = 0;
@@ -206,13 +213,16 @@ export class MotionBricks {
       if (!last) target = way ? way((i + 1) / pieces) : lerpPose(a, b, (i + 1) / pieces);
       const batch = emptyBatch(1);
       // (the frame after the goal, one step toward the next key: the arrival has that key's direction in it)
-      const goal = last && c && nextLen > 1 ? [target, lerpPose(b, c, 1 / nextLen)] : [target];
+      let goal = last && c && nextLen > 1 ? [target, lerpPose(b, c, 1 / nextLen)] : [target];
+      // (on the way: the reference frame at the goal in full, the three after it for where the hips go on -
+      //  the body of those is the model's, so it keeps its own stride instead of copying another body's)
+      if (!last && rolling && way) goal = [target, ...[1, 2, 3].map(d => ({ ...way((i + 1) / pieces + d / n), free: true }))];
       const align = encode(soma, batch, ctx, goal, allowed);
       const out = await this._run(batch);
       ms += out.ms;
       let part = decode(soma, out.motions, out.tokens[0], align);
       if (part.length < 4) throw Error('MotionBricks returned no motion');
-      part = correctEndpoints(soma, part, ctx[3], last ? b : null);
+      part = correctEndpoints(soma, part, ctx[3], last ? b : null, !last && rolling ? target : null);
       ctx = part.slice(-4);
       frames = frames.concat(i ? part.slice(1) : part);
     }

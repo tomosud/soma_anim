@@ -37,7 +37,8 @@ export class Evaluator {
     const S = this.sample(frames), n = S.length, F = this.floor;
     // height of the lowest point of a foot above where it rests on the floor
     const lift = (s, side) => Math.min(s.P['foot_' + side][1] - F['foot_' + side], s.P['ball_' + side][1] - F['ball_' + side]);
-    const planted = (s, side) => s.P['foot_' + side][1] - F['foot_' + side] < 2.5 && s.P['ball_' + side][1] - F['ball_' + side] < 2.5;
+    // (flat on the floor: within 1.5 cm at the ankle and at the ball. A foot swinging low over the floor is not planted)
+    const planted = (s, side) => s.P['foot_' + side][1] - F['foot_' + side] < 1.5 && s.P['ball_' + side][1] - F['ball_' + side] < 1.5;
     let slide = 0, slideMax = 0, contact = 0, air = 0, airRun = 0, airLongest = 0, sink = 0;
     for (let k = 0; k < n; k++) {
       const s = S[k];

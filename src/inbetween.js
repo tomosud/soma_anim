@@ -174,11 +174,18 @@ export class Inbetweener {
         rec[e].lift.push(Math.min(rig.jointWorld(f)[13] - this.floor[f], rig.jointWorld(b)[13] - this.floor[b]));
       });
     }
+    // (a contact that drops out for a frame or two is still the same plant; one that lasts a frame or two is none)
+    const clean = flags => {
+      const f = flags.slice();
+      for (let k = 1; k < n; k++) if (!f[k]) { let e = k; while (e < n && !f[e + 1]) e++; if (f[k - 1] && e < n && e - k < 3) for (let g = k; g <= e; g++) f[g] = true; k = e; }
+      for (let k = 0; k <= n; k++) if (f[k]) { let e = k; while (e < n && f[e + 1]) e++; if (e - k < 3 && k > 0 && e < n) for (let g = k; g <= e; g++) f[g] = false; k = e; }
+      return f;
+    };
     feet.forEach(([c], e) => {
       const r = rec[e], restT = rig.node(c).restT;
       // (the foot that has farther to go steps first)
       const first = M.dist(rec[0].pos[0], rec[0].pos[n]) >= M.dist(rec[1].pos[0], rec[1].pos[n]) ? 0 : 1;
-      const held = lockFoot(r.pos, contact[e], e === first ? 0 : 1);
+      const held = lockFoot(r.pos, clean(contact[e]), e === first ? 0 : 1);
       for (let k = 1; k < n; k++) {
         let p = held[k];
         const lift = r.lift[k] + (p[1] - r.pos[k][1]);
