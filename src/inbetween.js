@@ -26,6 +26,8 @@ export class Inbetweener {
     this.dims = [];
     for (const [o, c, w] of POSE_DIMS) for (let i = 0; i < c; i++) this.dims.push([o + i, Math.sqrt(w)]);
     for (let i = 0; i < n; i++) for (let d = 0; d < 16; d++) P[i * 16 + d] = db.feat[i * DIM + this.dims[d][0]] * this.dims[d][1];
+    // falls, hits and get-ups are never what lies between two ordinary poses
+    this.skip = db.tagged(['fall', 'getup', 'hit']);
     this.feet = ['L', 'R'].map(S => ['x', 'y', 'z'].map(a => rig.channelIndex.get(`${S}_Foot_trans.t${a}`)));
   }
 
@@ -39,7 +41,7 @@ export class Inbetweener {
     // how far and how much B is turned from A, seen from A
     const want = bodyPoint(qb.hip, qa.hip, qa.heading);
     const turn = wrapRad(qb.heading - qa.heading);
-    const N = db.n;
+    const N = db.n, skip = this.skip;
     // cost of starting at each entry / ending at each entry
     const ca = new Float32Array(N), cb = new Float32Array(N);
     for (let i = 0; i < N; i++) {
@@ -53,13 +55,16 @@ export class Inbetweener {
       const pen = 0.12 * Math.abs(Math.log2(step * 2 / n));
       for (let i = 0; i + step < N; i++) {
         const j = i + step;
-        if (best && ca[i] + pen >= best.cost) continue;
+        if (skip[i] || (best && ca[i] + pen >= best.cost)) continue;
         if (db.entClip[i] !== db.entClip[j] || db.entMirror[i] !== db.entMirror[j] || db.entFrame[j] - db.entFrame[i] !== step * 2) continue;
         const h = T[i * 4 + 3], c = Math.cos(h), s = Math.sin(h);
         const dx = T[j * 4] - T[i * 4], dz = T[j * 4 + 2] - T[i * 4 + 2];
         const ex = dx * c - dz * s - want[0], ez = dx * s + dz * c - want[2];
         const et = wrapRad(T[j * 4 + 3] - h - turn);
-        const cost = ca[i] + cb[j] + 4 * (ex * ex + ez * ez) + 0.5 * et * et + pen;
+        // how far the stretch strays from the straight way between its own ends (at its middle): the calm one wins
+        let stray = 0;
+        for (let d = 0, m = (i + (step >> 1)) * 16, oi = i * 16, oj = j * 16; d < 16; d++) { const e = P[m + d] - 0.5 * (P[oi + d] + P[oj + d]); stray += e * e; }
+        const cost = ca[i] + cb[j] + 4 * (ex * ex + ez * ez) + 0.5 * et * et + pen + 1.5 * stray;
         if (!best || cost < best.cost) best = { cost, i, j, frames: step * 2, speed: step * 2 / n };
       }
     }

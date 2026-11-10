@@ -64,7 +64,8 @@ export class Project {
         prevId = id;
       } else prevId = '';
       if (!seg) {
-        const mode = inb && this.mode !== 'ease' ? 'mm' : 'ease';
+        // (a stretch MotionBricks is still making is shown eased, not with a different motion that then changes)
+        const mode = inb && this.mode !== 'ease' && !pending ? 'mm' : 'ease';
         const id = mode + '|' + len + '|' + sig(a.v) + '|' + sig(b.v);
         seg = this.cache.get(id);
         if (!seg && inb) {

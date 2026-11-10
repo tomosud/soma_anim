@@ -47,7 +47,8 @@ function encode(soma, batch, context, targets, tokens) {
     }
     const given = f < 4 + nT ? 1 : 0;
     batch.has_global_root_values[f] = given;
-    batch.has_local_poses[f] = given;
+    // a target marked `free` says only where the hips are and which way they face; the body is the model's
+    batch.has_local_poses[f] = given && !(f >= 4 && poses[f].free) ? 1 : 0;
     batch.has_local_root_values[f] = (f === 3 || f === 4 + nT - 1) ? 0 : given;
   }
   for (let i = 0; i < 11; i++) batch.allowed_pred_num_tokens[i] = tokens.includes(6 + i) ? 1 : 0;
@@ -74,14 +75,17 @@ function decode(soma, motions, tokens, align) {
   return frames;
 }
 
-/** Move the first frame onto `start` and the last onto `end`, each correction fading across the motion (local rotations). */
+/**
+ * Move the first frame onto `start` and the last onto `end`, each correction fading across the motion (local
+ * rotations).  end = null: only the start is corrected (a stretch that goes on into the next one).
+ */
 function correctEndpoints(soma, frames, start, end) {
   const n = frames.length;
   if (n < 2) return frames;
   const local = p => { const out = []; for (let j = 0; j < NJ; j++) { const q = soma.rot(p, j); out.push(soma.parents[j] < 0 ? q : qmul(qinv(soma.rot(p, soma.parents[j])), q)); } return out; };
-  const L0 = local(frames[0]), L1 = local(frames[n - 1]), C = local(start), T = local(end);
+  const L0 = local(frames[0]), L1 = local(frames[n - 1]), C = local(start), T = end ? local(end) : L1;
   const dS = C.map((c, j) => qmul(c, qinv(L0[j]))), dE = T.map((t, j) => qmul(t, qinv(L1[j])));
-  const rS = M.sub(start.root, frames[0].root), rE = M.sub(end.root, frames[n - 1].root);
+  const rS = M.sub(start.root, frames[0].root), rE = end ? M.sub(end.root, frames[n - 1].root) : [0, 0, 0];
   return frames.map((fr, i) => {
     const w = i / (n - 1), L = local(fr), q = new Float32Array(NJ * 4);
     const out = { root: M.add(fr.root, M.add(M.scl(rS, 1 - w), M.scl(rE, w))), q, contact: fr.contact };
@@ -160,15 +164,30 @@ export class MotionBricks {
     rig.setVector(A).evaluate(); const a = re.fromRig(rig);
     rig.setVector(B).evaluate(); const b = re.fromRig(rig);
     rig.setVector(held).evaluate();
-    // the model makes 24-64 frames (6-16 tokens of 4), three of which are dropped at each end
-    const want = Math.max(6, Math.min(16, Math.round((n + 7) / 4)));
-    const batch = emptyBatch(1);
-    const align = encode(soma, batch, context ?? [a, a, a, a], [b], [want]);
-    const out = await this._run(batch);
-    let frames = decode(soma, out.motions, out.tokens[0], align);
-    if (frames.length < 4) throw Error('MotionBricks returned no motion');
-    frames = correctEndpoints(soma, frames, a, b);
-    // the model's length is a multiple of four frames: resample to the key spacing
+    // The model makes 24-64 frames at a time (6-16 tokens of 4 frames; three frames are dropped at each end, so
+    // 17-57 frames of travel).  A longer gap is made in several pieces, each continuing from the last: the pieces
+    // on the way aim at the pose between the keys for their moment, the last one at key B.
+    const pieces = Math.max(1, Math.ceil(n / 57));
+    let frames = [], ctx = context ?? [a, a, a, a], ms = 0;
+    for (let i = 0; i < pieces; i++) {
+      const last = i === pieces - 1;
+      const span = n / pieces; // frames this piece should cover
+      const want = Math.max(6, Math.min(16, Math.round((span + 7) / 4)));
+      let target = b;
+      // (on the way: the pose between the two keys. Left free, the model fills the time with gestures of its own)
+      if (!last) target = lerpPose(a, b, (i + 1) / pieces);
+      const batch = emptyBatch(1);
+      const align = encode(soma, batch, ctx, [target], [want]);
+      const out = await this._run(batch);
+      ms += out.ms;
+      let part = decode(soma, out.motions, out.tokens[0], align);
+      if (part.length < 4) throw Error('MotionBricks returned no motion');
+      part = correctEndpoints(soma, part, ctx[3], last ? b : null);
+      ctx = part.slice(-4);
+      frames = frames.concat(i ? part.slice(1) : part);
+    }
+    const out = { ms };
+    // the model's lengths are multiples of four frames: the last few percent are a resample to the key spacing
     const m = frames.length - 1, placed = [], contact = [[], []];
     for (let k = 0; k <= n; k++) {
       const f = k * m / n, i = Math.min(m - 1, Math.floor(f));
@@ -180,7 +199,7 @@ export class MotionBricks {
     held = rig.getVector();
     const r = this.inb.finish(A, B, n, placed, contact);
     rig.setVector(held).evaluate();
-    r.match = { clip: 'MotionBricks', frames: m, speed: m / n, ms: out.ms };
+    r.match = { clip: 'MotionBricks', frames: m, speed: m / n, ms: out.ms, pieces };
     r.tail = frames.slice(-4);
     return r;
   }
