@@ -419,7 +419,7 @@ const actions = {
     for (const ch of rig.controlByName.get(selected).channels) rig.set(selected + '.' + ch, 0);
     rig.evaluate(); commit([selected], { natural: false });
   },
-  resetAll() { project.pushUndo(); project.setKey(frame, project.zero(), []); working = null; rebake(); showFrame(frame); },
+  resetAll() { project.pushUndo(); project.setKey(frame, keepPlace(project.zero()), []); working = null; rebake(); showFrame(frame); },
   unpin() { const k = project.keyAt(frame); if (!k) return; project.pushUndo(); k.pins.clear(); rebake(); showFrame(frame); },
 };
 /** A pose brought from elsewhere takes the place and facing (the whole-body control) of the frame it lands on. */
