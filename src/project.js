@@ -8,6 +8,7 @@ export class Project {
     this.length = 90;
     this.mode = 'mb'; // 'mb' = MotionBricks, 'mm' = motion matching, 'ease' = plain interpolation
     this.todo = [];
+    this.tries = new Map();
     this.keys = [];
     this.baked = [];
     this.segments = []; // {from, to, match}
@@ -58,7 +59,8 @@ export class Project {
         const id = 'mb|' + len + '|' + sig(a.v) + '|' + sig(b.v) + '|' + hash(prevId);
         seg = this.cache.get(id);
         used.add(id);
-        if (!seg) { this.todo.push({ id, a: a.v, b: b.v, len, prevId }); pending = true; } else if (seg.failed) seg = null;
+        if (seg && seg.failed) { if (seg.failed < 3) { this.cache.delete(id); this.tries.set(id, seg.failed); } seg = null; }
+        if (!this.cache.has(id)) { this.todo.push({ id, a: a.v, b: b.v, len, prevId }); pending = true; }
         prevId = id;
       } else prevId = '';
       if (!seg) {
@@ -88,11 +90,14 @@ export class Project {
     while (version === this.fillVersion && this.todo.length) {
       const t = this.todo[0];
       let r;
-      try { r = await mb.generate(t.a, t.b, t.len, this.cache.get(t.prevId)?.tail ?? null); } catch (e) { console.error(e); r = { failed: true }; }
+      try { r = await mb.generate(t.a, t.b, t.len, this.cache.get(t.prevId)?.tail ?? null); } catch (e) {
+        console.error(e);
+        r = { failed: (this.tries.get(t.id) || 0) + 1, error: String(e?.message ?? e) };
+      }
       this.cache.set(t.id, r);
       if (version !== this.fillVersion) return;
       this.bake(inb, mb);
-      onUpdate();
+      onUpdate(r.failed >= 3 ? r.error : null);
     }
   }
 

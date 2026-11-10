@@ -147,10 +147,11 @@ function rebake() {
   refreshGhosts();
   if (project.todo.length) {
     status('MotionBricks が中割りを生成中…');
-    project.fill(inb, mb, () => {
+    project.fill(inb, mb, error => {
       // (a stretch landed: show it, unless the animator is in the middle of a drag)
-      if (gizmo.dragging || working) timeline.draw(); else showFrame(frame);
-      if (!project.todo.length) status(mbLine());
+      if (gizmo.dragging) timeline.draw(); else showFrame(frame, !!working);
+      if (error) status('MotionBricks の生成に失敗しました（その区間はモーションマッチング）: ' + error);
+      else if (!project.todo.length) status(mbLine());
     });
   }
 }
@@ -248,11 +249,13 @@ function setGizmoMode(mode) {
 
 gizmo.addEventListener('dragging-changed', e => {
   orbit.enabled = !e.value;
-  if (e.value) { working = rig.getVector(); } else if (selected) { commit([selected]); }
+  if (e.value) { working = rig.getVector(); moved = false; } else if (selected && moved) { commit([selected]); } else { working = null; }
 });
 
+let moved = false;
 gizmo.addEventListener('objectChange', () => {
   if (!selected) return;
+  moved = true;
   const c = rig.controlByName.get(selected), n = c.node;
   proxy.updateMatrixWorld(true);
   if (gizmo.mode === 'translate') {
@@ -422,6 +425,7 @@ function bindUI() {
   $('frame').onchange = e => showFrame(+e.target.value || 0);
   $('length').onchange = e => { project.pushUndo(); project.length = Math.max(10, Math.min(2000, +e.target.value || 90)); rebake(); showFrame(Math.min(frame, project.length)); };
   $('mode').onchange = e => { project.pushUndo(); project.mode = e.target.value; wantMotionBricks(); rebake(); showFrame(frame); };
+  $('regen').onclick = regenerate;
   $('newScene').onclick = () => { project.pushUndo(); newScene(project); select(null); frame = 0; afterLoad(); status('新しいシーンにしました（Ctrl+Z で前のシーンに戻せます）'); };
   $('strength').oninput = e => { $('strengthV').textContent = Math.round(e.target.value * 100) + '%'; };
   for (const id of ['showCtl', 'showFinger', 'showGhost']) $(id).onchange = () => { refreshControlLook(); refreshGhosts(); dirty = true; };
@@ -453,6 +457,7 @@ function bindUI() {
     else if (k === 'delete' || k === 'backspace') run(actions.delKey);
     else if (k === 'm') run(actions.mirror);
     else if (k === 'n') run(naturalizeNow);
+    else if (k === 'r') run(regenerate);
     else if (k === 'arrowleft') run(() => showFrame(frame - 1));
     else if (k === 'arrowright') run(() => showFrame(frame + 1));
     else if (k === ',') run(actions.prevKey);
@@ -461,6 +466,13 @@ function bindUI() {
     else if (k === 'e') run(() => setGizmoMode('rotate'));
     else if (k === 'escape') run(() => select(null));
   });
+}
+
+/** Throw away the in-betweens and make them again (MotionBricks is asked afresh). */
+function regenerate() {
+  project.cache.clear(); project.tries.clear();
+  rebake(); showFrame(frame, !!working);
+  flash('regen');
 }
 
 function afterLoad() {
@@ -501,6 +513,8 @@ async function start() {
     const saved = await loadState('project');
     const old = saved ? null : localStorage.getItem('soma_anim.project'); // (earlier versions kept it in localStorage)
     if (saved) project.fromJSON(saved); else if (old) project.fromJSON(JSON.parse(old));
+    // (scenes from before MotionBricks was the default were saved as motion matching: moved over once)
+    if (!(await loadState('mbDefault'))) { project.mode = 'mb'; saveState('mbDefault', true); }
     localStorage.removeItem('soma_anim.project');
   } catch { /* start empty */ }
   if (!project.keys.length) newScene(project);

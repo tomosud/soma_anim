@@ -135,7 +135,8 @@ export class MotionBricks {
   _run(batch) {
     const id = ++this.serial;
     return new Promise((resolve, reject) => {
-      this.waiting.set(id, { resolve, reject });
+      const timer = setTimeout(() => { this.waiting.delete(id); reject(Error('MotionBricks did not answer in 30 s')); }, 30000);
+      this.waiting.set(id, { resolve: d => { clearTimeout(timer); resolve(d); }, reject: e => { clearTimeout(timer); reject(e); } });
       this.worker.postMessage({ type: 'run', id, n: 1, inputs: batch });
     });
   }
