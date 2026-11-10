@@ -83,15 +83,15 @@ mayapy tools/maya_check.py <Rig_Manny_BNS.ma> samples/sample_bake.json
 | 場所 | 中身 |
 |---|---|
 | `src/` | アプリ本体（ES modules、ビルドなし） |
-| `assets/` | リグ、SOMA 骨格、参考モーション DB、Manny のメッシュ（`manny.*` は手元で作る。下記） |
+| `assets/` | リグ、SOMA 骨格、参考モーション DB、Manny のメッシュ |
 | `rigspec/` | Maya から書き出したリグの仕様と検証ケース（リグを作った Maya モジュール側の書き出しスクリプトで作成） |
 | `maya/` | Maya への取り込み |
 | `tools/` | サーバー、メッシュ変換、サンプル作成、Maya での確認 |
 
 ### Manny のメッシュ
 
-UE5 Manny のメッシュ（Epic Games のコンテンツ）はこのリポジトリに入れていません。無いときは骨格から作ったマネキンで表示します。
-手元に `SKM_Manny_Simple` があれば、`node tools/build_manny.mjs <target-character.json>` で `assets/manny.json` と `assets/manny.bin` を作ると、スキンメッシュで表示されます。
+`assets/manny.json` と `assets/manny.bin` は UE5 Manny（`SKM_Manny_Simple`、Epic Games のコンテンツ）のスキンメッシュです。`node tools/build_manny.mjs <target-character.json>` で作り直せます。
+ファイルが無いとき、または `?mesh=0` を付けたときは、骨格から作ったマネキンで表示します。
 
 ## これから
 

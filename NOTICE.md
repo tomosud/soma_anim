@@ -16,7 +16,7 @@ mgear（Shifter）で UE5 マネキン骨格に組んだ `Rig_Manny_BNS` のノ�
 
 ## UE5 Manny
 
-メッシュ（Epic Games のコンテンツ）は含みません。骨格の名前・階層・静止姿勢だけを、リグの定義として使っています。
+`assets/manny.json` と `assets/manny.bin` は UE5 マネキン（`SKM_Manny_Simple`）のスキンメッシュ、`assets/bns_rig.json` と `rigspec/` はその骨格の名前・階層・静止姿勢を含みます。UE5 マネキンは Epic Games のコンテンツで、Unreal Engine の使用許諾の条件に従います。このリポジトリの Apache License 2.0 はこれらには及びません。
 
 ## ライブラリ（CDN から読み込み）
 

@@ -3,6 +3,3 @@ eval_out/
 *.log
 # exported from the Maya scene for reference; the web app uses assets/manny.*
 rigspec/manny_bind.fbx
-# UE5 Manny mesh (Epic Games content): build locally with tools/build_manny.mjs
-assets/manny.json
-assets/manny.bin
