@@ -85,7 +85,11 @@ export class Inbetweener {
     const V = [], contact = [[], []];
     const feetIdx = [soma.index.LeftFoot, soma.index.RightFoot];
     let prevFeet = null;
+    // everything the reference does not drive (fingers, the whole-body control): plain ease from A to B
+    const other = k => { const u = ease(k / n), v = new Float64Array(A.length); for (let i = 0; i < v.length; i++) v[i] = A[i] + (this.isRot[i] ? wrap(B[i] - A[i]) : B[i] - A[i]) * u; return v; };
     for (let k = 0; k <= n; k++) {
+      // the body is fitted under the whole-body control of this frame
+      rig.setVector(other(k));
       const f = f0 + k * hit.frames / n, fa = Math.floor(f), t = f - fa;
       let pose = db.pose(clip, fa, mirrored);
       if (t > 1e-3) pose = lerpPose(pose, db.pose(clip, fa + 1, mirrored), t);
@@ -115,11 +119,13 @@ export class Inbetweener {
       const u = k / n, v = new Float64Array(A.length);
       for (let i = 0; i < v.length; i++) {
         if (this.bodyChannel[i]) v[i] = V[k][i] + (1 - u) * eA[i] + u * eB[i];
-        else v[i] = A[i] + (this.isRot[i] ? wrap(B[i] - A[i]) : B[i] - A[i]) * ease(u); // fingers: plain ease
+        else v[i] = V[k][i];
       }
       out.push(v);
     }
-    for (let e = 0; e < 2; e++) lockFoot(out, contact[e], this.feet[e]);
+    // (the foot controls live under the whole-body control: when that moves between the keys, a held value would slide)
+    const worldMoves = rig.channelKeys.some((k, i) => k.startsWith('world_ctl.') && Math.abs(A[i] - B[i]) > 1e-6);
+    if (!worldMoves) for (let e = 0; e < 2; e++) lockFoot(out, contact[e], this.feet[e]);
     return {
       frames: out.slice(1, n),
       match: { clip: db.clips[clip].name, frame: f0, frames: hit.frames, speed: hit.speed, mirrored, cost: hit.cost },

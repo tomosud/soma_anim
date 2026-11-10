@@ -45,12 +45,17 @@
     <section>
       <h2>コントロール</h2>
       <div id="selName" class="selname">（未選択）</div>
+      <div id="gizmoMode" class="pick" hidden>
+        <button id="modeMove" title="移動 (W)">移動</button>
+        <button id="modeTurn" title="回転 (E)">回転</button>
+      </div>
       <div id="channels"></div>
       <div class="buttons">
         <button id="resetSel">選択をリセット</button>
         <button id="resetAll">全身をリセット</button>
       </div>
       <div class="pick">
+        <button id="pickWorld" title="全身をまとめて動かす・回すコントロール">全身</button>
         <button data-pick="All_Trans_ctrl">移動系</button>
         <button data-pick="All_Rot_ctrl">回転系</button>
       </div>

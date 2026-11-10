@@ -75,6 +75,7 @@ export class RigFitter {
     const rig = this.rig, k = this.k;
     const R = n => M.rotation(T[n]), P = n => M.pos(T[n]);
     for (const c of BODY_FIT_CONTROLS) rig.node(c).value.fill(0);
+    rig.evaluate(); // the parents of the controls may have moved (world_ctl)
 
     this._pos('Hip_trans', P('pelvis'));
     rig.evaluate();

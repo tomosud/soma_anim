@@ -17,7 +17,7 @@ const $ = id => document.getElementById(id);
 const status = t => { $('status').textContent = t; };
 const FOOT_PINS = ['L_Foot_trans', 'R_Foot_trans', 'L_Foot_rot', 'R_Foot_rot', 'L_Toe_rot', 'R_Toe_rot'];
 const LABEL = {
-  Hip_trans: '腰', Hip2_rot: '腰の向き', Spine_trans: '胸', Spine_rot: '胸のひねり', Neck_rot: '首', Head_rot: '頭の傾き', Head_trans: '視線',
+  world_ctl: '全身', Hip_trans: '腰', Hip2_rot: '腰の向き', Spine_trans: '胸', Spine_rot: '胸のひねり', Neck_rot: '首', Head_rot: '頭の傾き', Head_trans: '視線',
   Shoulder_rot: '肩', elbow_pv: '肘の向き', Hand_trans: '手', Hand_rot: '手首', knee_pv: '膝の向き', Foot_trans: '足', Foot_rot: '足首', Toe_rot: 'つま先',
 };
 const label = n => { const m = n.match(/^([LR])_(.+)$/); const base = m ? m[2] : n; return LABEL[base] ? `${m ? (m[1] === 'L' ? '左' : '右') : ''}${LABEL[base]}` : n; };
@@ -77,13 +77,13 @@ const ghosts = [0x4fb0ff, 0xffa24a].map(color => {
 });
 
 const COLORS = { L: 0x4f9dff, R: 0xff5d5d, C: 0xffd24a };
+const colorOf = c => (c.group === 'world' ? 0xc79bff : COLORS[c.side] ?? 0xffffff);
 
 function buildControls() {
   for (const c of rig.controls) {
-    if (c.group === 'world') continue;
     const g = new T.Group();
     g.matrixAutoUpdate = false;
-    const mat = new T.LineBasicMaterial({ color: COLORS[c.side] ?? 0xffffff, depthTest: false, transparent: true, opacity: 0.9 });
+    const mat = new T.LineBasicMaterial({ color: colorOf(c), depthTest: false, transparent: true, opacity: 0.9 });
     for (const s of c.shapes) {
       const pts = s.cvs_local.flat();
       const geo = new T.BufferGeometry();
@@ -103,7 +103,7 @@ function refreshControlLook() {
   for (const [name, v] of ctlView) {
     const finger = v.c.group === 'finger';
     v.g.visible = $('showCtl').checked && (!finger || $('showFinger').checked);
-    v.mat.color.setHex(name === selected ? 0xffffff : pins.has(name) ? 0x6fe3a0 : COLORS[v.c.side]);
+    v.mat.color.setHex(name === selected ? 0xffffff : pins.has(name) ? 0x6fe3a0 : colorOf(v.c));
     v.mat.opacity = name === selected ? 1 : 0.85;
   }
 }
@@ -181,18 +181,33 @@ function naturalizeNow() {
 // ---------------------------------------------------------------- gizmo
 function select(name) {
   selected = name && ctlView.has(name) ? name : null;
-  if (!selected) { gizmo.detach(); refreshPanel(); refreshControlLook(); dirty = true; return; }
+  if (!selected) { gizmo.detach(); $('gizmoMode').hidden = true; refreshPanel(); refreshControlLook(); dirty = true; return; }
   const c = rig.controlByName.get(selected);
   if (c.group === 'finger' && !$('showFinger').checked) { $('showFinger').checked = true; }
   syncProxy();
   gizmo.attach(proxy);
-  const tr = c.hasT;
-  gizmo.setMode(tr ? 'translate' : 'rotate');
-  const local = !tr || c.channels.length < 3;
-  gizmo.setSpace(local ? 'local' : 'world');
-  const p = tr ? 't' : 'r';
-  gizmo.showX = c.channels.includes(p + 'x'); gizmo.showY = c.channels.includes(p + 'y'); gizmo.showZ = c.channels.includes(p + 'z');
+  // a control that only moves gets the arrows, one that only turns gets the rings;
+  // one that does both (world_ctl) keeps the mode chosen last (W / E)
+  setGizmoMode(c.hasT && c.hasR ? bothMode : c.hasT ? 'translate' : 'rotate');
   refreshPanel(); refreshControlLook();
+  dirty = true;
+}
+
+let bothMode = 'translate';
+function setGizmoMode(mode) {
+  if (!selected) return;
+  const c = rig.controlByName.get(selected);
+  if (mode === 'translate' ? !c.hasT : !c.hasR) return;
+  if (c.hasT && c.hasR) bothMode = mode;
+  const tr = mode === 'translate', p = tr ? 't' : 'r';
+  const n = c.channels.filter(ch => ch[0] === p).length;
+  gizmo.setMode(mode);
+  gizmo.setSpace(!tr || n < 3 ? 'local' : 'world');
+  gizmo.showX = c.channels.includes(p + 'x'); gizmo.showY = c.channels.includes(p + 'y'); gizmo.showZ = c.channels.includes(p + 'z');
+  syncProxy();
+  const box = $('gizmoMode');
+  box.hidden = !(c.hasT && c.hasR);
+  $('modeMove').classList.toggle('on', tr); $('modeTurn').classList.toggle('on', !tr);
   dirty = true;
 }
 
@@ -205,7 +220,7 @@ gizmo.addEventListener('objectChange', () => {
   if (!selected) return;
   const c = rig.controlByName.get(selected), n = c.node;
   proxy.updateMatrixWorld(true);
-  if (c.hasT) {
+  if (gizmo.mode === 'translate') {
     const t = M.sub(M.xpoint(proxy.position.toArray(), M.inv(n.parent.world)), n.restT);
     for (const ch of c.channels) if (ch[0] === 't') rig.set(selected + '.' + ch, t['xyz'.indexOf(ch[1])]);
   } else {
@@ -293,7 +308,7 @@ function refreshPanel() {
 function buildList() {
   const list = $('list');
   for (const c of rig.controls) {
-    if (c.group !== 'body') continue;
+    if (c.group === 'finger') continue;
     const d = document.createElement('div');
     d.dataset.name = c.name; d.textContent = label(c.name); d.title = c.name;
     d.onclick = () => select(c.name);
@@ -365,6 +380,9 @@ function bindUI() {
   $('paste').onclick = () => actions.paste(false);
   $('pasteMirror').onclick = () => actions.paste(true);
   $('naturalize').onclick = naturalizeNow;
+  $('modeMove').onclick = () => setGizmoMode('translate');
+  $('modeTurn').onclick = () => setGizmoMode('rotate');
+  $('pickWorld').onclick = () => select('world_ctl');
   $('first').onclick = () => showFrame(0);
   $('frame').onchange = e => showFrame(+e.target.value || 0);
   $('length').onchange = e => { project.pushUndo(); project.length = Math.max(10, Math.min(2000, +e.target.value || 90)); rebake(); showFrame(Math.min(frame, project.length)); };
@@ -403,6 +421,8 @@ function bindUI() {
     else if (k === 'arrowright') run(() => showFrame(frame + 1));
     else if (k === ',') run(actions.prevKey);
     else if (k === '.') run(actions.nextKey);
+    else if (k === 'w') run(() => setGizmoMode('translate'));
+    else if (k === 'e') run(() => setGizmoMode('rotate'));
     else if (k === 'escape') run(() => select(null));
   });
 }

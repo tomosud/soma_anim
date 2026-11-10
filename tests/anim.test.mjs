@@ -70,3 +70,25 @@ test('in-between: meets the keys, moves like the reference', () => {
     for (const v of r.frames) assert.ok(v.every(Number.isFinite));
   }
 });
+
+test('whole-body control: poses move with it, in-betweens still meet the keys', () => {
+  const A = rig.vectorFromValues({ 'R_Hand_trans.ty': 40 });
+  const B = rig.vectorFromValues({ 'R_Hand_trans.ty': 40, 'world_ctl.tx': 80, 'world_ctl.tz': 50, 'world_ctl.ry': 90 });
+  rig.setVector(A).evaluate(); const a = jp('hand_r'), pa = jp('pelvis');
+  rig.setVector(B).evaluate(); const b = jp('hand_r'), pb = jp('pelvis');
+  // the same pose, carried: the hand keeps its distance to the hips
+  assert.ok(Math.abs(M.dist(a, pa) - M.dist(b, pb)) < 1e-6);
+  assert.ok(M.dist(pa, pb) > 50);
+  const r = inb.generate(A, B, 24);
+  const seq = [A, ...r.frames, B];
+  let maxStep = 0;
+  const pts = seq.map(v => { rig.setVector(v).evaluate(); return ['pelvis', 'hand_r', 'foot_l', 'head'].map(jp); });
+  for (let k = 1; k < pts.length; k++) for (let j = 0; j < 4; j++) maxStep = Math.max(maxStep, M.dist(pts[k][j], pts[k - 1][j]));
+  console.log('world move: largest step', maxStep.toFixed(1), 'cm,', r.match.clip);
+  assert.ok(maxStep < 25);
+  // natural posing under a moved whole-body control keeps it
+  const n = nat.naturalize(B, new Set(['R_Hand_trans']), 1);
+  assert.equal(n.vector[rig.channelIndex.get('world_ctl.tx')], 80);
+  rig.setVector(n.vector).evaluate();
+  assert.ok(M.dist(jp('pelvis'), pb) < 40);
+});
