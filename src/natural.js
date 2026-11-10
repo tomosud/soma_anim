@@ -16,7 +16,7 @@ const PIN_DIMS = {
 };
 const BASE = [[F_FEET, 6, 1], [F_HIPS_H, 1, 2], [F_HANDS, 6, 1], [F_HEAD, 3, 1.5]];
 
-export function poseWeights(pins, pinned = 8) {
+export function poseWeights(pins, pinned = 3) {
   const w = new Float32Array(DIM);
   for (const [o, n, v] of BASE) for (let i = 0; i < n; i++) w[o + i] = v;
   for (const p of pins) { const d = PIN_DIMS[p]; if (d) for (let i = 0; i < d[1]; i++) w[d[0] + i] = pinned; }
@@ -27,6 +27,8 @@ export class Naturalizer {
   constructor(rig, db, re, fitter) {
     this.rig = rig; this.db = db; this.re = re; this.fitter = fitter;
     this.body = new Set(BODY_FIT_CONTROLS);
+    // falls, hits and getting up are not what anyone means when placing a hand: never offered as natural
+    this.skip = db.tagged(['fall', 'getup', 'hit']);
   }
 
   /**
@@ -37,7 +39,7 @@ export class Naturalizer {
     const { rig, db, re } = this;
     rig.setVector(v).evaluate();
     const { q, hip, heading } = queryFromRig(rig, re);
-    const hit = db.nearest(q, poseWeights(pins))[0];
+    const hit = db.nearest(q, poseWeights(pins), 1, this.skip)[0];
     if (!hit) return { vector: v.slice(), match: null };
     const pose = db.pose(hit.clip, hit.frame, hit.mirrored);
     const h = db.rig.heading(db.rig.positions(pose));

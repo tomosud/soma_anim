@@ -60,6 +60,19 @@ export class SomaToManny {
     return out;
   }
 
+  /** The SOMA pose of the pose the rig is in (the inverse of targets()). */
+  fromRig(rig) {
+    const soma = this.soma, q = new Float32Array(soma.n * 4), done = new Uint8Array(soma.n);
+    for (const j of this.joints) {
+      // (spine_01 / spine_02 share Spine1, spine_04 / spine_05 share Chest: the upper one speaks)
+      q.set(qmul(M.toQuat(M.rotation(rig.jointWorld(j.name))), qinv(j.c)), j.s * 4);
+      done[j.s] = 1;
+    }
+    const pose = { root: this.toSoma(M.pos(rig.jointWorld('pelvis'))), q };
+    for (let j = 0; j < soma.n; j++) if (!done[j]) q.set(qmul(soma.rot(pose, soma.parents[j]), soma.localRest[j]), j * 4);
+    return pose;
+  }
+
   /** cm (Manny world) -> metres (SOMA world) */
   toSoma(p) { return [p[0] / this.k, (p[1] - this.lift) / this.k, p[2] / this.k]; }
 }

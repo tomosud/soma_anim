@@ -82,14 +82,10 @@ export class Inbetweener {
     const h0 = T[hit.i * 4 + 3], x0 = T[hit.i * 4], z0 = T[hit.i * 4 + 2];
     const yaw = qa.heading - h0, c = Math.cos(yaw), s = Math.sin(yaw);
     const soma = db.rig;
-    const V = [], contact = [[], []];
+    const placedAll = [], contact = [[], []];
     const feetIdx = [soma.index.LeftFoot, soma.index.RightFoot];
     let prevFeet = null;
-    // everything the reference does not drive (fingers, the whole-body control): plain ease from A to B
-    const other = k => { const u = ease(k / n), v = new Float64Array(A.length); for (let i = 0; i < v.length; i++) v[i] = A[i] + (this.isRot[i] ? wrap(B[i] - A[i]) : B[i] - A[i]) * u; return v; };
     for (let k = 0; k <= n; k++) {
-      // the body is fitted under the whole-body control of this frame
-      rig.setVector(other(k));
       const f = f0 + k * hit.frames / n, fa = Math.floor(f), t = f - fa;
       let pose = db.pose(clip, fa, mirrored);
       if (t > 1e-3) pose = lerpPose(pose, db.pose(clip, fa + 1, mirrored), t);
@@ -102,10 +98,29 @@ export class Inbetweener {
         contact[e].push(feet[e][1] < soma.ankleHeight + 0.05 && sp < 0.35);
       }
       prevFeet = feet;
-      fitter.fit(re.targets(placed));
-      V.push(rig.getVector());
+      placedAll.push(placed);
     }
     for (let e = 0; e < 2; e++) contact[e][0] = contact[e][1] ?? contact[e][0];
+    const r = this.finish(A, B, n, placedAll, contact);
+    r.match = { clip: db.clips[clip].name, frame: f0, frames: hit.frames, speed: hit.speed, mirrored, cost: hit.cost };
+    return r;
+  }
+
+  /**
+   * Put n+1 placed SOMA poses (frame 0 = at key A ... frame n = at key B) on the rig and pull the two ends
+   * onto the keys.  contact: [left[], right[]] booleans per frame (the foot is planted).
+   */
+  finish(A, B, n, placedAll, contact) {
+    const { rig, re, fitter } = this;
+    // everything the reference does not drive (fingers, the whole-body control): plain ease from A to B
+    const other = k => { const u = ease(k / n), v = new Float64Array(A.length); for (let i = 0; i < v.length; i++) v[i] = A[i] + (this.isRot[i] ? wrap(B[i] - A[i]) : B[i] - A[i]) * u; return v; };
+    const V = [];
+    for (let k = 0; k <= n; k++) {
+      // the body is fitted under the whole-body control of this frame
+      rig.setVector(other(k));
+      fitter.fit(re.targets(placedAll[k]));
+      V.push(rig.getVector());
+    }
     // continuous Euler angles along the stretch
     for (let k = 1; k <= n; k++) for (let i = 0; i < V[k].length; i++) if (this.isRot[i]) V[k][i] = V[k - 1][i] + wrap(V[k][i] - V[k - 1][i]);
     // pull the ends onto the keys
@@ -126,10 +141,7 @@ export class Inbetweener {
     // (the foot controls live under the whole-body control: when that moves between the keys, a held value would slide)
     const worldMoves = rig.channelKeys.some((k, i) => k.startsWith('world_ctl.') && Math.abs(A[i] - B[i]) > 1e-6);
     if (!worldMoves) for (let e = 0; e < 2; e++) lockFoot(out, contact[e], this.feet[e]);
-    return {
-      frames: out.slice(1, n),
-      match: { clip: db.clips[clip].name, frame: f0, frames: hit.frames, speed: hit.speed, mirrored, cost: hit.cost },
-    };
+    return { frames: out.slice(1, n), match: null };
   }
 
   /** Plain eased interpolation (no reference motion). */

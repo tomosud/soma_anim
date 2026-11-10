@@ -2,6 +2,11 @@
 
 このリポジトリのコードは Apache License 2.0（[LICENSE](LICENSE)）です。次のものを含む・使います。
 
+## NVIDIA MotionBricks（[NVlabs/motionbricks](https://github.com/NVlabs/motionbricks)、revision `54fc563`）
+
+- **コード**（Apache-2.0）: `src/motionbricks.js` の入力のエンコード・出力のデコード・端点補正は、`motionbricks/model/soma/kernels.py` と `motionbricks/model/kernels.py` を JavaScript に移したものです（[soma-fighter-web](https://github.com/tomosud/soma-fighter-web) の `src/soma.js` 経由）。`src/mb_worker.js` は同リポジトリの `src/infer.worker.js` です。
+- **モデルの重み**（[NVIDIA Open Model Agreement](https://github.com/NVlabs/motionbricks/blob/54fc563aeaaf819a753d72cc9fdc6713989cdd43/motionbricks/assets/onnx/LICENSE.md)）: このリポジトリには含めません。利用者のブラウザが NVIDIA の GitHub から `mmm_v6_soma_fp16.onnx` を直接ダウンロードします。Licensed by NVIDIA Corporation under the NVIDIA Open Model Agreement.
+
 ## 参考モーション DB（`assets/motiondb.json`, `assets/motiondb.bin`）
 
 [soma-fighter-web](https://github.com/tomosud/soma-fighter-web) の `assets/fightdb.*` です。Mixamo（Adobe）のアニメーション 506 本を X Bot で書き出し、SOMA 骨格に移した姿勢データと、そこから計算した特徴量です。元の FBX は含みません。
@@ -21,3 +26,4 @@ mgear（Shifter）で UE5 マネキン骨格に組んだ `Rig_Manny_BNS` のノ�
 ## ライブラリ（CDN から読み込み）
 
 - [three.js](https://github.com/mrdoob/three.js) 0.180.0 — MIT
+- [ONNX Runtime Web](https://github.com/microsoft/onnxruntime) 1.30.0 — MIT

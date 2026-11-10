@@ -9,7 +9,9 @@ import { SomaToManny } from './retarget.js';
 import { RigFitter } from './fit.js';
 import { Naturalizer } from './natural.js';
 import { Inbetweener } from './inbetween.js';
-import { Project } from './project.js';
+import { Project, newScene } from './project.js';
+import { MotionBricks } from './motionbricks.js';
+import { loadState, saveState } from './store.js';
 import { loadManny, makeMannequin } from './character.js';
 import { Timeline } from './timeline.js';
 
@@ -61,7 +63,7 @@ new ResizeObserver(resize).observe(canvas.parentElement);
 orbit.addEventListener('change', () => { dirty = true; });
 
 // ---------------------------------------------------------------- state
-let rig, project, character, nat = null, inb = null, timeline;
+let rig, project, character, nat = null, inb = null, mb = null, timeline;
 let frame = 0, selected = null, playing = false, clipboard = null;
 let working = null; // pose being edited (not yet a key)
 const ctlView = new Map();
@@ -137,9 +139,39 @@ function showFrame(f, keepWorking = false) {
 }
 
 function rebake() {
-  project.bake(inb);
-  try { localStorage.setItem('soma_anim.project', project.snapshot()); } catch { /* private window */ }
+  project.bake(inb, mb);
+  save();
   refreshGhosts();
+  if (project.todo.length) {
+    status('MotionBricks が中割りを生成中…');
+    project.fill(inb, mb, () => {
+      // (a stretch landed: show it, unless the animator is in the middle of a drag)
+      if (gizmo.dragging || working) timeline.draw(); else showFrame(frame);
+      if (!project.todo.length) status(mbLine());
+    });
+  }
+}
+
+let saveTimer = 0;
+function save() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => saveState('project', project.toJSON()), 300);
+}
+
+const mbLine = () => (mb && mb.state === 'ready' ? `MotionBricks: ${mb.backend}` : '');
+
+/** Start MotionBricks when the in-betweens ask for it (the first time downloads about 380 MB). */
+function wantMotionBricks() {
+  if (!inb || project.mode !== 'mb') return;
+  if (!mb) mb = new MotionBricks(inb);
+  if (mb.state !== 'idle') return;
+  const mbytes = x => (x / 1048576).toFixed(0);
+  mb.load(p => {
+    if (p.phase === 'download') status(`MotionBricks のモデルを取得中… ${mbytes(p.loaded)}${p.total ? ' / ' + mbytes(p.total) : ''} MB（初回だけ。それまではモーションマッチングで表示）`);
+    else if (p.phase === 'cache') status('MotionBricks のモデルを読み込み中…');
+    else if (p.phase === 'session') status('MotionBricks を準備中…');
+  }).then(() => { status(mbLine()); rebake(); if (!gizmo.dragging && !working) showFrame(frame); })
+    .catch(e => { console.error(e); status('MotionBricks を使えませんでした（モーションマッチングで中割りします）: ' + e.message); });
 }
 
 function effectivePins(key) {
@@ -353,8 +385,8 @@ const actions = {
     project.setKey(frame, rig.mirrorVector(currentPose()), [...(k?.pins ?? [])].map(n => rig.mirrorName(n)));
     working = null; rebake(); showFrame(frame);
   },
-  undo() { if (project.undo()) { working = null; rebake(); showFrame(frame); } },
-  redo() { if (project.redo()) { working = null; rebake(); showFrame(frame); } },
+  undo() { if (project.undo()) { afterLoad(); wantMotionBricks(); } },
+  redo() { if (project.redo()) { afterLoad(); wantMotionBricks(); } },
   play() { playing = !playing; $('play').textContent = playing ? '⏸' : '▶'; last = 0; acc = 0; refreshGhosts(); },
   prevKey() { const k = [...project.keys].reverse().find(k => k.frame < frame); showFrame(k ? k.frame : 0); },
   nextKey() { const k = project.keys.find(k => k.frame > frame); if (k) showFrame(k.frame); },
@@ -386,7 +418,8 @@ function bindUI() {
   $('first').onclick = () => showFrame(0);
   $('frame').onchange = e => showFrame(+e.target.value || 0);
   $('length').onchange = e => { project.pushUndo(); project.length = Math.max(10, Math.min(2000, +e.target.value || 90)); rebake(); showFrame(Math.min(frame, project.length)); };
-  $('mode').onchange = e => { project.pushUndo(); project.mode = e.target.value; rebake(); showFrame(frame); };
+  $('mode').onchange = e => { project.pushUndo(); project.mode = e.target.value; wantMotionBricks(); rebake(); showFrame(frame); };
+  $('newScene').onclick = () => { project.pushUndo(); newScene(project); select(null); frame = 0; afterLoad(); status('新しいシーンにしました（Ctrl+Z で前のシーンに戻せます）'); };
   $('strength').oninput = e => { $('strengthV').textContent = Math.round(e.target.value * 100) + '%'; };
   for (const id of ['showCtl', 'showFinger', 'showGhost']) $(id).onchange = () => { refreshControlLook(); refreshGhosts(); dirty = true; };
   $('showMesh').onchange = e => { if (character) character.visible = e.target.checked; dirty = true; };
@@ -460,8 +493,13 @@ async function start() {
     beforeMove: () => project.pushUndo(),
   });
   bindUI();
-  try { const s = localStorage.getItem('soma_anim.project'); if (s) project.fromJSON(JSON.parse(s)); } catch { /* start empty */ }
-  if (!project.keys.length) project.setKey(0, project.zero());
+  try {
+    const saved = await loadState('project');
+    const old = saved ? null : localStorage.getItem('soma_anim.project'); // (earlier versions kept it in localStorage)
+    if (saved) project.fromJSON(saved); else if (old) project.fromJSON(JSON.parse(old));
+    localStorage.removeItem('soma_anim.project');
+  } catch { /* start empty */ }
+  if (!project.keys.length) newScene(project);
   resize(); afterLoad();
   requestAnimationFrame(tick);
   $('hint').textContent = 'コントロールの線をクリックして選び、矢印や輪をドラッグ。K: キー / Space: 再生 / M: 左右反転 / N: 自然なポーズに';
@@ -482,10 +520,11 @@ async function start() {
     db.track();
     rebake(); showFrame(frame);
     status(`参考モーション ${db.clips.length} クリップ`);
+    wantMotionBricks();
   } catch (e) {
     console.error(e);
     status('参考モーションを読み込めませんでした（単純な補間で動きます）');
   }
-  window.app = { rig, project, actions, select, showFrame, commit, naturalizeNow, render: () => renderer.render(scene, camera), get frame() { return frame; }, get nat() { return nat; }, get inb() { return inb; } };
+  window.app = { rig, project, actions, select, showFrame, commit, naturalizeNow, render: () => renderer.render(scene, camera), get frame() { return frame; }, get nat() { return nat; }, get inb() { return inb; }, get mb() { return mb; } };
 }
 start().catch(e => { console.error(e); status('起動に失敗: ' + e.message); });

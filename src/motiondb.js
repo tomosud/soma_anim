@@ -49,11 +49,19 @@ export class SomaRig {
     this.extra = Object.fromEntries(json.extras.map(e => [e.name, e]));
     this.legR = this.index.RightLeg; this.legL = this.index.LeftLeg;
     this.mirrorIndex = this.names.map(n => this.index[n.startsWith('Left') ? 'Right' + n.slice(4) : n.startsWith('Right') ? 'Left' + n.slice(5) : n]);
+    // joints the model does not drive (finger ends, jaw, eyes) ride on their parent
+    this.localRest = this.names.map((_, j) => (this.parents[j] < 0 ? this.restRot[j] : qmul(qinv(this.restRot[this.parents[j]]), this.restRot[j])));
+    this.rigid = ['LeftHandThumbEnd', 'LeftHandMiddleEnd', 'RightHandThumbEnd', 'RightHandMiddleEnd'].map(n => this.index[n]);
     this.hipHeight = this.restPos[0][1];
     this.ankleHeight = this.restPos[this.index.LeftFoot][1];
   }
 
   rot(pose, j) { const q = pose.q, o = j * 4; return [q[o], q[o + 1], q[o + 2], q[o + 3]]; }
+
+  fixRigid(pose) {
+    for (const j of this.rigid) pose.q.set(qmul(this.rot(pose, this.parents[j]), this.localRest[j]), j * 4);
+    return pose;
+  }
 
   /** World joint positions. */
   positions(pose) {
@@ -136,6 +144,13 @@ export class MotionDB {
     return mirrored ? this.rig.mirror(p) : p;
   }
 
+  /** 1 for the entries of clips with one of these tags (falls, hits ...), to leave them out of a search. */
+  tagged(tags) {
+    const m = new Uint8Array(this.n);
+    for (let i = 0; i < this.n; i++) if (tags.includes(this.clips[this.entClip[i]].tag)) m[i] = 1;
+    return m;
+  }
+
   /** Hips position and facing of every entry (computed once): Float32Array [x, y, z, heading] per entry. */
   track() {
     if (this._track) return this._track;
@@ -152,12 +167,13 @@ export class MotionDB {
    * Nearest entry to a static pose.  q: Float32Array(DIM) in metres (body frame),
    * w: weight per dimension (0 = not compared).
    */
-  nearest(q, w, k = 1) {
+  nearest(q, w, k = 1, skip = null) {
     const F = this.feat, dims = [];
     for (let d = 0; d < DIM; d++) if (w[d] > 0) dims.push(d);
     const best = [];
     let worst = Infinity;
     for (let i = 0; i < this.n; i++) {
+      if (skip && skip[i]) continue;
       const o = i * DIM;
       let c = 0;
       for (let j = 0; j < dims.length && c < worst; j++) { const d = dims[j], e = F[o + d] - q[d]; c += w[d] * e * e; }

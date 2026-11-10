@@ -86,13 +86,14 @@ export class Timeline {
     const y0 = 40, bh = 26;
     for (const s of p.segments) {
       const a = this.x(s.from), b = this.x(s.to);
-      g.fillStyle = s.match ? 'rgba(63,174,122,0.28)' : 'rgba(120,130,150,0.2)';
+      const mb = s.match?.clip === 'MotionBricks';
+      g.fillStyle = mb ? 'rgba(118,140,255,0.32)' : s.match ? 'rgba(63,174,122,0.28)' : 'rgba(120,130,150,0.2)';
       g.fillRect(a, y0, b - a, bh);
       if (s.match && b - a > 40) {
         g.save(); g.beginPath(); g.rect(a + 8, y0, b - a - 16, bh); g.clip();
-        g.fillStyle = '#9fd9bb'; g.textBaseline = 'middle';
+        g.fillStyle = mb ? '#c3ccff' : '#9fd9bb'; g.textBaseline = 'middle';
         const sp = Math.abs(s.match.speed - 1) > 0.05 ? ` ×${s.match.speed.toFixed(2)}` : '';
-        g.fillText(s.match.clip.replace(/_[0-9a-f]{6}$/, '').replace(/_/g, ' ') + sp, a + 12, y0 + bh / 2);
+        g.fillText((s.pending ? '生成中…  ' : '') + s.match.clip.replace(/_[0-9a-f]{6}$/, '').replace(/_/g, ' ') + sp, a + 12, y0 + bh / 2);
         g.restore();
       }
     }

@@ -6,7 +6,8 @@ export class Project {
     this.rig = rig;
     this.fps = 30;
     this.length = 90;
-    this.mode = 'mm'; // 'mm' = motion matching, 'ease' = plain interpolation
+    this.mode = 'mb'; // 'mb' = MotionBricks, 'mm' = motion matching, 'ease' = plain interpolation
+    this.todo = [];
     this.keys = [];
     this.baked = [];
     this.segments = []; // {from, to, match}
@@ -34,33 +35,65 @@ export class Project {
     return true;
   }
 
-  /** Bake every frame.  inb: Inbetweener or null (plain interpolation until the database is there). */
-  bake(inb) {
+  /**
+   * Bake every frame.  inb: Inbetweener or null (plain interpolation until the database is there),
+   * mb: MotionBricks or null.  In 'mb' mode a stretch the model has not made yet is shown with the
+   * motion-matched in-between and listed in this.todo (fill() makes those, one after another).
+   */
+  bake(inb, mb = null) {
     const n = this.length, out = new Array(n + 1), keys = this.keys;
     this.segments = [];
+    this.todo = [];
     if (!keys.length) { for (let f = 0; f <= n; f++) out[f] = this.zero(); this.baked = out; return; }
     for (let f = 0; f <= Math.min(n, keys[0].frame); f++) out[f] = keys[0].v;
     for (let f = keys[keys.length - 1].frame; f <= n; f++) out[f] = keys[keys.length - 1].v;
     const used = new Set();
+    const useMb = this.mode === 'mb' && inb && mb && mb.state === 'ready';
+    let prevId = '';
     for (let i = 0; i + 1 < keys.length; i++) {
       const a = keys[i], b = keys[i + 1], len = b.frame - a.frame;
-      const mode = inb && this.mode === 'mm' ? 'mm' : 'ease';
-      const id = mode + '|' + len + '|' + sig(a.v) + '|' + sig(b.v);
-      let seg = this.cache.get(id);
-      if (!seg && inb) {
-        seg = mode === 'mm' ? inb.generate(a.v, b.v, len) : null;
-        if (!seg) seg = inb.interpolate(a.v, b.v, len);
-        this.cache.set(id, seg);
+      let seg = null, pending = false;
+      if (useMb && len >= 2) {
+        // (the model continues from the motion that arrives at this key, so a stretch depends on the one before)
+        const id = 'mb|' + len + '|' + sig(a.v) + '|' + sig(b.v) + '|' + hash(prevId);
+        seg = this.cache.get(id);
+        used.add(id);
+        if (!seg) { this.todo.push({ id, a: a.v, b: b.v, len, prevId }); pending = true; } else if (seg.failed) seg = null;
+        prevId = id;
+      } else prevId = '';
+      if (!seg) {
+        const mode = inb && this.mode !== 'ease' ? 'mm' : 'ease';
+        const id = mode + '|' + len + '|' + sig(a.v) + '|' + sig(b.v);
+        seg = this.cache.get(id);
+        if (!seg && inb) {
+          seg = mode === 'mm' ? inb.generate(a.v, b.v, len) : null;
+          if (!seg) seg = inb.interpolate(a.v, b.v, len);
+          this.cache.set(id, seg);
+        }
+        if (!seg) seg = { frames: plain(a.v, b.v, len), match: null };
+        used.add(id);
       }
-      if (!seg) seg = { frames: plain(a.v, b.v, len), match: null };
-      used.add(id);
       for (let k = 1; k < len; k++) if (a.frame + k <= n) out[a.frame + k] = seg.frames[k - 1];
       if (a.frame <= n) out[a.frame] = a.v;
       if (b.frame <= n) out[b.frame] = b.v;
-      this.segments.push({ from: a.frame, to: b.frame, match: seg.match });
+      this.segments.push({ from: a.frame, to: b.frame, match: seg.match, pending });
     }
-    for (const id of this.cache.keys()) if (!used.has(id) && this.cache.size > 60) this.cache.delete(id);
+    if (this.cache.size > 80) for (const id of [...this.cache.keys()]) if (!used.has(id)) this.cache.delete(id);
     this.baked = out;
+  }
+
+  /** Make the stretches bake() left for MotionBricks, in order; onUpdate() after each one lands. */
+  async fill(inb, mb, onUpdate) {
+    const version = this.fillVersion = (this.fillVersion || 0) + 1;
+    while (version === this.fillVersion && this.todo.length) {
+      const t = this.todo[0];
+      let r;
+      try { r = await mb.generate(t.a, t.b, t.len, this.cache.get(t.prevId)?.tail ?? null); } catch (e) { console.error(e); r = { failed: true }; }
+      this.cache.set(t.id, r);
+      if (version !== this.fillVersion) return;
+      this.bake(inb, mb);
+      onUpdate();
+    }
   }
 
   pose(frame) { return this.keyAt(frame)?.v || this.baked[Math.max(0, Math.min(this.length, frame))] || this.zero(); }
@@ -81,7 +114,7 @@ export class Project {
 
   fromJSON(d) {
     if (d.format !== 'soma_anim') throw Error('soma_anim のファイルではありません');
-    this.fps = d.fps || 30; this.length = d.length || 90; this.mode = d.mode || 'mm';
+    this.fps = d.fps || 30; this.length = d.length || 90; this.mode = d.mode || 'mb';
     this.keys = d.keys.map(k => ({ frame: k.frame, pins: new Set(k.pins || []), v: this.rig.vectorFromValues(k.values) }));
     this.sort();
   }
@@ -97,10 +130,18 @@ export class Project {
   }
 }
 
+const hash = t => { let h = 2166136261; for (let i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); };
 const sig = v => { let h = 2166136261; for (let i = 0; i < v.length; i++) { h ^= Math.round(v[i] * 1000); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36) + ':' + v.length; };
 
 function plain(a, b, n) {
   const out = [];
   for (let k = 1; k < n; k++) { const u = k / n, s = u * u * (3 - 2 * u); out.push(a.map((x, i) => x + (b[i] - x) * s)); }
   return out;
+}
+
+/** A new scene: the rest pose at frame 0. */
+export function newScene(project) {
+  project.length = 90;
+  project.keys = [];
+  project.setKey(0, project.zero());
 }

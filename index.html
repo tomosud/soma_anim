@@ -17,6 +17,7 @@
   <h1>SOMA Anim</h1>
   <span class="sub">キーポーズ → 自然なポーズ → モーションマッチングで中割り（Manny + BNS リグ）</span>
   <span class="grow"></span>
+  <button id="newScene" title="新しいシーンを始める（Ctrl+Z で戻せます）">新規</button>
   <button id="undo" title="元に戻す (Ctrl+Z)">↶</button>
   <button id="redo" title="やり直す (Ctrl+Y)">↷</button>
   <button id="save" title="プロジェクトを保存 (.json)">保存</button>
@@ -33,7 +34,7 @@
       <h2>ポーズの自動補正</h2>
       <label class="row"><input id="auto" type="checkbox" checked> 動かしたら自然なポーズに直す</label>
       <label class="row"><input id="lockFeet" type="checkbox" checked> 足は今の位置に留める</label>
-      <label class="row">強さ <input id="strength" type="range" min="0" max="1" step="0.05" value="1"><span id="strengthV">100%</span></label>
+      <label class="row">強さ <input id="strength" type="range" min="0" max="1" step="0.05" value="0.7"><span id="strengthV">70%</span></label>
       <div class="buttons">
         <button id="naturalize" title="今のポーズを参考モーションの一番近い姿勢に寄せる (N)">今のポーズを自然に</button>
         <button id="unpin" title="手で決めた扱いのコントロールを解除する">ピンを全部外す</button>
@@ -87,7 +88,7 @@
     <button id="pasteMirror" title="左右反転して貼り付け (Ctrl+Shift+V)">反転貼り付け</button>
     <button id="mirror" title="このポーズを左右反転 (M)">左右反転</button>
     <span class="grow"></span>
-    <label>中割り <select id="mode"><option value="mm">モーションマッチング</option><option value="ease">単純な補間</option></select></label>
+    <label>中割り <select id="mode"><option value="mb">MotionBricks</option><option value="mm">モーションマッチング</option><option value="ease">単純な補間</option></select></label>
   </div>
   <canvas id="timeline"></canvas>
 </footer>
