@@ -121,8 +121,8 @@ export class MotionDB {
     this._track = null;
   }
 
-  static async load(rig, url) {
-    const [meta, buf] = await Promise.all([fetch(url + '.json').then(r => r.json()), fetch(url + '.bin').then(r => r.arrayBuffer())]);
+  static async load(rig, url, v = '') {
+    const [meta, buf] = await Promise.all([fetch(url + '.json' + v).then(r => r.json()), fetch(url + '.bin' + v).then(r => r.arrayBuffer())]);
     return new MotionDB(rig, meta, buf);
   }
 

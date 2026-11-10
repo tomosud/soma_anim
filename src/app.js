@@ -16,6 +16,9 @@ import { loadManny, makeMannequin } from './character.js';
 import { Timeline } from './timeline.js';
 
 const $ = id => document.getElementById(id);
+// cache busters: the commit for what changes with the code, a data version for the 20 MB motion database
+const VERSION = window.SOMA_ANIM_VERSION || 'dev', DB_VERSION = '1';
+const asset = p => (VERSION === 'dev' ? p : `${p}?v=${VERSION}`);
 const status = t => { $('status').textContent = t; };
 const FOOT_PINS = ['L_Foot_trans', 'R_Foot_trans', 'L_Foot_rot', 'R_Foot_rot', 'L_Toe_rot', 'R_Toe_rot'];
 const LABEL = {
@@ -480,7 +483,8 @@ function tick(t) {
 
 // ---------------------------------------------------------------- start
 async function start() {
-  const spec = await fetch('assets/bns_rig.json').then(r => r.json());
+  $('title').title = 'version ' + VERSION;
+  const spec = await fetch(asset('assets/bns_rig.json')).then(r => r.json());
   rig = new BnsRig(spec);
   project = new Project(rig);
   const skip = /^(ik_|interaction|center_of_mass)/;
@@ -506,14 +510,14 @@ async function start() {
 
   status('キャラクターを読み込み中…');
   // ?mesh=0 shows the capsule mannequin (what a copy without assets/manny.* shows)
-  try { if (new URLSearchParams(location.search).get('mesh') === '0') throw Error('off'); character = await loadManny('assets/manny'); } catch { character = makeMannequin(rig); }
+  try { if (new URLSearchParams(location.search).get('mesh') === '0') throw Error('off'); character = await loadManny('assets/manny', VERSION === 'dev' ? '' : '?v=' + VERSION); } catch { character = makeMannequin(rig); }
   scene.add(character);
   syncView();
 
   status('参考モーションを読み込み中…（約 20 MB）');
   try {
-    const soma = new SomaRig(await fetch('assets/soma_rig.json').then(r => r.json()));
-    const db = await MotionDB.load(soma, 'assets/motiondb');
+    const soma = new SomaRig(await fetch(asset('assets/soma_rig.json')).then(r => r.json()));
+    const db = await MotionDB.load(soma, 'assets/motiondb', '?v=' + DB_VERSION);
     const re = new SomaToManny(rig, soma), fitter = new RigFitter(rig);
     nat = new Naturalizer(rig, db, re, fitter);
     inb = new Inbetweener(rig, db, re, fitter);

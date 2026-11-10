@@ -24,8 +24,13 @@ jobs:
       - uses: actions/checkout@v4
       - name: Collect the static site
         run: |
+          V=${GITHUB_SHA::8}
           mkdir _site
-          cp -r index.html src assets NOTICE.md LICENSE _site/
+          cp -r assets NOTICE.md LICENSE _site/
+          # cache buster: the scripts live in a folder named after the commit
+          cp -r src _site/src.$V
+          sed -e "s#\"src/#\"src.$V/#g" -e "s#SOMA_ANIM_VERSION = 'dev'#SOMA_ANIM_VERSION = '$V'#" index.html > _site/index.html
+          grep -q "src.$V/app.js" _site/index.html
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

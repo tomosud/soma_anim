@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SOMA Anim</title>
+<!-- The deploy (.github/workflows/pages.yml) puts the scripts in src.<commit>/ and writes the commit here,
+     so a new version never mixes with cached files of the old one. -->
+<script>window.SOMA_ANIM_VERSION = 'dev';</script>
 <link rel="stylesheet" href="src/style.css">
 <script type="importmap">
 { "imports": {
@@ -14,7 +17,7 @@
 </head>
 <body>
 <header>
-  <h1>SOMA Anim</h1>
+  <h1 id="title">SOMA Anim</h1>
   <span class="sub">キーポーズ → 自然なポーズ → モーションマッチングで中割り（Manny + BNS リグ）</span>
   <span class="grow"></span>
   <button id="newScene" title="新しいシーンを始める（Ctrl+Z で戻せます）">新規</button>

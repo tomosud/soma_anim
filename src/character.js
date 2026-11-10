@@ -3,9 +3,9 @@
 import * as T from 'three';
 
 /** Skinned mesh driven by world matrices given from outside (rig.jointWorld). */
-export async function loadManny(url) {
-  const meta = await fetch(url + '.json').then(r => { if (!r.ok) throw Error('no mesh'); return r.json(); });
-  const buf = await fetch(url + '.bin').then(r => { if (!r.ok) throw Error('no mesh'); return r.arrayBuffer(); });
+export async function loadManny(url, v = '') {
+  const meta = await fetch(url + '.json' + v).then(r => { if (!r.ok) throw Error('no mesh'); return r.json(); });
+  const buf = await fetch(url + '.bin' + v).then(r => { if (!r.ok) throw Error('no mesh'); return r.arrayBuffer(); });
   const L = meta.layout, nv = meta.vertices;
   const g = new T.BufferGeometry();
   g.setAttribute('position', new T.BufferAttribute(new Float32Array(buf, L.positions.offset, L.positions.count), 3));
