@@ -28,6 +28,8 @@ export class Inbetweener {
     for (let i = 0; i < n; i++) for (let d = 0; d < 16; d++) P[i * 16 + d] = db.feat[i * DIM + this.dims[d][0]] * this.dims[d][1];
     // falls, hits and get-ups are never what lies between two ordinary poses
     this.skip = db.tagged(['fall', 'getup', 'hit']);
+    const restY = j => rig.joints[rig.jointIndex.get(j)].rest[13];
+    this.floor = { foot_l: restY('foot_l'), foot_r: restY('foot_r'), ball_l: restY('ball_l'), ball_r: restY('ball_r') };
     this.feet = ['L', 'R'].map(S => ['x', 'y', 'z'].map(a => rig.channelIndex.get(`${S}_Foot_trans.t${a}`)));
   }
 
@@ -71,12 +73,8 @@ export class Inbetweener {
     return best;
   }
 
-  /**
-   * A, B: pose vectors of the two keys, n: frames from A to B.
-   * Returns {frames: [vector for frame 1 .. n-1], match} or null when there is nothing to do.
-   */
-  generate(A, B, n) {
-    if (n < 2) return { frames: [], match: null };
+  /** The reference stretch for A -> B placed in the world: n+1 SOMA poses, foot contacts, and what it is. */
+  stretch(A, B, n) {
     const { rig, db, re, fitter } = this;
     rig.setVector(A).evaluate(); const qa = queryFromRig(rig, re);
     rig.setVector(B).evaluate(); const qb = queryFromRig(rig, re);
@@ -91,7 +89,8 @@ export class Inbetweener {
     const feetIdx = [soma.index.LeftFoot, soma.index.RightFoot];
     let prevFeet = null;
     for (let k = 0; k <= n; k++) {
-      const f = f0 + k * hit.frames / n, fa = Math.floor(f), t = f - fa;
+      // (eased a little into and out of the keys: a stretch cut out of a longer motion arrives at full speed)
+      const u = k / n, f = f0 + (0.5 * u + 0.5 * ease(u)) * hit.frames, fa = Math.floor(f), t = f - fa;
       let pose = db.pose(clip, fa, mirrored);
       if (t > 1e-3) pose = lerpPose(pose, db.pose(clip, fa + 1, mirrored), t);
       const dx = pose.root[0] - x0, dz = pose.root[2] - z0;
@@ -106,8 +105,19 @@ export class Inbetweener {
       placedAll.push(placed);
     }
     for (let e = 0; e < 2; e++) contact[e][0] = contact[e][1] ?? contact[e][0];
-    const r = this.finish(A, B, n, placedAll, contact);
-    r.match = { clip: db.clips[clip].name, frame: f0, frames: hit.frames, speed: hit.speed, mirrored, cost: hit.cost };
+    return { placed: placedAll, contact, a: qa, b: qb, match: { clip: db.clips[clip].name, frame: f0, frames: hit.frames, speed: hit.speed, mirrored, cost: hit.cost } };
+  }
+
+  /**
+   * A, B: pose vectors of the two keys, n: frames from A to B.
+   * Returns {frames: [vector for frame 1 .. n-1], match} or null when there is nothing to do.
+   */
+  generate(A, B, n) {
+    if (n < 2) return { frames: [], match: null };
+    const st = this.stretch(A, B, n);
+    if (!st) return null;
+    const r = this.finish(A, B, n, st.placed, st.contact);
+    r.match = st.match;
     return r;
   }
 
@@ -143,10 +153,40 @@ export class Inbetweener {
       }
       out.push(v);
     }
-    // (the foot controls live under the whole-body control: when that moves between the keys, a held value would slide)
-    const worldMoves = rig.channelKeys.some((k, i) => k.startsWith('world_ctl.') && Math.abs(A[i] - B[i]) > 1e-6);
-    if (!worldMoves) for (let e = 0; e < 2; e++) lockFoot(out, contact[e], this.feet[e]);
+    this.plantFeet(out, contact);
     return { frames: out.slice(1, n), match: null };
+  }
+
+  /**
+   * Feet that are planted stay where they are - in the world, whatever the whole-body control does under them -
+   * and no foot goes under the floor.  out[0] and out[n] are the keys and are not touched.
+   */
+  plantFeet(out, contact) {
+    const { rig } = this, n = out.length - 1;
+    const feet = [['L_Foot_trans', 'foot_l', 'ball_l'], ['R_Foot_trans', 'foot_r', 'ball_r']];
+    const rec = feet.map(() => ({ pos: [], inv: [], lift: [] }));
+    for (let k = 0; k <= n; k++) {
+      rig.setVector(out[k]).evaluate();
+      feet.forEach(([c, f, b], e) => {
+        const node = rig.node(c);
+        rec[e].pos.push(M.pos(node.world));
+        rec[e].inv.push(M.inv(node.parent.world));
+        rec[e].lift.push(Math.min(rig.jointWorld(f)[13] - this.floor[f], rig.jointWorld(b)[13] - this.floor[b]));
+      });
+    }
+    feet.forEach(([c], e) => {
+      const r = rec[e], restT = rig.node(c).restT;
+      // (the foot that has farther to go steps first)
+      const first = M.dist(rec[0].pos[0], rec[0].pos[n]) >= M.dist(rec[1].pos[0], rec[1].pos[n]) ? 0 : 1;
+      const held = lockFoot(r.pos, contact[e], e === first ? 0 : 1);
+      for (let k = 1; k < n; k++) {
+        let p = held[k];
+        const lift = r.lift[k] + (p[1] - r.pos[k][1]);
+        if (lift < 0) p = [p[0], p[1] - lift, p[2]];
+        const t = M.sub(M.xpoint(p, r.inv[k]), restT);
+        this.feet[e].forEach((i, a2) => { out[k][i] = t[a2]; });
+      }
+    });
   }
 
   /** Plain eased interpolation (no reference motion). */
@@ -176,32 +216,48 @@ function lerpPose(a, b, t) {
 }
 
 /**
- * Keep a foot still while the reference has it planted.  frames[0] and frames[n] are the keys and are
- * never changed: a plant that touches a key holds the key's position, one in the middle holds where it
- * landed, and the steps in between take up the difference.
+ * Keep a foot still while it is planted.  pos: its world position per frame, contact: planted or not.
+ * Returns the new positions.  The first and last frames are the keys and never change: a plant that touches
+ * a key holds the key's position, one that lasts from key to key goes straight from one to the other, one in
+ * the middle holds where it landed, and the steps in between take up the difference.
  */
-function lockFoot(frames, contact, idx) {
-  const n = frames.length - 1;
-  const off = frames.map(() => null); // offset to add where the foot is planted
+function lockFoot(pos, contact, order = 0) {
+  const n = pos.length - 1;
+  const off = pos.map(() => null); // offset to add
+  const step = (from, to, u) => { // a step from one place to another: off the floor in the middle
+    const t = u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u), d = M.dist(from, to);
+    const p = M.lerp(from, to, t);
+    p[1] += Math.min(9, 2 + 0.12 * d) * 4 * t * (1 - t) * (d > 3 ? 1 : 0);
+    return p;
+  };
   let k = 0;
   while (k <= n) {
     if (!contact[k]) { k++; continue; }
     let e = k;
     while (e < n && contact[e + 1]) e++;
     if (e - k >= 2) {
-      const hold = k === 0 ? 0 : e === n ? n : k;
       const whole = k === 0 && e === n;
-      if (!whole) for (let f = k; f <= e; f++) off[f] = idx.map(i => frames[hold][i] - frames[f][i]);
+      // (planted from key to key, yet the keys have it in two places: one step, the two feet one after the other)
+      const u0 = order ? 0.5 : 0.08, u1 = order ? 0.92 : 0.5;
+      for (let f = k; f <= e; f++) {
+        const want = whole ? step(pos[0], pos[n], (f / n - u0) / (u1 - u0)) : pos[k === 0 ? 0 : e === n ? n : k];
+        off[f] = M.sub(want, pos[f]);
+      }
     }
     k = e + 1;
   }
   off[0] = [0, 0, 0]; off[n] = [0, 0, 0];
-  // steps: carry the offset from one plant to the next
+  // steps: carry the offset from one plant to the next, lifting the foot if it is carried far
   let last = 0;
   for (let f = 1; f <= n; f++) {
     if (!off[f]) continue;
-    for (let g = last + 1; g < f; g++) { const u = (g - last) / (f - last); off[g] = off[last].map((x, a) => x + (off[f][a] - x) * u); }
+    const d = M.dist(off[last], off[f]);
+    for (let g = last + 1; g < f; g++) {
+      const u = (g - last) / (f - last);
+      off[g] = M.lerp(off[last], off[f], u);
+      if (d > 6) off[g][1] += Math.min(6, 0.1 * d) * 4 * u * (1 - u);
+    }
     last = f;
   }
-  for (let f = 1; f < n; f++) idx.forEach((i, a) => { frames[f][i] += off[f][a]; });
+  return pos.map((p, f) => M.add(p, off[f]));
 }

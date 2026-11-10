@@ -48,6 +48,12 @@ footer { background: var(--panel); border-top: 1px solid var(--line); }
 .frame { color: var(--dim); }
 .sep { width: 1px; height: 20px; background: var(--line); margin: 0 4px; }
 #timeline { display: block; width: 100%; height: 84px; cursor: pointer; touch-action: none; }
+#loading { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: rgba(15,16,19,0.82); }
+#loading[hidden] { display: none; }
+#loading .box { width: min(420px, 86vw); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; display: grid; gap: 12px; }
+#loading .track { height: 6px; background: #30343c; border-radius: 3px; overflow: hidden; }
+#loadBar { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+#loadSkip { justify-self: start; font-size: 12px; }
 @media (max-width: 760px) {
   main { grid-template-columns: 1fr; grid-template-rows: 1fr 200px; }
   aside { border-left: 0; border-top: 1px solid var(--line); }

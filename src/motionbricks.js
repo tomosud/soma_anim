@@ -151,33 +151,63 @@ export class MotionBricks {
    * Returns {frames, match, tail} like Inbetweener.generate; tail = the last four SOMA poses, for the next one.
    * Requests run one at a time, in the order they were asked for.
    */
-  generate(A, B, n, context = null) {
-    const job = this.chain.then(() => this._generate(A, B, n, context));
+  generate(A, B, n, context = null, opts = {}) {
+    const job = this.chain.then(() => this._generate(A, B, n, context, opts));
     this.chain = job.catch(() => {});
     return job;
   }
 
-  async _generate(A, B, n, context) {
+  async _generate(A, B, n, context, { flow = false, next = null, nextLen = 0 } = {}) {
     const { rig, re } = this.inb, soma = this.soma;
     // (this runs between the animator's actions: the rig is put back as it was each time it is borrowed)
     let held = rig.getVector();
     rig.setVector(A).evaluate(); const a = re.fromRig(rig);
     rig.setVector(B).evaluate(); const b = re.fromRig(rig);
+    let c = null;
+    if (flow && next) { rig.setVector(next).evaluate(); c = re.fromRig(rig); }
     rig.setVector(held).evaluate();
     // The model makes 24-64 frames at a time (6-16 tokens of 4 frames; three frames are dropped at each end, so
-    // 17-57 frames of travel).  A longer gap is made in several pieces, each continuing from the last: the pieces
-    // on the way aim at the pose between the keys for their moment, the last one at key B.
-    const pieces = Math.max(1, Math.ceil(n / 57));
+    // 17-57 frames of travel) and says itself how long the move takes.  It is NOT told to fill the whole gap:
+    // asked to spend two seconds on a small change of pose, it invents something to do (a jump, a roll).
+    // So it may take any length up to the gap, the move is played at its own speed from key A, and the pose
+    // of key B is held for what is left.  Only a long way to go is made in several pieces, each continuing
+    // from the last and aiming at the pose between the keys for its moment.
+    const dist = Math.hypot(b.root[0] - a.root[0], b.root[2] - a.root[2]); // metres
+    //
+    // flow: the keys are passed through instead.  The move takes exactly the gap (the animator's timing is
+    // the motion's), it continues from the stretch before, and it arrives already moving toward the key after.
+    //
+    // Going somewhere or turning is different: there the animator's timing is the speed of the walk, so the
+    // gap is filled exactly (left to itself the model dashes there and waits).
+    const ha = soma.heading(soma.positions(a)), hb = soma.heading(soma.positions(b));
+    const timed = flow || dist > 0.3 || Math.abs(Math.atan2(Math.sin(hb - ha), Math.cos(hb - ha))) > 0.5;
+    const pieces = timed ? Math.max(1, Math.ceil(n / 57)) : 1;
+    // Way points of a long walk: frames of the reference stretch that goes from A to B (a body in mid stride,
+    // carried onto the line between the keys).  The pose between two standing keys would be a stop on the way.
+    let way = null;
+    if (pieces > 1) {
+      held = rig.getVector();
+      const st = this.inb.stretch(A, B, n);
+      rig.setVector(held).evaluate();
+      if (st) {
+        const p0 = st.placed[0].root, p1 = st.placed[n].root;
+        way = u => { const q = st.placed[Math.round(u * n)]; return { root: [q.root[0] + (1 - u) * (a.root[0] - p0[0]) + u * (b.root[0] - p1[0]), q.root[1], q.root[2] + (1 - u) * (a.root[2] - p0[2]) + u * (b.root[2] - p1[2])], q: q.q }; };
+      }
+    }
     let frames = [], ctx = context ?? [a, a, a, a], ms = 0;
     for (let i = 0; i < pieces; i++) {
       const last = i === pieces - 1;
-      const span = n / pieces; // frames this piece should cover
-      const want = Math.max(6, Math.min(16, Math.round((span + 7) / 4)));
+      const most = Math.max(6, Math.min(16, Math.floor((n / pieces + 7) / 4)));
+      const allowed = [];
+      if (timed) allowed.push(Math.max(6, Math.min(16, Math.round((n / pieces + 7) / 4))));
+      else for (let t = 6; t <= most; t++) allowed.push(t);
       let target = b;
       // (on the way: the pose between the two keys. Left free, the model fills the time with gestures of its own)
-      if (!last) target = lerpPose(a, b, (i + 1) / pieces);
+      if (!last) target = way ? way((i + 1) / pieces) : lerpPose(a, b, (i + 1) / pieces);
       const batch = emptyBatch(1);
-      const align = encode(soma, batch, ctx, [target], [want]);
+      // (the frame after the goal, one step toward the next key: the arrival has that key's direction in it)
+      const goal = last && c && nextLen > 1 ? [target, lerpPose(b, c, 1 / nextLen)] : [target];
+      const align = encode(soma, batch, ctx, goal, allowed);
       const out = await this._run(batch);
       ms += out.ms;
       let part = decode(soma, out.motions, out.tokens[0], align);
@@ -186,21 +216,23 @@ export class MotionBricks {
       ctx = part.slice(-4);
       frames = frames.concat(i ? part.slice(1) : part);
     }
-    const out = { ms };
-    // the model's lengths are multiples of four frames: the last few percent are a resample to the key spacing
-    const m = frames.length - 1, placed = [], contact = [[], []];
-    for (let k = 0; k <= n; k++) {
-      const f = k * m / n, i = Math.min(m - 1, Math.floor(f));
-      const p = lerpPose(frames[i], frames[i + 1], f - i);
-      placed.push(p);
-      contact[0].push(Math.max(p.contact[0], p.contact[1]) > 0.55);
-      contact[1].push(Math.max(p.contact[2], p.contact[3]) > 0.55);
+    // m: frames the move takes.  Longer than the gap (only for keys closer than the model's shortest move):
+    // played faster.  Shorter: played as it is, then key B is held.
+    const len = frames.length - 1, m = timed ? n : Math.min(n, len), placed = [], contact = [[], []];
+    for (let k = 0; k <= m; k++) {
+      const f = k * len / m, i = Math.min(len - 1, Math.floor(f));
+      const q = lerpPose(frames[i], frames[i + 1], f - i);
+      placed.push(q);
+      contact[0].push(Math.max(q.contact[0], q.contact[1]) > 0.55);
+      contact[1].push(Math.max(q.contact[2], q.contact[3]) > 0.55);
     }
     held = rig.getVector();
-    const r = this.inb.finish(A, B, n, placed, contact);
+    const r = this.inb.finish(A, B, m, placed, contact);
     rig.setVector(held).evaluate();
-    r.match = { clip: 'MotionBricks', frames: m, speed: m / n, ms: out.ms, pieces };
-    r.tail = frames.slice(-4);
+    for (let k = m; k < n; k++) r.frames.push(B);
+    r.match = { clip: 'MotionBricks', frames: len, speed: len / m, hold: n - m, ms, pieces, flow };
+    // (the next stretch continues this movement only if it runs right up to the key)
+    r.tail = m === n ? frames.slice(-4) : null;
     return r;
   }
 }

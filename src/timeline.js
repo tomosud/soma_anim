@@ -88,7 +88,10 @@ export class Timeline {
       const a = this.x(s.from), b = this.x(s.to);
       const mb = s.match?.clip === 'MotionBricks';
       g.fillStyle = mb ? 'rgba(118,140,255,0.32)' : s.match ? 'rgba(63,174,122,0.28)' : 'rgba(120,130,150,0.2)';
-      g.fillRect(a, y0, b - a, bh);
+      // (MotionBricks: the move, then key B held)
+      const hold = s.match?.hold ? this.x(s.to - s.match.hold) : b;
+      g.fillRect(a, y0, hold - a, bh);
+      if (hold < b) { g.fillStyle = 'rgba(118,140,255,0.12)'; g.fillRect(hold, y0, b - hold, bh); g.fillStyle = '#8e9bff'; g.fillRect(hold - 0.5, y0, 1, bh); }
       if (s.match && b - a > 40) {
         g.save(); g.beginPath(); g.rect(a + 8, y0, b - a - 16, bh); g.clip();
         g.fillStyle = mb ? '#c3ccff' : '#9fd9bb'; g.textBaseline = 'middle';

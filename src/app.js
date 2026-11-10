@@ -20,6 +20,15 @@ const $ = id => document.getElementById(id);
 const VERSION = window.SOMA_ANIM_VERSION || 'dev', DB_VERSION = '1';
 const asset = p => (VERSION === 'dev' ? p : `${p}?v=${VERSION}`);
 const status = t => { $('status').textContent = t; };
+/** The wait screen: text and progress 0..1 (null = unknown); wait(null) takes it away. */
+function wait(text, part = null, canSkip = false) {
+  $('loading').hidden = text === null;
+  if (text === null) return;
+  $('loadText').textContent = text;
+  $('loadBar').style.width = part === null ? '100%' : Math.round(part * 100) + '%';
+  $('loadBar').style.opacity = part === null ? 0.35 : 1;
+  $('loadSkip').hidden = !canSkip;
+}
 const FOOT_PINS = ['L_Foot_trans', 'R_Foot_trans', 'L_Foot_rot', 'R_Foot_rot', 'L_Toe_rot', 'R_Toe_rot'];
 const LABEL = {
   world_ctl: '全身', Hip_trans: '腰', Hip2_rot: '腰の向き', Spine_trans: '胸', Spine_rot: '胸のひねり', Neck_rot: '首', Head_rot: '頭の傾き', Head_trans: '視線',
@@ -164,18 +173,25 @@ function save() {
 
 const mbLine = () => (mb && mb.state === 'ready' ? `MotionBricks: ${mb.backend}` : '');
 
-/** Start MotionBricks when the in-betweens ask for it (the first time downloads about 380 MB). */
+/**
+ * Start MotionBricks when the in-betweens ask for it, and keep the animator waiting until it is there (what is
+ * made before that would be made again).  The model (about 380 MB) is downloaded once and kept in IndexedDB.
+ */
 function wantMotionBricks() {
-  if (!inb || project.mode !== 'mb') return;
+  if (!inb || project.mode !== 'mb') { wait(null); return; }
   if (!mb) mb = new MotionBricks(inb);
-  if (mb.state !== 'idle') return;
+  if (mb.state !== 'idle') { if (mb.state !== 'loading') wait(null); return; }
   const mbytes = x => (x / 1048576).toFixed(0);
+  let skipped = false;
+  $('loadSkip').onclick = () => { skipped = true; wait(null); };
+  const show = (text, part, canSkip) => { status(text); if (!skipped) wait(text, part, canSkip); };
+  show('MotionBricks を準備中…', null, false);
   mb.load(p => {
-    if (p.phase === 'download') status(`MotionBricks のモデルを取得中… ${mbytes(p.loaded)}${p.total ? ' / ' + mbytes(p.total) : ''} MB（初回だけ。それまではモーションマッチングで表示）`);
-    else if (p.phase === 'cache') status('MotionBricks のモデルを読み込み中…');
-    else if (p.phase === 'session') status('MotionBricks を準備中…');
-  }).then(() => { status(mbLine()); rebake(); if (!gizmo.dragging && !working) showFrame(frame); })
-    .catch(e => { console.error(e); status('MotionBricks を使えませんでした（モーションマッチングで中割りします）: ' + e.message); });
+    if (p.phase === 'download') show(`MotionBricks のモデルを取得中… ${mbytes(p.loaded)}${p.total ? ' / ' + mbytes(p.total) : ''} MB（初回だけ）`, p.total ? p.loaded / p.total : null, true);
+    else if (p.phase === 'cache') show('MotionBricks のモデルを読み込み中…（保存済みのものを使用）', null, false);
+    else if (p.phase === 'session') show('MotionBricks を準備中…', null, false);
+  }).then(() => { wait(null); status(mbLine()); rebake(); if (!gizmo.dragging && !working) showFrame(frame); })
+    .catch(e => { console.error(e); wait(null); status('MotionBricks を使えませんでした（モーションマッチングで中割りします）: ' + e.message); });
 }
 
 function effectivePins(key) {
@@ -426,6 +442,7 @@ function bindUI() {
   $('length').onchange = e => { project.pushUndo(); project.length = Math.max(10, Math.min(2000, +e.target.value || 90)); rebake(); showFrame(Math.min(frame, project.length)); };
   $('mode').onchange = e => { project.pushUndo(); project.mode = e.target.value; wantMotionBricks(); rebake(); showFrame(frame); };
   $('regen').onclick = regenerate;
+  $('flow').onchange = e => { project.pushUndo(); project.flow = e.target.checked; rebake(); showFrame(frame); };
   $('newScene').onclick = () => { project.pushUndo(); newScene(project); select(null); frame = 0; afterLoad(); status('新しいシーンにしました（Ctrl+Z で前のシーンに戻せます）'); };
   $('strength').oninput = e => { $('strengthV').textContent = Math.round(e.target.value * 100) + '%'; };
   for (const id of ['showCtl', 'showFinger', 'showGhost']) $(id).onchange = () => { refreshControlLook(); refreshGhosts(); dirty = true; };
@@ -476,7 +493,7 @@ function regenerate() {
 }
 
 function afterLoad() {
-  $('length').value = project.length; $('mode').value = project.mode;
+  $('length').value = project.length; $('mode').value = project.mode; $('flow').checked = project.flow;
   working = null; rebake(); showFrame(Math.min(frame, project.length));
 }
 
@@ -522,12 +539,14 @@ async function start() {
   requestAnimationFrame(tick);
   $('hint').textContent = 'コントロールの線をクリックして選び、矢印や輪をドラッグ。K: キー / Space: 再生 / M: 左右反転 / N: 自然なポーズに';
 
+  wait('キャラクターを読み込み中…');
   status('キャラクターを読み込み中…');
   // ?mesh=0 shows the capsule mannequin (what a copy without assets/manny.* shows)
   try { if (new URLSearchParams(location.search).get('mesh') === '0') throw Error('off'); character = await loadManny('assets/manny', VERSION === 'dev' ? '' : '?v=' + VERSION); } catch { character = makeMannequin(rig); }
   scene.add(character);
   syncView();
 
+  wait('参考モーションを読み込み中…（約 20 MB）');
   status('参考モーションを読み込み中…（約 20 MB）');
   try {
     const soma = new SomaRig(await fetch(asset('assets/soma_rig.json')).then(r => r.json()));
@@ -539,10 +558,12 @@ async function start() {
     rebake(); showFrame(frame);
     status(`参考モーション ${db.clips.length} クリップ`);
     wantMotionBricks();
+    if (project.mode !== 'mb') wait(null);
   } catch (e) {
     console.error(e);
     status('参考モーションを読み込めませんでした（単純な補間で動きます）');
+    wait(null);
   }
   window.app = { rig, project, actions, select, showFrame, commit, naturalizeNow, render: () => renderer.render(scene, camera), get frame() { return frame; }, get nat() { return nat; }, get inb() { return inb; }, get mb() { return mb; } };
 }
-start().catch(e => { console.error(e); status('起動に失敗: ' + e.message); });
+start().catch(e => { console.error(e); wait(null); status('起動に失敗: ' + e.message); });

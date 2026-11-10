@@ -7,6 +7,7 @@ export class Project {
     this.fps = 30;
     this.length = 90;
     this.mode = 'mb'; // 'mb' = MotionBricks, 'mm' = motion matching, 'ease' = plain interpolation
+    this.flow = false; // MotionBricks: pass through the keys (true) or arrive and hold (false)
     this.todo = [];
     this.tries = new Map();
     this.keys = [];
@@ -54,13 +55,15 @@ export class Project {
     for (let i = 0; i + 1 < keys.length; i++) {
       const a = keys[i], b = keys[i + 1], len = b.frame - a.frame;
       let seg = null, pending = false;
-      if (useMb && len >= 2) {
+      // (the model's shortest move is 17 frames: keys closer than that would only be a sped-up version of it)
+      if (useMb && len >= 14) {
         // (the model continues from the motion that arrives at this key, so a stretch depends on the one before)
-        const id = 'mb|' + len + '|' + sig(a.v) + '|' + sig(b.v) + '|' + hash(prevId);
+        const next = this.flow ? keys[i + 2] : null;
+        const id = 'mb|' + len + '|' + sig(a.v) + '|' + sig(b.v) + '|' + hash(prevId) + (this.flow ? '|flow|' + (next ? sig(next.v) + '|' + (next.frame - b.frame) : '') : '');
         seg = this.cache.get(id);
         used.add(id);
         if (seg && seg.failed) { if (seg.failed < 3) { this.cache.delete(id); this.tries.set(id, seg.failed); } seg = null; }
-        if (!this.cache.has(id)) { this.todo.push({ id, a: a.v, b: b.v, len, prevId }); pending = true; }
+        if (!this.cache.has(id)) { this.todo.push({ id, a: a.v, b: b.v, len, prevId, opts: { flow: this.flow, next: next?.v ?? null, nextLen: next ? next.frame - b.frame : 0 } }); pending = true; }
         prevId = id;
       } else prevId = '';
       if (!seg) {
@@ -91,7 +94,7 @@ export class Project {
     while (version === this.fillVersion && this.todo.length) {
       const t = this.todo[0];
       let r;
-      try { r = await mb.generate(t.a, t.b, t.len, this.cache.get(t.prevId)?.tail ?? null); } catch (e) {
+      try { r = await mb.generate(t.a, t.b, t.len, this.cache.get(t.prevId)?.tail ?? null, t.opts); } catch (e) {
         console.error(e);
         r = { failed: (this.tries.get(t.id) || 0) + 1, error: String(e?.message ?? e) };
       }
@@ -113,14 +116,14 @@ export class Project {
   // -- files --------------------------------------------------------------
   toJSON() {
     return {
-      format: 'soma_anim', version: 1, rig: 'Rig_Manny_BNS', fps: this.fps, length: this.length, mode: this.mode,
+      format: 'soma_anim', version: 1, rig: 'Rig_Manny_BNS', fps: this.fps, length: this.length, mode: this.mode, flow: this.flow,
       keys: this.keys.map(k => ({ frame: k.frame, pins: [...k.pins], values: this.rig.valuesFromVector(k.v) })),
     };
   }
 
   fromJSON(d) {
     if (d.format !== 'soma_anim') throw Error('soma_anim のファイルではありません');
-    this.fps = d.fps || 30; this.length = d.length || 90; this.mode = d.mode || 'mb';
+    this.fps = d.fps || 30; this.length = d.length || 90; this.mode = d.mode || 'mb'; this.flow = !!d.flow;
     this.keys = d.keys.map(k => ({ frame: k.frame, pins: new Set(k.pins || []), v: this.rig.vectorFromValues(k.values) }));
     this.sort();
   }
