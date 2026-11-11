@@ -19,6 +19,8 @@ export class Project {
   }
 
   zero() { return new Float64Array(this.rig.channelKeys.length); }
+  /** The pose a scene starts in (a relaxed stand; the rig's own rest pose until it is set). */
+  start() { return this.rest ? this.rest.slice() : this.zero(); }
   sort() { this.keys.sort((a, b) => a.frame - b.frame); }
   keyAt(frame) { return this.keys.find(k => k.frame === frame) || null; }
 
@@ -46,7 +48,7 @@ export class Project {
     const n = this.length, out = new Array(n + 1), keys = this.keys;
     this.segments = [];
     this.todo = [];
-    if (!keys.length) { for (let f = 0; f <= n; f++) out[f] = this.zero(); this.baked = out; return; }
+    if (!keys.length) { for (let f = 0; f <= n; f++) out[f] = this.start(); this.baked = out; return; }
     for (let f = 0; f <= Math.min(n, keys[0].frame); f++) out[f] = keys[0].v;
     for (let f = keys[keys.length - 1].frame; f <= n; f++) out[f] = keys[keys.length - 1].v;
     const used = new Set();
@@ -56,7 +58,7 @@ export class Project {
       const a = keys[i], b = keys[i + 1], len = b.frame - a.frame;
       let seg = null, pending = false;
       // (the model's shortest move is 17 frames: keys closer than that would only be a sped-up version of it)
-      if (useMb && len >= 14) {
+      if (useMb && len >= 17) {
         // (the model continues from the motion that arrives at this key, so a stretch depends on the one before)
         const next = this.flow ? keys[i + 2] : null;
         const id = 'mb|' + len + '|' + sig(a.v) + '|' + sig(b.v) + '|' + hash(prevId) + (this.flow ? '|flow|' + (next ? sig(next.v) + '|' + (next.frame - b.frame) : '') : '');
@@ -68,9 +70,10 @@ export class Project {
       } else prevId = '';
       if (!seg) {
         // (what MotionBricks has not made, or cannot make, is eased)
-        const id = 'ease|' + len + '|' + sig(a.v) + '|' + sig(b.v);
+        const id = (this.mode === 'mb' ? 'steps|' : 'ease|') + len + '|' + sig(a.v) + '|' + sig(b.v);
         seg = this.cache.get(id);
-        if (!seg && inb) { seg = inb.interpolate(a.v, b.v, len); this.cache.set(id, seg); }
+        // (in MotionBricks mode what the model does not make still keeps its feet: planted, or stepping over)
+        if (!seg && inb) { seg = this.mode === 'mb' ? { frames: inb.steps(a.v, b.v, len), match: null } : inb.interpolate(a.v, b.v, len); this.cache.set(id, seg); }
         if (!seg) seg = { frames: plain(a.v, b.v, len), match: null };
         used.add(id);
       }
@@ -100,7 +103,7 @@ export class Project {
     }
   }
 
-  pose(frame) { return this.keyAt(frame)?.v || this.baked[Math.max(0, Math.min(this.length, frame))] || this.zero(); }
+  pose(frame) { return this.keyAt(frame)?.v || this.baked[Math.max(0, Math.min(this.length, frame))] || this.start(); }
 
   // -- undo ---------------------------------------------------------------
   snapshot() { return JSON.stringify(this.toJSON()); }
@@ -147,5 +150,5 @@ function plain(a, b, n) {
 export function newScene(project) {
   project.length = 90;
   project.keys = [];
-  project.setKey(0, project.zero());
+  project.setKey(0, project.start());
 }

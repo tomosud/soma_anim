@@ -18,7 +18,8 @@ const ORDER = ['pelvis', 'spine_01', 'spine_02', 'spine_03', 'spine_04', 'spine_
 for (const s of 'lr') ORDER.push('clavicle_' + s, 'upperarm_' + s, 'lowerarm_' + s, 'hand_' + s, 'thigh_' + s, 'calf_' + s, 'foot_' + s, 'ball_' + s);
 
 export class SomaToManny {
-  constructor(rig, soma) {
+  /** cal: {joint: quaternion} from assets/retarget_cal.json - the roll of the limb bones going rig -> SOMA. */
+  constructor(rig, soma, cal = null) {
     this.soma = soma;
     const rest = Object.fromEntries(rig.joints.map(j => [j.name, j.rest]));
     const parent = Object.fromEntries(rig.joints.map(j => [j.name, j.parent]));
@@ -43,7 +44,7 @@ export class SomaToManny {
       // offset from the parent joint in the frame of the parent
       const p = parent[name];
       const off = rest[p] && MAP[p] ? M.xdir(M.sub(M.pos(rest[name]), M.pos(rest[p])), M.transpose3(M.rotation(rest[p]))) : null;
-      return { name, s, c, parent: MAP[p] ? p : null, off };
+      return { name, s, c, back: cal?.[name] ?? c, parent: MAP[p] ? p : null, off };
     });
   }
 
@@ -65,7 +66,7 @@ export class SomaToManny {
     const soma = this.soma, q = new Float32Array(soma.n * 4), done = new Uint8Array(soma.n);
     for (const j of this.joints) {
       // (spine_01 / spine_02 share Spine1, spine_04 / spine_05 share Chest: the upper one speaks)
-      q.set(qmul(M.toQuat(M.rotation(rig.jointWorld(j.name))), qinv(j.c)), j.s * 4);
+      q.set(qmul(M.toQuat(M.rotation(rig.jointWorld(j.name))), qinv(j.back)), j.s * 4);
       done[j.s] = 1;
     }
     const pose = { root: this.toSoma(M.pos(rig.jointWorld('pelvis'))), q };

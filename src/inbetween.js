@@ -1,124 +1,20 @@
-// In-betweens by motion matching.
+// Putting generated motion on the rig, and the plain in-between.
 //
-// Between two key poses A and B, n frames apart, the reference database is searched for the stretch of
-// real motion that starts like A, ends like B, and travels and turns as far as B is from A.  That stretch
-// is put on the rig frame by frame and its two ends are pulled onto the keys (the difference at each end
-// fades linearly across the stretch, as MotionBricks' end-point correction does), so the keys are met
-// exactly and what happens in between is real movement, not a blend of two poses.
-// Feet that are planted in the reference stay where they are (no sliding).
+// finish(): SOMA poses (from MotionBricks) are fitted to the rig frame by frame, the two ends are pulled onto
+// the keys (the difference at each end fades linearly across the stretch), and feet that are planted stay where
+// they are (no sliding).
 import * as M from './m4.js';
-import { DIM, F_FEET, F_HIPS_H, F_HANDS, F_HEAD } from './motiondb.js';
-import { queryFromRig, bodyPoint } from './retarget.js';
 import { BODY_FIT_CONTROLS } from './fit.js';
 import { wrap } from './natural.js';
-
-const POSE_DIMS = [[F_FEET, 6, 1], [F_HIPS_H, 1, 2], [F_HANDS, 6, 1], [F_HEAD, 3, 1.5]];
-const SPEEDS = [1, 0.8, 1.25, 0.66, 1.5, 0.5, 2];
-const wrapRad = a => Math.atan2(Math.sin(a), Math.cos(a));
 
 export class Inbetweener {
   constructor(rig, db, re, fitter) {
     this.rig = rig; this.db = db; this.re = re; this.fitter = fitter;
     this.bodyChannel = rig.channelControl.map(c => BODY_FIT_CONTROLS.includes(c.name));
     this.isRot = rig.channelKeys.map(k => k[k.length - 2] === 'r');
-    // compact pose features: 16 numbers per entry, already multiplied by sqrt(weight)
-    const n = db.n, P = this.P = new Float32Array(n * 16);
-    this.dims = [];
-    for (const [o, c, w] of POSE_DIMS) for (let i = 0; i < c; i++) this.dims.push([o + i, Math.sqrt(w)]);
-    for (let i = 0; i < n; i++) for (let d = 0; d < 16; d++) P[i * 16 + d] = db.feat[i * DIM + this.dims[d][0]] * this.dims[d][1];
-    // falls, hits and get-ups are never what lies between two ordinary poses
-    this.skip = db.tagged(['fall', 'getup', 'hit']);
     const restY = j => rig.joints[rig.jointIndex.get(j)].rest[13];
     this.floor = { foot_l: restY('foot_l'), foot_r: restY('foot_r'), ball_l: restY('ball_l'), ball_r: restY('ball_r') };
     this.feet = ['L', 'R'].map(S => ['x', 'y', 'z'].map(a => rig.channelIndex.get(`${S}_Foot_trans.t${a}`)));
-  }
-
-  _compact(q) { return this.dims.map(([d, w]) => q[d] * w); }
-
-  /** The best stretch of reference motion from pose a to pose b in n frames. */
-  search(qa, qb, n) {
-    const { db, P } = this;
-    const T = db.track();
-    const a = this._compact(qa.q), b = this._compact(qb.q);
-    // how far and how much B is turned from A, seen from A
-    const want = bodyPoint(qb.hip, qa.hip, qa.heading);
-    const turn = wrapRad(qb.heading - qa.heading);
-    const N = db.n, skip = this.skip;
-    // cost of starting at each entry / ending at each entry
-    const ca = new Float32Array(N), cb = new Float32Array(N);
-    for (let i = 0; i < N; i++) {
-      let x = 0, y = 0;
-      for (let d = 0, o = i * 16; d < 16; d++) { const e = P[o + d] - a[d], f = P[o + d] - b[d]; x += e * e; y += f * f; }
-      ca[i] = x; cb[i] = y;
-    }
-    let best = null;
-    for (const speed of SPEEDS) {
-      const step = Math.max(1, Math.round(n * speed / 2)); // entries are 2 frames apart
-      const pen = 0.12 * Math.abs(Math.log2(step * 2 / n));
-      for (let i = 0; i + step < N; i++) {
-        const j = i + step;
-        if (skip[i] || (best && ca[i] + pen >= best.cost)) continue;
-        if (db.entClip[i] !== db.entClip[j] || db.entMirror[i] !== db.entMirror[j] || db.entFrame[j] - db.entFrame[i] !== step * 2) continue;
-        const h = T[i * 4 + 3], c = Math.cos(h), s = Math.sin(h);
-        const dx = T[j * 4] - T[i * 4], dz = T[j * 4 + 2] - T[i * 4 + 2];
-        const ex = dx * c - dz * s - want[0], ez = dx * s + dz * c - want[2];
-        const et = wrapRad(T[j * 4 + 3] - h - turn);
-        // how far the stretch strays from the straight way between its own ends (at its middle): the calm one wins
-        let stray = 0;
-        for (let d = 0, m = (i + (step >> 1)) * 16, oi = i * 16, oj = j * 16; d < 16; d++) { const e = P[m + d] - 0.5 * (P[oi + d] + P[oj + d]); stray += e * e; }
-        const cost = ca[i] + cb[j] + 4 * (ex * ex + ez * ez) + 0.5 * et * et + pen + 1.5 * stray;
-        if (!best || cost < best.cost) best = { cost, i, j, frames: step * 2, speed: step * 2 / n };
-      }
-    }
-    return best;
-  }
-
-  /** The reference stretch for A -> B placed in the world: n+1 SOMA poses, foot contacts, and what it is. */
-  stretch(A, B, n) {
-    const { rig, db, re, fitter } = this;
-    rig.setVector(A).evaluate(); const qa = queryFromRig(rig, re);
-    rig.setVector(B).evaluate(); const qb = queryFromRig(rig, re);
-    const hit = this.search(qa, qb, n);
-    if (!hit) return null;
-    const clip = db.entClip[hit.i], mirrored = !!db.entMirror[hit.i], f0 = db.entFrame[hit.i];
-    const T = db.track();
-    const h0 = T[hit.i * 4 + 3], x0 = T[hit.i * 4], z0 = T[hit.i * 4 + 2];
-    const yaw = qa.heading - h0, c = Math.cos(yaw), s = Math.sin(yaw);
-    const soma = db.rig;
-    const placedAll = [], contact = [[], []];
-    const feetIdx = [soma.index.LeftFoot, soma.index.RightFoot];
-    let prevFeet = null;
-    for (let k = 0; k <= n; k++) {
-      // (eased a little into and out of the keys: a stretch cut out of a longer motion arrives at full speed)
-      const u = k / n, f = f0 + (0.5 * u + 0.5 * ease(u)) * hit.frames, fa = Math.floor(f), t = f - fa;
-      let pose = db.pose(clip, fa, mirrored);
-      if (t > 1e-3) pose = lerpPose(pose, db.pose(clip, fa + 1, mirrored), t);
-      const dx = pose.root[0] - x0, dz = pose.root[2] - z0;
-      const placed = soma.place(pose, yaw, qa.hip[0] + dx * c + dz * s, qa.hip[2] - dx * s + dz * c);
-      // planted feet of the reference: low and not moving
-      const Pp = soma.positions(placed), feet = feetIdx.map(j => Pp[j]);
-      for (let e = 0; e < 2; e++) {
-        const sp = prevFeet ? M.dist(feet[e], prevFeet[e]) * db.fps * (hit.frames / n) : 0;
-        contact[e].push(feet[e][1] < soma.ankleHeight + 0.05 && sp < 0.35);
-      }
-      prevFeet = feet;
-      placedAll.push(placed);
-    }
-    for (let e = 0; e < 2; e++) contact[e][0] = contact[e][1] ?? contact[e][0];
-    return { placed: placedAll, contact, a: qa, b: qb, match: { clip: db.clips[clip].name, frame: f0, frames: hit.frames, speed: hit.speed, mirrored, cost: hit.cost } };
-  }
-
-  /**
-   * A, B: pose vectors of the two keys, n: frames from A to B.
-   * Returns {frames: [vector for frame 1 .. n-1], match} or null when there is nothing to do.
-   */
-  generate(A, B, n) {
-    if (n < 2) return { frames: [], match: null };
-    const st = this.stretch(A, B, n);
-    if (!st) return null;
-    const r = this.finish(A, B, n, st.placed, st.contact);
-    r.match = st.match;
-    return r;
   }
 
   /**
@@ -194,6 +90,18 @@ export class Inbetweener {
         this.feet[e].forEach((i, a2) => { out[k][i] = t[a2]; });
       }
     });
+  }
+
+  /**
+   * The plain in-between with its feet looked after: a foot that stands in both keys stays where it stands, and
+   * steps over (lifted, one foot after the other) if the keys have it in two places.  Frames 1..n-1.
+   */
+  steps(A, B, n) {
+    const out = [A, ...this.interpolate(A, B, n).frames, B];
+    const { rig } = this, down = v => { rig.setVector(v).evaluate(); return [['foot_l', 'ball_l'], ['foot_r', 'ball_r']].map(([f, b]) => rig.jointWorld(f)[13] - this.floor[f] < 4 && rig.jointWorld(b)[13] - this.floor[b] < 4); };
+    const a = down(A), b = down(B);
+    this.plantFeet(out, [0, 1].map(e => out.map(() => a[e] && b[e])));
+    return out.slice(1, n);
   }
 
   /** Plain eased interpolation (no reference motion). */

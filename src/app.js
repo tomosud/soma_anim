@@ -8,6 +8,7 @@ import { SomaRig, MotionDB } from './motiondb.js';
 import { SomaToManny } from './retarget.js';
 import { RigFitter } from './fit.js';
 import { Naturalizer } from './natural.js';
+import { Physical } from './physical.js';
 import { Inbetweener } from './inbetween.js';
 import { Project, newScene } from './project.js';
 import { MotionBricks } from './motionbricks.js';
@@ -31,6 +32,8 @@ function wait(text, part = null, canSkip = false) {
   $('loadBar').style.opacity = part === null ? 0.35 : 1;
   $('loadSkip').hidden = !canSkip;
 }
+/** Controls that carry other parts of the body with them. */
+const CARRIES = new Set(['Hip_trans', 'Hip2_rot', 'Spine_trans', 'Spine_rot', 'Neck_rot']);
 const FOOT_PINS = ['L_Foot_trans', 'R_Foot_trans', 'L_Foot_rot', 'R_Foot_rot', 'L_Toe_rot', 'R_Toe_rot'];
 const LABEL = {
   world_ctl: '全身', Hip_trans: '腰', Hip2_rot: '腰の向き', Spine_trans: '胸', Spine_rot: '胸のひねり', Neck_rot: '首', Head_rot: '頭の傾き', Head_trans: '視線',
@@ -77,7 +80,7 @@ new ResizeObserver(resize).observe(canvas.parentElement);
 orbit.addEventListener('change', () => { dirty = true; });
 
 // ---------------------------------------------------------------- state
-let rig, project, character, nat = null, inb = null, mb = null, timeline, footReset;
+let rig, project, character, nat = null, inb = null, mb = null, timeline, footReset, physical, env = null;
 let frame = 0, selected = null, playing = false, clipboard = null;
 let working = null; // pose being edited (not yet a key)
 const ctlView = new Map();
@@ -202,32 +205,45 @@ function effectivePins(key) {
   return p;
 }
 
+/** What stays where it is in the world during an edit: the edited controls and the feet (locked, or placed by hand). */
+function heldFor(key, touched) {
+  const h = new Set(touched);
+  for (const n of FOOT_PINS) if ($('lockFeet').checked || key?.pins.has(n)) h.add(n);
+  return h;
+}
+
 /** The rig holds an edited pose: make it the key of this frame. */
-function commit(touched, { natural = $('auto').checked } = {}) {
+function commit(touched, { natural = $('auto').checked, before = null } = {}) {
+  // (the pose before the edit: the body follows from it)
+  before = before ?? dragStart ?? project.pose(frame);
+  dragStart = null;
+  const edited = rig.getVector();
   project.pushUndo();
-  const key = project.setKey(frame, rig.getVector());
+  const key = project.setKey(frame, edited);
   for (const n of touched) key.pins.add(n);
-  if (natural && nat) {
-    const r = nat.naturalize(key.v, effectivePins(key), +$('strength').value);
+  // (moving the whole body, or a finger, changes nothing about the pose of the body)
+  const posed = touched.some(n => n !== 'world_ctl' && rig.controlByName.get(n)?.group !== 'finger');
+  if (natural && nat && posed) {
+    const r = nat.naturalize(key.v, key.pins, +$('strength').value, { before, touched, held: heldFor(key, touched), balance: $('balance').checked });
     key.v = r.vector;
-    showMatch(r.match);
+    showMatch(r.match, r.notes);
   }
   working = null;
   rebake();
   showFrame(frame);
 }
 
-function showMatch(m) {
-  $('match').textContent = m ? `参考: ${m.clip} f${m.frame}${m.mirrored ? '（反転）' : ''}` : '';
+function showMatch(m, notes = []) {
+  $('match').textContent = [notes.join('、'), m ? `参考: ${m.clip} f${m.frame}${m.mirrored ? '（反転）' : ''}` : ''].filter(Boolean).join(' ／ ');
 }
 
 function naturalizeNow() {
   if (!nat) return;
   project.pushUndo();
   const key = project.setKey(frame, currentPose());
-  const r = nat.naturalize(key.v, effectivePins(key), 1);
+  const r = nat.naturalize(key.v, effectivePins(key), 1, { balance: $('balance').checked });
   key.v = r.vector;
-  showMatch(r.match);
+  showMatch(r.match, r.notes);
   working = null;
   rebake(); showFrame(frame);
 }
@@ -267,10 +283,10 @@ function setGizmoMode(mode) {
 
 gizmo.addEventListener('dragging-changed', e => {
   orbit.enabled = !e.value;
-  if (e.value) { working = rig.getVector(); moved = false; } else if (selected && moved) { commit([selected]); } else { working = null; }
+  if (e.value) { working = rig.getVector(); dragStart = working.slice(); moved = false; } else if (selected && moved) { commit([selected]); } else { working = null; dragStart = null; }
 });
 
-let moved = false;
+let moved = false, dragStart = null;
 gizmo.addEventListener('objectChange', () => {
   if (!selected) return;
   moved = true;
@@ -288,6 +304,10 @@ gizmo.addEventListener('objectChange', () => {
   }
   rig.evaluate();
   working = rig.getVector();
+  // the body comes along while it is dragged (hips, chest: every other control sits in the world)
+  if (nat && dragStart && $('auto').checked && CARRIES.has(selected)) {
+    working = nat.follow(working, heldFor(project.keyAt(frame), [selected]), dragStart);
+  }
   syncView(); refreshChannels();
 });
 gizmo.addEventListener('change', () => { dirty = true; });
@@ -340,7 +360,7 @@ function refreshPanel() {
       const inp = document.createElement('input');
       inp.type = 'number'; inp.step = ch[0] === 't' ? 1 : 5; inp.dataset.key = selected + '.' + ch;
       inp.value = +rig.get(inp.dataset.key).toFixed(2);
-      inp.addEventListener('change', () => { rig.set(inp.dataset.key, +inp.value || 0); rig.evaluate(); commit([selected]); });
+      inp.addEventListener('change', () => { const before = rig.getVector(); rig.set(inp.dataset.key, +inp.value || 0); rig.evaluate(); commit([selected], { before }); });
       box.append(l, inp);
     }
   }
@@ -416,10 +436,11 @@ const actions = {
   nextKey() { const k = project.keys.find(k => k.frame > frame); if (k) showFrame(k.frame); },
   resetSel() {
     if (!selected) return;
-    for (const ch of rig.controlByName.get(selected).channels) rig.set(selected + '.' + ch, 0);
-    rig.evaluate(); commit([selected], { natural: false });
+    const before = rig.getVector(), start = project.start();
+    for (const ch of rig.controlByName.get(selected).channels) rig.set(selected + '.' + ch, selected === 'world_ctl' ? 0 : start[rig.channelIndex.get(selected + '.' + ch)]);
+    rig.evaluate(); commit([selected], { natural: false, before });
   },
-  resetAll() { project.pushUndo(); project.setKey(frame, keepPlace(project.zero()), []); working = null; rebake(); showFrame(frame); },
+  resetAll() { project.pushUndo(); project.setKey(frame, keepPlace(project.start()), []); working = null; rebake(); showFrame(frame); },
   unpin() { const k = project.keyAt(frame); if (!k) return; project.pushUndo(); k.pins.clear(); rebake(); showFrame(frame); },
 };
 /** A pose brought from elsewhere takes the place and facing (the whole-body control) of the frame it lands on. */
@@ -519,6 +540,34 @@ function afterLoad() {
   working = null; rebake(); showFrame(Math.min(frame, project.length));
 }
 
+// ---------------------------------------------------------------- pictures for the evaluation
+const shotCam = new T.OrthographicCamera(-1, 1, 1, -1, 1, 4000);
+/**
+ * The character in pose v, drawn into a 2D context at (x, y, w, h): the whole figure, the camera standing
+ * around the hips at angle `around` (radians from +Z; the hips are in the middle of the picture).
+ */
+function shot(g, v, x, y, w, h, around) {
+  rig.setVector(v).evaluate();
+  character.userData.update(rig);
+  const hidden = [...ctlView.values()].map(c => c.g).concat(ghosts, [grid]).filter(o => o.visible);
+  for (const o of hidden) o.visible = false;
+  const was = { bg: scene.background, ratio: renderer.getPixelRatio(), size: renderer.getSize(new T.Vector2()), mesh: character.visible };
+  character.visible = true;
+  scene.background = new T.Color(0x9aa3ad);
+  const p = rig.jointWorld('pelvis'), tall = 215, wide = tall * w / h;
+  Object.assign(shotCam, { left: -wide / 2, right: wide / 2, top: tall - 12, bottom: -12 });
+  shotCam.updateProjectionMatrix();
+  shotCam.position.set(p[12] + Math.sin(around) * 900, 0, p[14] + Math.cos(around) * 900);
+  shotCam.lookAt(p[12], 0, p[14]);
+  renderer.setPixelRatio(1); renderer.setSize(w, h, false);
+  renderer.render(scene, shotCam);
+  g.drawImage(canvas, 0, 0, w, h, x, y, w, h);
+  renderer.setPixelRatio(was.ratio); renderer.setSize(was.size.x, was.size.y, false);
+  scene.background = was.bg; character.visible = was.mesh;
+  for (const o of hidden) o.visible = true;
+  dirty = true;
+}
+
 // ---------------------------------------------------------------- loop
 let last = 0, acc = 0;
 function tick(t) {
@@ -538,7 +587,9 @@ async function start() {
   const spec = await fetch(asset('assets/bns_rig.json')).then(r => r.json());
   rig = new BnsRig(spec);
   project = new Project(rig);
+  project.rest = rig.vectorFromValues((await fetch(asset('assets/start_pose.json')).then(r => r.json())).values);
   footReset = new FootReset(rig);
+  physical = new Physical(rig);
   const skip = /^(ik_|interaction|center_of_mass)/;
   for (const j of rig.joints) if (rig.jointIndex.has(j.parent) && j.parent !== 'root' && !skip.test(j.name)) BONES.push([j.parent, j.name]);
   buildControls(); buildList();
@@ -557,6 +608,8 @@ async function start() {
     if (!(await loadState('mbDefault'))) { project.mode = 'mb'; saveState('mbDefault', true); }
     localStorage.removeItem('soma_anim.project');
   } catch { /* start empty */ }
+  // (a scene nobody has touched yet starts in the relaxed stand, not in the rig's A-pose)
+  if (project.keys.length === 1 && project.keys[0].v.every(x => x === 0)) project.keys = [];
   if (!project.keys.length) newScene(project);
   resize(); afterLoad();
   requestAnimationFrame(tick);
@@ -574,8 +627,10 @@ async function start() {
   try {
     const soma = new SomaRig(await fetch(asset('assets/soma_rig.json')).then(r => r.json()));
     const db = await MotionDB.load(soma, 'assets/motiondb', '?v=' + DB_VERSION);
-    const re = new SomaToManny(rig, soma), fitter = new RigFitter(rig);
-    nat = new Naturalizer(rig, db, re, fitter);
+    const cal = await fetch(asset('assets/retarget_cal.json')).then(r => r.json());
+    const re = new SomaToManny(rig, soma, cal.joints), fitter = new RigFitter(rig);
+    nat = new Naturalizer(rig, db, re, fitter, physical);
+    env = { rig, nat, db, re, fitter, physical, start: project.start() };
     inb = new Inbetweener(rig, db, re, fitter);
     db.track();
     rebake(); showFrame(frame);
@@ -587,6 +642,6 @@ async function start() {
     status('参考モーションを読み込めませんでした（単純な補間で動きます）');
     wait(null);
   }
-  window.app = { rig, project, actions, select, showFrame, commit, naturalizeNow, render: () => renderer.render(scene, camera), get frame() { return frame; }, get nat() { return nat; }, get inb() { return inb; }, get mb() { return mb; } };
+  window.app = { rig, project, actions, select, showFrame, commit, naturalizeNow, render: () => renderer.render(scene, camera), get frame() { return frame; }, get nat() { return nat; }, get env() { return env; }, startPose: () => project.start(), shot, get inb() { return inb; }, get mb() { return mb; } };
 }
 start().catch(e => { console.error(e); wait(null); status('起動に失敗: ' + e.message); });
