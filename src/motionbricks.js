@@ -308,10 +308,12 @@ export class MotionBricks {
     };
     const stride = f => { const s = along(f); return this._stride(gait, s / (gait.speed / FPS * swing), 4, a.root[0] + ux * s, a.root[2] + uz * s, facing(f), rate, Math.min(1, swing)).map(p => carry(p, f / n)); };
     let frames = [], t = 0, context = ctx;
-    const HORIZON = 33, PLAY = 23; // 10 tokens ahead, asked anew 10 frames before arriving
-    while (n - t > 57 || (n - t >= 38 && D - along(t) > 0.8)) {
-      const play = Math.min(PLAY, n - t - 20);
-      const part = correctEndpoints(soma, (await one(context, stride(t + HORIZON), [10])).slice(0, play + 1), context[3], null);
+    // (10 tokens ahead, asked anew 10 frames before arriving; with little time left, a shorter look ahead -
+    //  so that even a dash of a second gets a running stride to aim at before it aims at key B)
+    while (n - t > 57 || (n - t >= 28 && D - along(t) > 0.8)) {
+      const tokens = n - t >= 44 ? 10 : 7, horizon = tokens * 4 - 7;
+      const play = Math.min(horizon - 10, n - t - 17);
+      const part = correctEndpoints(soma, (await one(context, stride(t + horizon), [tokens])).slice(0, play + 1), context[3], null);
       frames = frames.concat(frames.length ? part.slice(1) : part);
       context = frames.slice(-4);
       t += play;
@@ -352,16 +354,19 @@ export class MotionBricks {
     const range = (lo, hi) => { const r = []; for (let t = lo; t <= hi; t++) r.push(t); return r; };
     const plans = [];
     // (measured: 1 m in one generation is fine, 1.5 m is a dive)
-    if (dist > 0.9 && n >= 38 && this._gait(0, 1)) plans.push({ kind: 'walk' });
+    if (dist > 0.9 && n >= 28 && this._gait(0, 1)) plans.push({ kind: 'walk' });
     // (too far for one move and too short a time for a walk: in two or three moves)
     if (dist > 1.2 && n >= 34) plans.push({ kind: 'hops', pieces: Math.max(2, Math.min(Math.floor(n / 17), Math.ceil(dist / 0.9))) });
+    // The animator's timing is the motion's: whatever is made fills the gap from key to key - there is no
+    // stretch of frames where the character has arrived and waits for the key.
     if (n <= 57) {
-      // the gap is the move (the animator's timing); failing that, the model's own time and a hold
       plans.push({ kind: 'single', tokens: [whole] });
-      if (upTo > 6) plans.push({ kind: 'single', tokens: range(6, upTo) });
-      if (upTo > 8) plans.push({ kind: 'single', tokens: [Math.max(6, upTo - 3)] });
+      if (whole > 6) plans.push({ kind: 'single', tokens: [whole - 1] });
+      if (whole < 16) plans.push({ kind: 'single', tokens: [whole + 1] });
     } else {
-      plans.push({ kind: 'single', tokens: range(8, 16) }, { kind: 'single', tokens: [12] }, { kind: 'single', tokens: [9] });
+      // (longer than one generation and going nowhere: a slow change, made in pieces through the poses between)
+      plans.push({ kind: 'hops', pieces: Math.ceil(n / 50) });
+      plans.push({ kind: 'single', tokens: [16] });
     }
     // Every way is put on the rig and measured as the self test measures (leaving the floor, tipping over,
     // spinning, leaving the way between the keys, gestures nobody asked for); the first that is clean is taken,
@@ -372,15 +377,19 @@ export class MotionBricks {
       let r;
       try { r = await this._attempt(plan, a, b, c, n, ctx, nextLen); } catch (e) { if (plan.kind === 'single' && !best) throw e; continue; }
       tried++; ms += r.ms;
-      const made = this._place(A, B, n, r.frames, plan.kind !== 'single' || (n <= 57 && plan.tokens.length === 1 && plan.tokens[0] === whole));
+      const made = this._place(A, B, n, r.frames, true);
       const score = this._score(A, B, made.frames, plan.kind === 'walk' ? (r.run ? 'run' : 'walk') : '');
       tries.push(`${plan.kind}${plan.tokens ? ' ' + plan.tokens.join(',') : ''}: ${score.total.toFixed(2)} ${worst(score)}`);
-      if (!best || score.total < best.score.total) best = { plan, r, made, score };
+      // (a walk is preferred to a single move of about the same score: it does not leap)
+      const rank = score.total - (plan.kind === 'walk' ? 0.2 : 0);
+      if (!best || rank < best.rank) best = { plan, r, made, score, rank };
       // (the plans are in the order of preference: one that is good enough is taken)
       if (score.total < (plan.kind === 'walk' ? 0.9 : 0.6)) break;
     }
     const { made, r, plan, score } = best;
-    if (score.total > 1.6) {
+    // (keys too far apart for the time between them cannot be made as a person moves: what the model makes of
+    //  them is a leap or a spin, and the plain in-between with a step is the lesser evil)
+    if (score.total > 1.0) {
       held = rig.getVector();
       const plainFrames = this.inb.steps(A, B, n);
       rig.setVector(held).evaluate();

@@ -54,6 +54,9 @@ export const STRESS = {
   'crouch, long hold, up': [[0, {}, []], [20, { 'Hip_trans.ty': -45 }, ['Hip_trans']], [80, {}, []], [100, { 'Hip_trans.ty': 45 }, ['Hip_trans']]],
   'touch the floor and up': [[0, {}, []], [30, { 'R_Hand_trans.ty': -70, 'R_Hand_trans.tz': 35 }, ['R_Hand_trans']], [60, 'start', []]],
   'big step to the side and back': [[0, {}, []], [25, { 'R_Foot_trans.tx': -60 }, ['R_Foot_trans']], [50, { 'R_Foot_trans.tx': 60 }, ['R_Foot_trans']]],
+  'dash, turn, and back (2.7 m in 30 f, 1.9 m in 19 f)': [[0, {}, []], [30, { 'world_ctl.tz': 273, 'world_ctl.ry': 96 }, []], [49, { 'world_ctl.tz': -193, 'world_ctl.ry': -252 }, []]],
+  'slow hand raise over 90 f': [[0, {}, []], [90, { 'R_Hand_trans.ty': 70, 'R_Hand_trans.tz': 25 }, ['R_Hand_trans']]],
+  'crouch over 70 f, then walk 1.5 m in 30 f': [[0, {}, []], [70, { 'Hip_trans.ty': -30 }, ['Hip_trans']], [100, { 'world_ctl.tz': 150 }, []]],
   'short hop of the whole body (40 cm in 14 f)': [[0, {}, []], [14, { 'world_ctl.tz': 40 }, []]],
 };
 
