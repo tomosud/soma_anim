@@ -24,9 +24,14 @@ export class Project {
   sort() { this.keys.sort((a, b) => a.frame - b.frame); }
   keyAt(frame) { return this.keys.find(k => k.frame === frame) || null; }
 
-  setKey(frame, v, pins = null) {
+  /**
+   * ref: {clip, frame, mirror} when the pose is a frame of the reference motion (the pose book) - the frames
+   * around it tell the in-between how the pose is moved through.  'keep' leaves what the key has; anything
+   * else (an edit by hand) forgets it.
+   */
+  setKey(frame, v, pins = null, ref = null) {
     let k = this.keyAt(frame);
-    if (!k) { k = { frame, v: v.slice(), pins: new Set(pins || []) }; this.keys.push(k); this.sort(); } else { k.v = v.slice(); if (pins) k.pins = new Set(pins); }
+    if (!k) { k = { frame, v: v.slice(), pins: new Set(pins || []), ref: ref === 'keep' ? null : ref }; this.keys.push(k); this.sort(); } else { k.v = v.slice(); if (pins) k.pins = new Set(pins); if (ref !== 'keep') k.ref = ref; }
     return k;
   }
 
@@ -57,15 +62,16 @@ export class Project {
     for (let i = 0; i + 1 < keys.length; i++) {
       const a = keys[i], b = keys[i + 1], len = b.frame - a.frame;
       let seg = null, pending = false;
-      // (the model's shortest move is 17 frames: keys closer than that would only be a sped-up version of it)
-      if (useMb && len >= 17) {
+      // (the model's shortest move is 17 frames: for keys closer than that it is played that much faster - a
+      //  strike is a fast move; under 5 frames there is nothing to make)
+      if (useMb && len >= 5) {
         // (the model continues from the motion that arrives at this key, so a stretch depends on the one before)
         const next = this.flow ? keys[i + 2] : null;
-        const id = 'mb|' + len + '|' + sig(a.v) + '|' + sig(b.v) + '|' + hash(prevId) + (this.flow ? '|flow|' + (next ? sig(next.v) + '|' + (next.frame - b.frame) : '') : '');
+        const id = 'mb|' + len + '|' + sig(a.v) + '|' + sig(b.v) + '|' + refSig(a.ref) + refSig(b.ref) + '|' + hash(prevId) + (this.flow ? '|flow|' + (next ? sig(next.v) + '|' + (next.frame - b.frame) : '') : '');
         seg = this.cache.get(id);
         used.add(id);
         if (seg && seg.failed) { if (seg.failed < 3) { this.cache.delete(id); this.tries.set(id, seg.failed); } seg = null; }
-        if (!this.cache.has(id)) { this.todo.push({ id, a: a.v, b: b.v, len, prevId, opts: { flow: this.flow, next: next?.v ?? null, nextLen: next ? next.frame - b.frame : 0 } }); pending = true; }
+        if (!this.cache.has(id)) { this.todo.push({ id, a: a.v, b: b.v, len, prevId, opts: { flow: this.flow, next: next?.v ?? null, nextLen: next ? next.frame - b.frame : 0, refA: a.ref || null, refB: b.ref || null } }); pending = true; }
         prevId = id;
       } else prevId = '';
       if (!seg) {
@@ -115,14 +121,14 @@ export class Project {
   toJSON() {
     return {
       format: 'soma_anim', version: 1, rig: 'Rig_Manny_BNS', fps: this.fps, length: this.length, mode: this.mode, flow: this.flow,
-      keys: this.keys.map(k => ({ frame: k.frame, pins: [...k.pins], values: this.rig.valuesFromVector(k.v) })),
+      keys: this.keys.map(k => ({ frame: k.frame, pins: [...k.pins], ...(k.ref ? { ref: k.ref } : {}), values: this.rig.valuesFromVector(k.v) })),
     };
   }
 
   fromJSON(d) {
     if (d.format !== 'soma_anim') throw Error('soma_anim のファイルではありません');
     this.fps = d.fps || 30; this.length = d.length || 300; this.mode = d.mode === 'ease' ? 'ease' : 'mb'; this.flow = !!d.flow;
-    this.keys = d.keys.map(k => ({ frame: k.frame, pins: new Set(k.pins || []), v: this.rig.vectorFromValues(k.values) }));
+    this.keys = d.keys.map(k => ({ frame: k.frame, pins: new Set(k.pins || []), ref: k.ref || null, v: this.rig.vectorFromValues(k.values) }));
     this.sort();
   }
 
@@ -137,6 +143,7 @@ export class Project {
   }
 }
 
+const refSig = r => (r ? `${r.clip}@${r.frame}${r.mirror ? 'm' : ''};` : ';');
 const hash = t => { let h = 2166136261; for (let i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); };
 const sig = v => { let h = 2166136261; for (let i = 0; i < v.length; i++) { h ^= Math.round(v[i] * 1000); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36) + ':' + v.length; };
 

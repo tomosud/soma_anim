@@ -68,6 +68,11 @@
   {
    "frame": 22,
    "pins": [],
+   "ref": {
+    "clip": "stance_male_fight_idle_empty_stance_c9c63b",
+    "frame": 20,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": -6.46338,
     "Hip_trans.ty": -13.15775,
@@ -134,6 +139,11 @@
   {
    "frame": 36,
    "pins": [],
+   "ref": {
+    "clip": "stance_male_fight_idle_empty_stance_c9c63b",
+    "frame": 20,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": -6.46338,
     "Hip_trans.ty": -13.15775,
@@ -200,6 +210,11 @@
   {
    "frame": 40,
    "pins": [],
+   "ref": {
+    "clip": "punch_jab_punch_c9c5f7",
+    "frame": 17,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": 8.56244,
     "Hip_trans.ty": -15.36901,
@@ -266,6 +281,11 @@
   {
    "frame": 47,
    "pins": [],
+   "ref": {
+    "clip": "stance_male_fight_idle_empty_stance_c9c63b",
+    "frame": 20,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": -4.56194,
     "Hip_trans.ty": -13.15775,
@@ -332,6 +352,11 @@
   {
    "frame": 52,
    "pins": [],
+   "ref": {
+    "clip": "punch_cross_punch_c9c5f8",
+    "frame": 4,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": 7.12083,
     "Hip_trans.ty": -8.86448,
@@ -398,6 +423,11 @@
   {
    "frame": 57,
    "pins": [],
+   "ref": {
+    "clip": "punch_cross_punch_c9c5f8",
+    "frame": 11,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": 9.12308,
     "Hip_trans.ty": -9.33073,
@@ -464,6 +494,11 @@
   {
    "frame": 70,
    "pins": [],
+   "ref": {
+    "clip": "stance_male_fight_idle_empty_stance_c9c63b",
+    "frame": 20,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": -3.86328,
     "Hip_trans.ty": -13.15775,
@@ -599,6 +634,11 @@
   {
    "frame": 95,
    "pins": [],
+   "ref": {
+    "clip": "punch_standing_left_uppercut_punch_c9c9c6",
+    "frame": 8,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": 5.30686,
     "Hip_trans.ty": -10.85008,
@@ -666,6 +706,11 @@
   {
    "frame": 100,
    "pins": [],
+   "ref": {
+    "clip": "punch_standing_left_uppercut_punch_c9c9c6",
+    "frame": 15,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": 10.75835,
     "Hip_trans.ty": -7.12,
@@ -733,6 +778,11 @@
   {
    "frame": 112,
    "pins": [],
+   "ref": {
+    "clip": "stance_male_fight_idle_empty_stance_c9c63b",
+    "frame": 20,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": -0.93865,
     "Hip_trans.ty": -13.15775,
@@ -800,6 +850,11 @@
   {
    "frame": 122,
    "pins": [],
+   "ref": {
+    "clip": "kick_mma_roundhouse_kick_c9cd3a",
+    "frame": 13,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": 24.04936,
     "Hip_trans.ty": -3.30094,
@@ -867,6 +922,11 @@
   {
    "frame": 128,
    "pins": [],
+   "ref": {
+    "clip": "kick_mma_roundhouse_kick_c9cd3a",
+    "frame": 22,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": 14.25409,
     "Hip_trans.ty": 1.36166,
@@ -934,6 +994,11 @@
   {
    "frame": 148,
    "pins": [],
+   "ref": {
+    "clip": "stance_male_fight_idle_empty_stance_c9c63b",
+    "frame": 20,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": 33.95213,
     "Hip_trans.ty": -13.15775,
@@ -1070,6 +1135,11 @@
   {
    "frame": 176,
    "pins": [],
+   "ref": {
+    "clip": "block_blocking_the_chest_area_with_both__c9c71e",
+    "frame": 52,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": 44.29729,
     "Hip_trans.ty": -10.26733,
@@ -1137,6 +1207,11 @@
   {
    "frame": 188,
    "pins": [],
+   "ref": {
+    "clip": "block_boxing_dodge_advance_c9c619",
+    "frame": 47,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": 32.92011,
     "Hip_trans.ty": -27.56681,
@@ -1204,6 +1279,11 @@
   {
    "frame": 196,
    "pins": [],
+   "ref": {
+    "clip": "punch_mid_body_jab_c9cb16",
+    "frame": 15,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": 45.4255,
     "Hip_trans.ty": -20.31379,
@@ -1271,6 +1351,11 @@
   {
    "frame": 208,
    "pins": [],
+   "ref": {
+    "clip": "stance_male_fight_idle_empty_stance_c9c63b",
+    "frame": 20,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": 20.45511,
     "Hip_trans.ty": -13.15775,
@@ -1338,6 +1423,11 @@
   {
    "frame": 218,
    "pins": [],
+   "ref": {
+    "clip": "kick_boxing_illegal_knee_c9c70c",
+    "frame": 29,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": 16.20749,
     "Hip_trans.ty": -11.87235,
@@ -1405,6 +1495,11 @@
   {
    "frame": 225,
    "pins": [],
+   "ref": {
+    "clip": "kick_mma_high_kick_c9cd39",
+    "frame": 19,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": 29.27927,
     "Hip_trans.ty": 4.38554,
@@ -1472,6 +1567,11 @@
   {
    "frame": 246,
    "pins": [],
+   "ref": {
+    "clip": "stance_male_fight_idle_empty_stance_c9c63b",
+    "frame": 20,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": 49.80566,
     "Hip_trans.ty": -13.15775,
@@ -1539,6 +1639,11 @@
   {
    "frame": 272,
    "pins": [],
+   "ref": {
+    "clip": "standard_idle_c9cccb",
+    "frame": 10,
+    "mirror": false
+   },
    "values": {
     "Hip_trans.tx": 57.49619,
     "Hip_trans.ty": 2.61833,

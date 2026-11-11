@@ -108,13 +108,49 @@ export class Evaluator {
       if (keys.includes(k)) kink = Math.max(kink, acc);
       speed = Math.max(speed, M.dist(p1, p0));
     }
+    // How the motion moves (not what is wrong with it): plain interpolation moves every joint at once, along
+    // straight lines, with the same ease in and out - a body does none of that.  Per stretch between two keys:
+    //   still    share of frames in which nothing moves (dead time)
+    //   snap     top speed over mean speed of the limb that travels most (1.5 = a plain ease; a strike is 2-3)
+    //   arc      how far that limb leaves the straight line between its two ends, as a share of the line
+    //   overlap  spread of the moments the parts of the body are fastest, as a share of the stretch
+    //            (0 = everything moves in step)
+    const PARTS = ['pelvis', 'neck_01', 'head', 'hand_l', 'hand_r', 'foot_l', 'foot_r'];
+    const live = { still: 0, snap: 0, arc: 0, overlap: 0 };
+    let stretches = 0, moving = 0, counted = 0;
+    for (let i = 0; i + 1 < keys.length; i++) {
+      const a = keys[i], b = keys[i + 1], len = b - a;
+      if (len < 3) continue;
+      const sp = j => { const out = []; for (let k = a + 1; k <= b; k++) out.push(M.dist(S[k].P[j], S[k - 1].P[j]) * fps); return out; }; // cm/s
+      const V = Object.fromEntries(PARTS.map(j => [j, sp(j)]));
+      for (let k = 0; k < len; k++) { counted++; if (Math.max(...PARTS.map(j => V[j][k])) < 4) live.still++; }
+      const travel = j => V[j].reduce((x, y) => x + y, 0) / fps;
+      const lead = PARTS.slice().sort((x, y) => travel(y) - travel(x))[0];
+      if (travel(lead) < 15) continue;
+      moving++;
+      const v = V[lead], mean = v.reduce((x, y) => x + y, 0) / len;
+      live.snap += Math.max(...v) / (mean || 1);
+      const p0 = S[a].P[lead], p1 = S[b].P[lead], chord = M.dist(p0, p1);
+      if (chord > 5) {
+        const d = M.norm(M.sub(p1, p0));
+        let off = 0;
+        for (let k = a + 1; k < b; k++) { const r = M.sub(S[k].P[lead], p0); off = Math.max(off, M.len(M.sub(r, M.scl(d, M.dot(r, d))))); }
+        live.arc += off / chord; stretches++;
+      }
+      const peaks = PARTS.filter(j => travel(j) > 8).map(j => V[j].indexOf(Math.max(...V[j])) / len);
+      if (peaks.length > 1) { const m = peaks.reduce((x, y) => x + y, 0) / peaks.length; live.overlap += Math.sqrt(peaks.reduce((x, y) => x + (y - m) * (y - m), 0) / peaks.length); }
+    }
+    live.still = counted ? live.still / counted : 0;
+    live.snap = moving ? live.snap / moving : 0;
+    live.arc = stretches ? live.arc / stretches : 0;
+    live.overlap = moving ? live.overlap / moving : 0;
     const pel = S.map(s => s.P.pelvis[1]);
     const keyPel = keys.map(k => pel[k]);
     const ref = S.map(s => s.ref);
     ref.forEach((x, k) => { series.ref[k] = x; });
     const max = k => Math.max(...series[k]);
     return {
-      frames: n, series,
+      frames: n, series, live,
       slideSpeed: contact ? slide / contact * fps : 0, // cm/s while planted
       slideMax: slideMax * fps, // worst single frame, cm/s
       airborne: air / n, // share of frames with both feet off the floor

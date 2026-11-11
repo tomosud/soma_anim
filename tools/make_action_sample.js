@@ -66,3 +66,28 @@ export async function draw(step = 3, per = 20) {
   }
   return files;
 }
+
+/** The scene that is open, in-betweened both ways and measured: how it moves (src/evaluate.js, `live`). */
+export async function compare() {
+  const app = window.app, { Evaluator, penalty } = await import('../src/evaluate.js'), { Project } = await import('../src/project.js');
+  const ev = new Evaluator(app.rig, app.inb.db, app.inb.re), keys = app.project.keys.map(k => k.frame), out = [];
+  for (const mode of ['ease', 'mb']) {
+    const p = new Project(app.rig);
+    p.fromJSON(app.project.toJSON()); p.mode = mode;
+    p.bake(app.inb, app.mb);
+    if (p.todo.length) await p.fill(app.inb, app.mb, () => {});
+    const m = ev.measure(p.baked, keys), pen = penalty(m);
+    const made = p.segments.filter(s => s.match && s.match.clip === 'MotionBricks').length, plain = p.segments.filter(s => s.match && s.match.clip === 'plain').length;
+    out.push(`${mode.padEnd(5)} still ${m.live.still.toFixed(2)}  snap ${m.live.snap.toFixed(2)}  arc ${m.live.arc.toFixed(2)}  overlap ${m.live.overlap.toFixed(2)}  | penalty ${pen.total.toFixed(2)} (${Object.entries(pen.parts).filter(e => e[1] > 0.15).map(e => e[0] + ' ' + e[1].toFixed(1)).join(', ')})  | segments: ${p.segments.length}, by the model ${made}, fallen back to plain ${plain}`);
+  }
+  return out.join('\n');
+}
+
+/** Every frame from a to b of the scene that is open, two views: eval_out/<name>.png */
+export async function dense(a, b, name) {
+  const app = window.app, { strip, savePng } = await import('./draw.js');
+  const idx = []; for (let f = a; f <= b; f++) idx.push(f);
+  const keys = app.project.keys.map(k => k.frame);
+  const rows = [false, true].map(side => ({ label: `every frame ${a}-${b}  ${side ? 'side (faces right)' : 'front-left'}   frame = ${a} + tile`, frames: idx.map(f => app.project.baked[f]), keys: idx.map((f, k) => (keys.includes(f) ? k : -1)).filter(k => k >= 0), side }));
+  await savePng(strip(app.rig, app.env.physical.floor, rows, { per: 99, shot: app.shot }), name + '.png');
+}

@@ -189,6 +189,23 @@ export class MotionBricks {
     return job;
   }
 
+  /**
+   * The pose `base` as it is `offsets` frames away in the reference motion it was taken from: every joint turns
+   * (relative to its parent) as it turns in the clip between that frame and the offset one, the hips travel
+   * as they travel there.  ref: {clip, frame, mirror}.
+   */
+  _around(base, ref, offsets) {
+    const db = this.inb.db, soma = this.soma, clip = db.clips.findIndex(c => c.name === ref.clip);
+    if (clip < 0) return offsets.map(() => base);
+    const p0 = db.pose(clip, ref.frame, !!ref.mirror), L0 = locals(soma, p0), Lb = locals(soma, base);
+    const yaw = qyaw(soma.heading(soma.positions(base)) - soma.heading(soma.positions(p0)));
+    return offsets.map(off => {
+      const p = db.pose(clip, ref.frame + off, !!ref.mirror), L = locals(soma, p);
+      const d = qrot(yaw, [p.root[0] - p0.root[0], 0, p.root[2] - p0.root[2]]);
+      return fromLocals(soma, [base.root[0] + d[0], base.root[1] + p.root[1] - p0.root[1], base.root[2] + d[2]], Lb.map((q, j) => qmul(q, qmul(qinv(L0[j]), L[j]))));
+    });
+  }
+
   /** The walk the reference motion has for going `dir` (radians from straight ahead, + = left) at `speed` m/s. */
   _gait(dir, speed, low = false) {
     if (!this.gaits) {
@@ -244,9 +261,9 @@ export class MotionBricks {
    * One way of making the stretch.  plan: {kind: 'single', tokens: [...]} or {kind: 'walk'}.
    * Returns the SOMA frames (frame 0 = at A ... the last at B) and how long the model took.
    */
-  async _attempt(plan, a, b, c, n, ctx, nextLen) {
+  async _attempt(plan, a, b, c, n, ctx, nextLen, after = null) {
     const soma = this.soma;
-    const goal = c && nextLen > 1 ? [b, lerpPose(b, c, 1 / nextLen)] : [b];
+    const goal = after ? [b, ...after] : c && nextLen > 1 ? [b, lerpPose(b, c, 1 / nextLen)] : [b];
     let ms = 0;
     const one = async (context, targets, tokens) => { const r = await this.raw(context, targets, tokens); ms += r.ms; if (r.frames.length < 4) throw Error('MotionBricks returned no motion'); return r.frames; };
     if (plan.kind === 'single') {
@@ -328,7 +345,7 @@ export class MotionBricks {
     return { frames, ms, gait: gait.clip, rate, run: gait.run };
   }
 
-  async _generate(A, B, n, context, { flow = false, next = null, nextLen = 0 } = {}) {
+  async _generate(A, B, n, context, { flow = false, next = null, nextLen = 0, refA = null, refB = null } = {}) {
     const { rig, re } = this.inb, soma = this.soma;
     // (this runs between the animator's actions: the rig is put back as it was each time it is borrowed)
     let held = rig.getVector();
@@ -337,7 +354,11 @@ export class MotionBricks {
     let c = null;
     if (flow && next) { rig.setVector(next).evaluate(); c = re.fromRig(rig); }
     rig.setVector(held).evaluate();
-    const ctx = context ?? [a, a, a, a];
+    // A key that is a frame of the reference motion is moved through the way that motion moves through it:
+    // the frames after it go to the model as the target (they carry the speed of the strike), the frames
+    // before it as where the motion comes from.  (This is how the model is meant to be given a pose.)
+    const after = refB ? this._around(b, refB, [1, 2, 3]) : null;
+    const ctx = context ?? (refA ? [...this._around(a, refA, [-3, -2, -1]), a] : [a, a, a, a]);
     const dist = Math.hypot(b.root[0] - a.root[0], b.root[2] - a.root[2]); // metres
     const ha = soma.heading(soma.positions(a)), hb = soma.heading(soma.positions(b));
     const turn = Math.abs(Math.atan2(Math.sin(hb - ha), Math.cos(hb - ha)));
@@ -375,7 +396,7 @@ export class MotionBricks {
     const tries = [];
     for (const plan of plans) {
       let r;
-      try { r = await this._attempt(plan, a, b, c, n, ctx, nextLen); } catch (e) { if (plan.kind === 'single' && !best) throw e; continue; }
+      try { r = await this._attempt(plan, a, b, c, n, ctx, nextLen, after); } catch (e) { if (plan.kind === 'single' && !best) throw e; continue; }
       tried++; ms += r.ms;
       const made = this._place(A, B, n, r.frames, true);
       const score = this._score(A, B, made.frames, plan.kind === 'walk' ? (r.run ? 'run' : 'walk') : '');

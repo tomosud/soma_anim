@@ -219,10 +219,10 @@ function commit(touched, { natural = $('auto').checked, before = null } = {}) {
   dragStart = null;
   const edited = rig.getVector();
   project.pushUndo();
-  const key = project.setKey(frame, edited);
-  for (const n of touched) key.pins.add(n);
   // (moving the whole body, or a finger, changes nothing about the pose of the body)
   const posed = touched.some(n => n !== 'world_ctl' && rig.controlByName.get(n)?.group !== 'finger');
+  const key = project.setKey(frame, edited, null, posed ? null : 'keep');
+  for (const n of touched) key.pins.add(n);
   if (natural && nat && posed) {
     const r = nat.naturalize(key.v, key.pins, +$('strength').value, { before, touched, held: heldFor(key, touched), balance: $('balance').checked });
     key.v = r.vector;
@@ -415,18 +415,18 @@ function refreshGhosts() {
 const actions = {
   addKey() { project.pushUndo(); project.setKey(frame, currentPose()); working = null; rebake(); showFrame(frame); },
   delKey() { if (!project.keyAt(frame)) return; project.pushUndo(); project.removeKey(frame); rebake(); showFrame(frame); },
-  copy() { const k = project.keyAt(frame); clipboard = { v: currentPose().slice(), pins: [...(k?.pins ?? [])] }; flash('copy'); },
+  copy() { const k = project.keyAt(frame); clipboard = { v: currentPose().slice(), pins: [...(k?.pins ?? [])], ref: k?.ref ?? null }; flash('copy'); },
   paste(mirror = false) {
     if (!clipboard) return;
     project.pushUndo();
     const v = keepPlace(mirror ? rig.mirrorVector(clipboard.v) : clipboard.v.slice());
-    project.setKey(frame, v, clipboard.pins.map(n => (mirror ? rig.mirrorName(n) : n)));
+    project.setKey(frame, v, clipboard.pins.map(n => (mirror ? rig.mirrorName(n) : n)), clipboard.ref ? { ...clipboard.ref, mirror: !!clipboard.ref.mirror !== mirror } : null);
     working = null; rebake(); showFrame(frame);
   },
   mirror() {
     project.pushUndo();
     const k = project.keyAt(frame);
-    project.setKey(frame, keepPlace(rig.mirrorVector(currentPose())), [...(k?.pins ?? [])].map(n => rig.mirrorName(n)));
+    project.setKey(frame, keepPlace(rig.mirrorVector(currentPose())), [...(k?.pins ?? [])].map(n => rig.mirrorName(n)), k?.ref ? { ...k.ref, mirror: !k.ref.mirror } : null);
     working = null; rebake(); showFrame(frame);
   },
   undo() { if (project.undo()) { afterLoad(); wantMotionBricks(); } },
@@ -533,7 +533,8 @@ function applyPose(label, { mirror = false } = {}) {
   previewOf = null;
   if (!v) return false;
   project.pushUndo();
-  project.setKey(frame, v, []);
+  const entry = poseBook.find(p => p.label === label);
+  project.setKey(frame, v, [], { clip: entry.clip, frame: entry.frame, mirror: !!mirror });
   working = null; rebake(); showFrame(frame);
   status(`「${label}」をフレーム ${frame} に置きました${mirror ? '（左右反転）' : ''}`);
   return true;

@@ -121,16 +121,18 @@ export async function run({ set = SCENARIOS, scenarios = Object.keys(set), metho
   rig.setVector(held).evaluate();
   const lines = [];
   const pad = (s, n) => String(s).padEnd(n);
-  lines.push(pad('scenario', 25) + pad('method', 9) + COLS.map(c => pad(c[1], 7)).join('') + 'penalty  what');
+  lines.push(pad('scenario', 25) + pad('method', 9) + COLS.map(c => pad(c[1], 7)).join('') + pad('penalty', 9) + 'still snap  arc   overlap  what');
   for (const r of results) {
     const what = Object.entries(r.penalty.parts).filter(e => e[1] > 0.15).map(e => `${e[0]} ${e[1].toFixed(1)}`).join(', ');
-    lines.push(pad(r.scenario, 25) + pad(r.method, 9) + COLS.map(c => pad(r.metrics[c[0]].toFixed(c[2]), 7)).join('') + pad(r.penalty.total.toFixed(2), 9) + what);
+    lines.push(pad(r.scenario, 25) + pad(r.method, 9) + COLS.map(c => pad(r.metrics[c[0]].toFixed(c[2]), 7)).join('') + pad(r.penalty.total.toFixed(2), 9) + pad(r.metrics.live.still.toFixed(2), 6) + pad(r.metrics.live.snap.toFixed(2), 6) + pad(r.metrics.live.arc.toFixed(2), 6) + pad(r.metrics.live.overlap.toFixed(2), 9) + what);
   }
   lines.push('');
   for (const method of methods) {
     const rs = results.filter(r => r.method === method);
     if (!rs.length) continue;
     const sum = k => rs.reduce((a, r) => a + r.penalty.parts[k], 0);
+    const avg = k => (rs.reduce((a, r) => a + r.metrics.live[k], 0) / rs.length).toFixed(2);
+    lines.push(pad('MOTION ' + method, 34) + `still ${avg('still')}  snap ${avg('snap')}  arc ${avg('arc')}  overlap ${avg('overlap')}   (plain interpolation: snap 1.5, arc ~0, overlap ~0)`);
     lines.push(pad('TOTAL ' + method, 34) + 'penalty ' + rs.reduce((a, r) => a + r.penalty.total, 0).toFixed(2) + '   ' + Object.keys(rs[0].penalty.parts).map(k => `${k} ${sum(k).toFixed(1)}`).join('  '));
   }
   const text = lines.join('\n');
