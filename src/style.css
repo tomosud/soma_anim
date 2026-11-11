@@ -59,3 +59,7 @@ footer { background: var(--panel); border-top: 1px solid var(--line); }
   aside { border-left: 0; border-top: 1px solid var(--line); }
   .sub { display: none; }
 }
+
+#poseBook h3 { font-size: 11px; font-weight: 600; color: #9aa3b2; margin: 8px 0 3px; }
+#poseBook .set { display: flex; flex-wrap: wrap; gap: 4px; }
+#poseBook button { font-size: 11px; padding: 2px 7px; }

@@ -1,0 +1,179 @@
+{
+ "about": "pose book: frames of the reference motion (tools/make_poses.mjs)",
+ "poses": [
+  {
+   "group": "立ち・構え",
+   "label": "立ち",
+   "clip": "standard_idle_c9cccb",
+   "frame": 10
+  },
+  {
+   "group": "立ち・構え",
+   "label": "ボクシングの構え",
+   "clip": "stance_boxing_idle_c9c705",
+   "frame": 20
+  },
+  {
+   "group": "立ち・構え",
+   "label": "格闘の構え",
+   "clip": "stance_male_fight_idle_empty_stance_c9c63b",
+   "frame": 20
+  },
+  {
+   "group": "立ち・構え",
+   "label": "低い構え",
+   "clip": "stance_male_fight_idle_thai_chi_to_open_s_c9c63c",
+   "frame": 52
+  },
+  {
+   "group": "立ち・構え",
+   "label": "しゃがむ",
+   "clip": "crouching_from_standing_position_c9c8ec",
+   "frame": 92
+  },
+  {
+   "group": "立ち・構え",
+   "label": "勝利",
+   "clip": "aj_victory_idle_c9cd99",
+   "frame": 14
+  },
+  {
+   "group": "パンチ",
+   "label": "ジャブ",
+   "clip": "punch_jab_punch_c9c5f7",
+   "frame": 17
+  },
+  {
+   "group": "パンチ",
+   "label": "クロス",
+   "clip": "punch_cross_punch_c9c5f8",
+   "frame": 11
+  },
+  {
+   "group": "パンチ",
+   "label": "ロングジャブ",
+   "clip": "punch_long_head_jab_c9cb18",
+   "frame": 15
+  },
+  {
+   "group": "パンチ",
+   "label": "ボディ",
+   "clip": "punch_mid_body_jab_c9cb16",
+   "frame": 15
+  },
+  {
+   "group": "パンチ",
+   "label": "フック",
+   "clip": "punch_hook_with_the_lead_hand_c9c5f9",
+   "frame": 18
+  },
+  {
+   "group": "パンチ",
+   "label": "アッパー",
+   "clip": "punch_standing_left_uppercut_punch_c9c9c6",
+   "frame": 15
+  },
+  {
+   "group": "パンチ",
+   "label": "アッパーの溜め",
+   "clip": "punch_standing_left_uppercut_punch_c9c9c6",
+   "frame": 8
+  },
+  {
+   "group": "パンチ",
+   "label": "肘打ち",
+   "clip": "punch_male_elbow_punch_c9c61b",
+   "frame": 33
+  },
+  {
+   "group": "パンチ",
+   "label": "振りかぶり",
+   "clip": "punch_cross_punch_c9c5f8",
+   "frame": 4
+  },
+  {
+   "group": "キック",
+   "label": "前蹴り",
+   "clip": "kick_male_front_snap_kick_with_the_lead_c9c61f",
+   "frame": 31
+  },
+  {
+   "group": "キック",
+   "label": "回し蹴り",
+   "clip": "kick_mma_roundhouse_kick_c9cd3a",
+   "frame": 22
+  },
+  {
+   "group": "キック",
+   "label": "ハイキック",
+   "clip": "kick_mma_high_kick_c9cd39",
+   "frame": 19
+  },
+  {
+   "group": "キック",
+   "label": "ミドルキック",
+   "clip": "kick_mma_medium_kick_c9cd38",
+   "frame": 20
+  },
+  {
+   "group": "キック",
+   "label": "ローキック",
+   "clip": "kick_mma_low_kick_c9cd28",
+   "frame": 18
+  },
+  {
+   "group": "キック",
+   "label": "サイドキック",
+   "clip": "kick_mma_side_kick_c9cd27",
+   "frame": 18
+  },
+  {
+   "group": "キック",
+   "label": "突き蹴り",
+   "clip": "kick_male_thrust_kick_with_the_rear_foo_c9c63f",
+   "frame": 28
+  },
+  {
+   "group": "キック",
+   "label": "膝蹴り",
+   "clip": "kick_boxing_illegal_knee_c9c70c",
+   "frame": 29
+  },
+  {
+   "group": "キック",
+   "label": "蹴りの溜め",
+   "clip": "kick_mma_roundhouse_kick_c9cd3a",
+   "frame": 13
+  },
+  {
+   "group": "防御・よけ",
+   "label": "上段ブロック",
+   "clip": "block_high_center_block_c9caee",
+   "frame": 9
+  },
+  {
+   "group": "防御・よけ",
+   "label": "下段ブロック",
+   "clip": "block_low_center_block_c9caf3",
+   "frame": 34
+  },
+  {
+   "group": "防御・よけ",
+   "label": "両腕ガード",
+   "clip": "block_blocking_the_chest_area_with_both__c9c71e",
+   "frame": 52
+  },
+  {
+   "group": "防御・よけ",
+   "label": "下がってよける",
+   "clip": "block_boxing_dodge_retreat_c9c619",
+   "frame": 26
+  },
+  {
+   "group": "防御・よけ",
+   "label": "ダッキング",
+   "clip": "block_boxing_dodge_advance_c9c619",
+   "frame": 47
+  }
+ ]
+}

@@ -5,7 +5,7 @@ import { TransformControls } from 'three/addons/controls/TransformControls.js';
 import * as M from './m4.js';
 import { BnsRig } from './rig.js';
 import { SomaRig, MotionDB } from './motiondb.js';
-import { SomaToManny } from './retarget.js';
+import { SomaToManny, rigHeading } from './retarget.js';
 import { RigFitter } from './fit.js';
 import { Naturalizer } from './natural.js';
 import { Physical } from './physical.js';
@@ -459,6 +459,86 @@ function resetFeet(all = false) {
   flash(all ? 'feetAll' : 'feet');
 }
 
+// ---------------------------------------------------------------- pose book
+let poseBook = [];
+function buildPoseBook(book) {
+  poseBook = book;
+  const box = $('poseBook');
+  box.textContent = '';
+  for (const group of [...new Set(book.map(p => p.group))]) {
+    const h = document.createElement('h3'); h.textContent = group;
+    const set = document.createElement('div'); set.className = 'set';
+    for (const p of book.filter(q => q.group === group)) {
+      const b = document.createElement('button');
+      b.textContent = p.label; b.title = `${p.clip} フレーム ${p.frame}`;
+      // (Shift: the mirror image)
+      b.onclick = e => applyPose(p.label, { mirror: e.shiftKey });
+      b.onmouseenter = e => previewPose(p.label, e.shiftKey);
+      b.onmouseleave = endPreview;
+      set.append(b);
+    }
+    box.append(h, set);
+  }
+}
+
+/** The pose vector a pose of the book gives on this frame: where the character stands and faces stays. */
+function bookPose(label, mirror = false) {
+  const entry = poseBook.find(p => p.label === label);
+  if (!entry || !env) return null;
+  const { db, re, fitter } = env, soma = db.rig;
+  const clip = db.clips.findIndex(c => c.name === entry.clip);
+  if (clip < 0) return null;
+  const here = previewOf ?? currentPose();
+  rig.setVector(here).evaluate();
+  // The pose faces the way the whole-body control faces (the clips all face the same way, whatever the stance),
+  // and stands where the character stands: the feet that are on the floor in it are laid over where those
+  // feet are now, so that going from one pose of the book to the next does not shuffle the feet about.
+  const yaw = M.toEuler(M.rotation(rig.controlWorld('world_ctl')), 'xyz')[1] * M.DEG;
+  const pose = db.pose(clip, entry.frame, mirror);
+  const placed0 = soma.place(pose, yaw, 0, 0), P = soma.positions(placed0);
+  const feet = [['LeftFoot', 'foot_l'], ['RightFoot', 'foot_r']].map(([s, m]) => ({ at: P[soma.index[s]], now: re.toSoma(M.pos(rig.jointWorld(m))) }));
+  const down = feet.filter(f => f.at[1] < soma.ankleHeight + 0.06), use = down.length ? down : feet;
+  const dx = use.reduce((a, f) => a + f.now[0] - f.at[0], 0) / use.length, dz = use.reduce((a, f) => a + f.now[2] - f.at[2], 0) / use.length;
+  rig.setVector(here);
+  fitter.fit(re.targets(soma.place(pose, yaw, dx, dz)));
+  // (poses of an action are caught in mid move: only the floor and the reach of the legs are seen to)
+  const v = physical.fix(rig.getVector(), new Set(), [], 999).vector;
+  // a foot that stands in the pose (the ankle and the ball both near the floor) stands flat
+  rig.setVector(v).evaluate();
+  const stands = ['l', 'r'].map(s => rig.jointWorld('foot_' + s)[13] - physical.floor['foot_' + s] < 3 && rig.jointWorld('ball_' + s)[13] - physical.floor['ball_' + s] < 3);
+  if (stands[0] || stands[1]) {
+    const flat = footReset.apply(v);
+    rig.channelKeys.forEach((k, i) => { const m = /^([LR])_(Foot_trans|Foot_rot|Toe_rot)[.]/.exec(k); if (m && stands[m[1] === 'L' ? 0 : 1]) v[i] = flat[i]; });
+  }
+  return physical.fix(v, new Set(), [], 999).vector;
+}
+
+/** Pointing at a pose of the book shows it on the character; leaving puts the frame's own pose back. */
+let previewOf = null;
+function previewPose(label, mirror) {
+  if (playing || gizmo.dragging) return;
+  if (!previewOf) previewOf = currentPose().slice();
+  const v = bookPose(label, mirror);
+  rig.setVector(v || previewOf).evaluate();
+  syncView();
+}
+function endPreview() {
+  if (!previewOf) return;
+  previewOf = null;
+  showFrame(frame, !!working);
+}
+
+function applyPose(label, { mirror = false } = {}) {
+  const v = bookPose(label, mirror);
+  previewOf = null;
+  if (!v) return false;
+  project.pushUndo();
+  project.setKey(frame, v, []);
+  working = null; rebake(); showFrame(frame);
+  status(`「${label}」をフレーム ${frame} に置きました${mirror ? '（左右反転）' : ''}`);
+  return true;
+}
+
 function flash(id) { const b = $(id); b.classList.add('on'); setTimeout(() => b.classList.remove('on'), 250); }
 
 function download(name, text) {
@@ -478,7 +558,7 @@ function bindUI() {
   $('pickWorld').onclick = () => select('world_ctl');
   $('first').onclick = () => showFrame(0);
   $('frame').onchange = e => showFrame(+e.target.value || 0);
-  $('length').onchange = e => { project.pushUndo(); project.length = Math.max(10, Math.min(2000, +e.target.value || 90)); rebake(); showFrame(Math.min(frame, project.length)); };
+  $('length').onchange = e => { project.pushUndo(); project.length = Math.max(10, Math.min(2000, +e.target.value || 300)); rebake(); showFrame(Math.min(frame, project.length)); };
   $('mode').onchange = e => { project.pushUndo(); project.mode = e.target.value; wantMotionBricks(); rebake(); showFrame(frame); };
   $('regen').onclick = regenerate;
   $('flow').onchange = e => { project.pushUndo(); project.flow = e.target.checked; rebake(); showFrame(frame); };
@@ -492,6 +572,9 @@ function bindUI() {
   $('feet').onclick = () => resetFeet(false);
   $('feetAll').onclick = () => resetFeet(true);
   $('load').onclick = () => $('file').click();
+  $('sample').onclick = async () => {
+    try { const d = await fetch(asset('assets/sample_action.json')).then(r => r.json()); project.pushUndo(); project.fromJSON(d); select(null); frame = 0; afterLoad(); status('サンプルを開きました（Ctrl+Z で前のシーンに戻せます）。Space で再生'); } catch (err) { status('サンプルを開けませんでした: ' + err.message); }
+  };
   $('file').onchange = async e => {
     const f = e.target.files[0];
     if (!f) return;
@@ -631,6 +714,7 @@ async function start() {
     const re = new SomaToManny(rig, soma, cal.joints), fitter = new RigFitter(rig);
     nat = new Naturalizer(rig, db, re, fitter, physical);
     env = { rig, nat, db, re, fitter, physical, start: project.start() };
+    fetch(asset('assets/poses.json')).then(r => r.json()).then(d => buildPoseBook(d.poses)).catch(() => {});
     inb = new Inbetweener(rig, db, re, fitter);
     db.track();
     rebake(); showFrame(frame);
@@ -642,6 +726,6 @@ async function start() {
     status('参考モーションを読み込めませんでした（単純な補間で動きます）');
     wait(null);
   }
-  window.app = { rig, project, actions, select, showFrame, commit, naturalizeNow, render: () => renderer.render(scene, camera), get frame() { return frame; }, get nat() { return nat; }, get env() { return env; }, startPose: () => project.start(), shot, get inb() { return inb; }, get mb() { return mb; } };
+  window.app = { rig, project, actions, select, showFrame, commit, naturalizeNow, render: () => renderer.render(scene, camera), get frame() { return frame; }, get nat() { return nat; }, get env() { return env; }, startPose: () => project.start(), shot, applyPose, get poseBook() { return poseBook; }, get inb() { return inb; }, get mb() { return mb; } };
 }
 start().catch(e => { console.error(e); wait(null); status('起動に失敗: ' + e.message); });

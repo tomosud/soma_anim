@@ -5,7 +5,7 @@ export class Project {
   constructor(rig) {
     this.rig = rig;
     this.fps = 30;
-    this.length = 90;
+    this.length = 300;
     this.mode = 'mb'; // 'mb' = MotionBricks, 'ease' = plain interpolation
     this.flow = false; // MotionBricks: pass through the keys (true) or arrive and hold (false)
     this.todo = [];
@@ -121,7 +121,7 @@ export class Project {
 
   fromJSON(d) {
     if (d.format !== 'soma_anim') throw Error('soma_anim のファイルではありません');
-    this.fps = d.fps || 30; this.length = d.length || 90; this.mode = d.mode === 'ease' ? 'ease' : 'mb'; this.flow = !!d.flow;
+    this.fps = d.fps || 30; this.length = d.length || 300; this.mode = d.mode === 'ease' ? 'ease' : 'mb'; this.flow = !!d.flow;
     this.keys = d.keys.map(k => ({ frame: k.frame, pins: new Set(k.pins || []), v: this.rig.vectorFromValues(k.values) }));
     this.sort();
   }
@@ -148,7 +148,7 @@ function plain(a, b, n) {
 
 /** A new scene: the rest pose at frame 0. */
 export function newScene(project) {
-  project.length = 90;
+  project.length = 300;
   project.keys = [];
   project.setKey(0, project.start());
 }

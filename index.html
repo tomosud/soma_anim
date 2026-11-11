@@ -27,6 +27,7 @@
   <button id="redo" title="やり直す (Ctrl+Y)">↷</button>
   <button id="save" title="プロジェクトを保存 (.json)">保存</button>
   <button id="load" title="プロジェクトを開く">開く</button>
+  <button id="sample" title="サンプルのアクション（300 フレーム）を開く。ポーズの見本だけで組んだもの">サンプル</button>
   <button id="export" title="全フレームのコントロール値を書き出す（Maya の Rig_Manny_BNS 用）">Maya 用に書き出し</button>
   <button id="exportFbx" title="Manny の骨のアニメーションを FBX で書き出す（メッシュなし。Maya・Unreal 用）">FBX 書き出し</button>
   <input id="file" type="file" accept=".json" hidden>
@@ -50,6 +51,12 @@
       </div>
       <div id="pins" class="chips"></div>
       <div id="match" class="note"></div>
+    </section>
+
+    <section>
+      <h2>ポーズの見本</h2>
+      <div class="note">マウスを乗せるとそのポーズを試しに表示し、クリックすると今のフレームのキーにします（立っている場所と向きはそのまま、着いている足は今の位置に合わせる）。Shift を押しながらだと左右反転。</div>
+      <div id="poseBook"></div>
     </section>
 
     <section>
@@ -88,7 +95,7 @@
     <button id="prevKey" title="前のキー (,)">◀◆</button>
     <button id="play" title="再生 / 停止 (Space)">▶</button>
     <button id="nextKey" title="次のキー (.)">◆▶</button>
-    <span class="frame">フレーム <input id="frame" type="number" min="0" value="0"> / <input id="length" type="number" min="10" max="2000" value="90"></span>
+    <span class="frame">フレーム <input id="frame" type="number" min="0" value="0"> / <input id="length" type="number" min="10" max="2000" value="300"></span>
     <span class="sep"></span>
     <button id="addKey" title="今のポーズをキーにする (K)">◆ キー</button>
     <button id="delKey" title="このフレームのキーを消す (Delete)">削除</button>
