@@ -459,6 +459,39 @@ function resetFeet(all = false) {
   flash(all ? 'feetAll' : 'feet');
 }
 
+/**
+ * The whole-body control brought under the character (under the hips, on the floor) without changing the pose:
+ * the controls that sit in it are moved back by as much.  A pose placed by its feet, or hips dragged away, leave
+ * the ring behind - and it is the ring that moves and turns the whole body.
+ */
+function recenter(v) {
+  rig.setVector(v).evaluate();
+  const p = rig.jointWorld('pelvis'), w = rig.controlWorld('world_ctl');
+  const d = [p[12] - w[12], 0, p[14] - w[14]];
+  if (Math.hypot(d[0], d[2]) < 0.05) return v;
+  // where every control that sits in the ring is now: it is put back there after the ring has moved
+  // (a few passes: some of them hang on parts of the body that the others move)
+  const held = rig.controls.filter(c => c.parentControl === 'world_ctl' && c.hasT).map(c => [c, M.pos(c.node.world)]);
+  const ring = rig.node('world_ctl'), dl = M.xdir(d, M.inv(ring.parent.world));
+  for (const ch of ['tx', 'ty', 'tz']) rig.set('world_ctl.' + ch, rig.get('world_ctl.' + ch) + dl['xyz'.indexOf(ch[1])]);
+  for (let pass = 0; pass < 4; pass++) {
+    rig.evaluate();
+    for (const [c, at] of held) {
+      const t = M.sub(M.xpoint(at, M.inv(c.node.parent.world)), c.node.restT);
+      for (const ch of c.channels) if (ch[0] === 't') rig.set(c.name + '.' + ch, t['xyz'.indexOf(ch[1])]);
+    }
+  }
+  rig.evaluate();
+  return rig.getVector();
+}
+
+function recenterAll() {
+  project.pushUndo();
+  for (const k of project.keys) k.v = recenter(k.v);
+  working = null; rebake(); showFrame(frame);
+  status('全身の輪を、すべてのキーで体の真下に置き直しました（ポーズは変わりません）');
+}
+
 // ---------------------------------------------------------------- pose book
 let poseBook = [];
 function buildPoseBook(book) {
@@ -510,7 +543,7 @@ function bookPose(label, mirror = false) {
     const flat = footReset.apply(v);
     rig.channelKeys.forEach((k, i) => { const m = /^([LR])_(Foot_trans|Foot_rot|Toe_rot)[.]/.exec(k); if (m && stands[m[1] === 'L' ? 0 : 1]) v[i] = flat[i]; });
   }
-  return physical.fix(v, new Set(), [], 999).vector;
+  return recenter(physical.fix(v, new Set(), [], 999).vector);
 }
 
 /** Pointing at a pose of the book shows it on the character; leaving puts the frame's own pose back. */
@@ -572,6 +605,7 @@ function bindUI() {
   $('exportFbx').onclick = () => { const text = writeFbx(rig, project.baked, project.fps); showFrame(frame, !!working); download('soma_anim.fbx', text); };
   $('feet').onclick = () => resetFeet(false);
   $('feetAll').onclick = () => resetFeet(true);
+  $('recenter').onclick = recenterAll;
   $('load').onclick = () => $('file').click();
   $('sample').onclick = async () => {
     try { const d = await fetch(asset('assets/sample_action.json')).then(r => r.json()); project.pushUndo(); project.fromJSON(d); select(null); frame = 0; afterLoad(); status('サンプルを開きました（Ctrl+Z で前のシーンに戻せます）。Space で再生'); } catch (err) { status('サンプルを開けませんでした: ' + err.message); }
@@ -727,6 +761,6 @@ async function start() {
     status('参考モーションを読み込めませんでした（単純な補間で動きます）');
     wait(null);
   }
-  window.app = { rig, project, actions, select, showFrame, commit, naturalizeNow, render: () => renderer.render(scene, camera), get frame() { return frame; }, get nat() { return nat; }, get env() { return env; }, startPose: () => project.start(), shot, applyPose, get poseBook() { return poseBook; }, get inb() { return inb; }, get mb() { return mb; } };
+  window.app = { rig, project, actions, select, showFrame, commit, naturalizeNow, render: () => renderer.render(scene, camera), get frame() { return frame; }, get nat() { return nat; }, get env() { return env; }, startPose: () => project.start(), shot, recenter, applyPose, get poseBook() { return poseBook; }, get inb() { return inb; }, get mb() { return mb; } };
 }
 start().catch(e => { console.error(e); wait(null); status('起動に失敗: ' + e.message); });
