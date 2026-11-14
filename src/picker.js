@@ -2,6 +2,7 @@
 // Buttons select controls, set the switches (follow, the direction of the elbows and knees, the wrist and
 // ankle), drive the automatic shoulder, and run the pose tools of the page.
 const NS = 'http://www.w3.org/2000/svg';
+const MIN_TEXT = 11;
 const rgb = c => `rgba(${c[0]},${c[1]},${c[2]},${(c[3] ?? 255) / 255})`;
 
 /**
@@ -81,6 +82,16 @@ export class Picker {
       this.nodes.push({ it, g, shape, bar });
     }
     box.append(svg);
+    // The words at least MIN_TEXT px on the screen (the picture of the Maya rig is drawn for a bigger window): a word
+    // that is then wider than its button is pressed to the button's width.
+    const min = MIN_TEXT / unit;
+    for (const { it, g } of this.nodes) {
+      const t = g.querySelector('text');
+      if (!t || !it.text) continue;
+      t.setAttribute('font-size', Math.max(it.textSize || 5, min * (it.kind === 'label' ? 0.85 : 1)));
+      const room = it.kind === 'label' ? null : it.size[0] - 2;
+      if (room && t.getComputedTextLength() > room) { t.setAttribute('textLength', room); t.setAttribute('lengthAdjust', 'spacingAndGlyphs'); }
+    }
     this.refresh();
   }
 

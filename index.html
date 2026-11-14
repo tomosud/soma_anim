@@ -47,6 +47,35 @@
   </div>
 
   <aside>
+    <nav class="tabs">
+      <button data-tab="pose" class="on" title="キーのポーズを作る: 自動補正とコントロール">ポーズ</button>
+      <button data-tab="book" title="ポーズの見本（クリックで今のフレームのキーにする）">見本</button>
+      <button data-tab="show" title="表示の切り替え">表示</button>
+    </nav>
+    <div class="pane" data-pane="pose">
+    <section>
+      <h2>コントロール</h2>
+      <div id="selName" class="selname">（未選択）</div>
+      <div id="gizmoMode" class="pick" hidden>
+        <button id="modeMove" title="移動 (W)">移動</button>
+        <button id="modeTurn" title="回転 (E)">回転</button>
+      </div>
+      <div id="channels"></div>
+      <div class="buttons">
+        <button id="resetSel">選択をリセット</button>
+        <button id="resetAll" title="ポーズを初期状態に戻す。全身の位置と向き（world_ctl）はそのまま">ポーズをリセット</button>
+        <button id="recenter" title="全身の輪（world_ctl）を、すべてのキーで体の真下に置き直す。ポーズと動きは変わらない">輪を体の下へ</button>
+      </div>
+      <details class="more">
+        <summary>コントロールの一覧（ピッカーでも選べます）</summary>
+        <div class="pick">
+          <button id="pickWorld" title="全身をまとめて動かす・回すコントロール">全身</button>
+          <button data-pick="All_Trans_ctrl">移動系</button>
+          <button data-pick="All_Rot_ctrl">回転系</button>
+        </div>
+        <div id="list" class="list"></div>
+      </details>
+    </section>
     <section>
       <h2>ポーズの自動補正（このフレームのキーごと）</h2>
       <label class="row" title="このキーのポーズを動かしたとき、自然なポーズに直す。キーごとに覚えます（新しいキーはオン）"><input id="auto" type="checkbox" checked> 動かしたら自然なポーズに直す</label>
@@ -62,34 +91,15 @@
       <div id="pins" class="chips"></div>
       <div id="match" class="note"></div>
     </section>
-
+    </div>
+    <div class="pane" data-pane="book" hidden>
     <section>
       <h2>ポーズの見本</h2>
       <div class="note">マウスを乗せるとそのポーズを試しに表示し、クリックすると今のフレームのキーにします（立っている場所と向きはそのまま、着いている足は今の位置に合わせる）。Shift を押しながらだと左右反転。</div>
       <div id="poseBook"></div>
     </section>
-
-    <section>
-      <h2>コントロール</h2>
-      <div id="selName" class="selname">（未選択）</div>
-      <div id="gizmoMode" class="pick" hidden>
-        <button id="modeMove" title="移動 (W)">移動</button>
-        <button id="modeTurn" title="回転 (E)">回転</button>
-      </div>
-      <div id="channels"></div>
-      <div class="buttons">
-        <button id="resetSel">選択をリセット</button>
-        <button id="resetAll" title="ポーズを初期状態に戻す。全身の位置と向き（world_ctl）はそのまま">ポーズをリセット</button>
-        <button id="recenter" title="全身の輪（world_ctl）を、すべてのキーで体の真下に置き直す。ポーズと動きは変わらない">輪を体の下へ</button>
-      </div>
-      <div class="pick">
-        <button id="pickWorld" title="全身をまとめて動かす・回すコントロール">全身</button>
-        <button data-pick="All_Trans_ctrl">移動系</button>
-        <button data-pick="All_Rot_ctrl">回転系</button>
-      </div>
-      <div id="list" class="list"></div>
-    </section>
-
+    </div>
+    <div class="pane" data-pane="show" hidden>
     <section>
       <h2>表示</h2>
       <label class="row"><input id="showCtl" type="checkbox" checked> コントロール</label>
@@ -97,6 +107,7 @@
       <label class="row"><input id="showMesh" type="checkbox" checked> メッシュ</label>
       <label class="row"><input id="showGhost" type="checkbox" checked> 前後のキーを薄く表示</label>
     </section>
+    </div>
   </aside>
 </main>
 

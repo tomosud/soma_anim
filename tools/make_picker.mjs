@@ -14,7 +14,10 @@ const OPS = {
   'posetools.reset_hand': 'resetHand', 'posetools.copy_hand': 'copyHand', 'posetools.paste_hand': 'pasteHand', 'posetools.hand_to_other': 'handToOther',
   'posetools.key_attr': 'key',
 };
-const LEAVE_TEXT = /IK\/FK|マウスを乗せると|右クリック|押して切替/;
+// (the pose tools of the whole body - reset, mirror, copy, paste - are on the bar of the page already: left out, the
+//  picture is a fifth shorter and its buttons that much bigger)
+const LEAVE_TEXT = /IK\/FK|マウスを乗せると|右クリック|押して切替|^ポーズ（/;
+const LEAVE_OPS = new Set(['resetPose', 'mirror', 'copy', 'paste']);
 
 const r1 = x => Math.round(x * 10) / 10;
 // (lines about the Maya tools - the right-click menu, the graph editor - are not for this page)
@@ -33,7 +36,7 @@ const tabs = src.tabs.map(tab => {
       const name = o && OPS[o.module.replace(/^bns_rig\./, '') + '.' + o.function];
       if (!name) continue;
       op = name;
-      if (name === 'mirror' && !/'flip'/.test(o.args)) continue; // (left to right / right to left: not on this page)
+      if (LEAVE_OPS.has(name)) continue;
       const side = /'([LR])'/.exec(o.args || '');
       if (side) op += ':' + side[1];
     }

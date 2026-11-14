@@ -610,12 +610,12 @@ function handOp(op, side) {
 //  remembered in this browser; the width follows the picture)
 const PICKER_SIZES = [0.45, 0.65, 0.85, 1];
 let pickerHeight = 420;
-const pickerLook = (() => { try { return { w: 2, fold: false, ...JSON.parse(localStorage.getItem('soma_anim.picker') || '{}') }; } catch { return { w: 2, fold: false }; } })();
+const pickerLook = (() => { try { return { w: 3, fold: false, ...JSON.parse(localStorage.getItem('soma_anim.picker') || '{}') }; } catch { return { w: 3, fold: false }; } })();
 function layoutPicker() {
   const p = $('pickerPanel');
   pickerLook.w = Math.max(0, Math.min(PICKER_SIZES.length - 1, pickerLook.w | 0));
-  // (the title bar and the tabs above the picture: about 70 px)
-  pickerHeight = Math.max(160, $('view').clientHeight * PICKER_SIZES[pickerLook.w] - 90);
+  // (the title bar and the tabs above the picture, the margins of the panel: about 100 px)
+  pickerHeight = Math.max(160, $('view').clientHeight * PICKER_SIZES[pickerLook.w] - 100);
   picker?.setHeight(pickerHeight);
   p.classList.toggle('folded', !!pickerLook.fold);
   $('pickerFold').textContent = (pickerLook.fold ? '▸' : '▾') + ' ピッカー';
@@ -748,6 +748,15 @@ function download(name, text) {
 }
 
 function bindUI() {
+  // (the tabs of the side panel; the one open is remembered in this browser)
+  const tabs = [...document.querySelectorAll('aside .tabs button')];
+  const openTab = name => {
+    for (const b of tabs) b.classList.toggle('on', b.dataset.tab === name);
+    for (const p of document.querySelectorAll('aside .pane')) p.hidden = p.dataset.pane !== name;
+    try { localStorage.setItem('soma_anim.tab', name); } catch { /* (not kept: fine) */ }
+  };
+  for (const b of tabs) b.onclick = () => openTab(b.dataset.tab);
+  try { const t = localStorage.getItem('soma_anim.tab'); if (t && tabs.some(b => b.dataset.tab === t)) openTab(t); } catch { /* (the first tab) */ }
   for (const id of ['addKey', 'delKey', 'copy', 'mirror', 'undo', 'redo', 'play', 'prevKey', 'nextKey', 'resetSel', 'resetAll', 'unpin']) $(id).onclick = () => actions[id]();
   $('paste').onclick = () => actions.paste(false);
   $('pasteMirror').onclick = () => actions.paste(true);
