@@ -117,10 +117,12 @@ async function load({ url, ep, batch }) {
     }
   }
   if (!session) {
+    // (on the CPU a batch costs as much as its requests one by one: one at a time)
+    batch = 1;
     session = await ort.InferenceSession.create(bytes, { executionProviders: ['wasm'], graphOptimizationLevel: 'all', freeDimensionOverrides: { batch_size: batch } });
     backend = 'WASM (CPU)';
   }
-  post('ready', { backend, warnings: errors });
+  post('ready', { backend, batch, warnings: errors });
 }
 
 async function run({ id, n, inputs }) {

@@ -8,7 +8,7 @@ SOMA Anim を続けるときは、まずこれを読む。仕組みの説明は 
 - リポ: `tomosud/soma_anim`（公開）。push は Alta で: `node D:/Work/Tool/to_gitdesktop_alta/tools/alta-mcp/alta-mcp.mjs call git.push '{"path":"D:/Work/Tool/soma_anim"}'`
 - gh の既定アカウントは会社側なので、tomosud の API は `GH_TOKEN="$(gh auth token --user tomosud)" gh ...`
 - 手元: `D:\Work\.claude\launch.json` の `soma-anim`（`node tools/serve.mjs 8931`）。Browser pane の `preview_start {name: "soma-anim"}`
-- 試験: `node --test tests/`（99 件）
+- 試験: `node --test tests/`（166 件）
 
 ## 本人の方針（守ること）
 
@@ -36,7 +36,7 @@ SOMA Anim を続けるときは、まずこれを読む。仕組みの説明は 
 
 - Maya リグのセッション（「IK/FK切り替え機能の検討」`local_778e9c6c-6190-41a7-a3b1-c151f7f7cfb0`）から受け取った資料は `rigspec/` に置いた。**このリポには上げない**（本人の指示 2026-11-14、`.gitignore`）。リグを変えたら、あちらに `export_spec.py` とピッカーの書き出しを頼み、`rigspec/` に置き直して `assets/bns_rig.json` にコピー、`node tools/make_picker.mjs`、`node tools/make_retarget_cal.mjs`、`node tools/make_start_pose.mjs`。分からない点はあちらに聞く。
 - IK/FK は IK に固定（本人の指示）。IK の中の切り替えは使う（`src/switches.js`）。照合は IK のケース 132 件が全件 0.01 cm 未満。
-- 残り: 骨格 → コントロール値（`src/fit.js`）が 1 回 10 ms（前は 2.6 ms。評価の回数が増えた）。Maya での一致の確認（`tools/maya_check.py`）は新しいリグでは未実施。
+- 骨格 → コントロール値（`src/fit.js`）は 1 回 1.5 ms（2026-11-14。リグの評価を依存の順にして 10 → 1.5 ms、結果は 15 桁まで同じ。`node tools/bench_rig.mjs`）。Maya での一致の確認（`tools/maya_check.py`）は新しいリグでは未実施。
 
 ### 2. 動きの質の残り
 
@@ -44,6 +44,12 @@ SOMA Anim を続けるときは、まずこれを読む。仕組みの説明は 
 - 歩きの前傾・歩幅、後ろ歩きの歩幅のむら、しゃがんだままの移動（立ち上がる）、横歩き。
 - キーの間で全身の輪（world_ctl）が体から最大 14 cm ずれる（キーの上では 0）。
 - 手で直したキーは見本の「前後の動き」（`key.ref`）を失う。
+
+## 速さ（2026-11-14）
+
+- サンプル 23 区間の生成: 8.8 秒 → 3.1 秒。ランダムな 9 シーン（`tools/plainsweep.js`）: 150 秒 → 56 秒、通過モード 6 シーン: 116 秒 → 45 秒。採点の平均は同じ（0.283 → 0.281、0.248 → 0.244）。
+- 内訳（変更前のサンプル）: 当てはめ 4.6 秒、推論 2.9 秒、採点 0.3 秒。いまは推論（1 回約 90 ms、8 件まとめても同じ）が大半。
+- まとめて推論すると数値がわずかに変わる（fp16）ので、区間の結果は前と完全には同じでない。品質は上の通り同じ。
 
 ## 仕組みの要点（README に無いこと）
 

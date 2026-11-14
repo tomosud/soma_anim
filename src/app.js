@@ -439,7 +439,7 @@ const actions = {
   },
   undo() { if (project.undo()) { afterLoad(); wantMotionBricks(); } },
   redo() { if (project.redo()) { afterLoad(); wantMotionBricks(); } },
-  play() { playing = !playing; $('play').textContent = playing ? '⏸' : '▶'; last = 0; acc = 0; refreshGhosts(); },
+  play() { playing = !playing; $('play').textContent = playing ? '⏸' : '▶'; last = 0; acc = 0; refreshGhosts(); $('pickerPanel').hidden = playing; },
   prevKey() { const k = [...project.keys].reverse().find(k => k.frame < frame); showFrame(k ? k.frame : 0); },
   nextKey() { const k = project.keys.find(k => k.frame > frame); if (k) showFrame(k.frame); },
   resetSel() {
@@ -581,6 +581,27 @@ function handOp(op, side) {
   project.setKey(frame, v, null, 'keep');
   working = null; rebake(); showFrame(frame);
 }
+
+// (the panel over the view: how much of the height of the view it takes, and whether it is folded, are
+//  remembered in this browser; the width follows the picture)
+const PICKER_SIZES = [0.45, 0.65, 0.85, 1];
+const pickerLook = (() => { try { return { w: 2, fold: false, ...JSON.parse(localStorage.getItem('soma_anim.picker') || '{}') }; } catch { return { w: 2, fold: false }; } })();
+function layoutPicker() {
+  const p = $('pickerPanel');
+  pickerLook.w = Math.max(0, Math.min(PICKER_SIZES.length - 1, pickerLook.w | 0));
+  // (the title bar and the tabs above the picture: about 70 px)
+  p.style.setProperty('--pick-h', Math.max(160, $('view').clientHeight * PICKER_SIZES[pickerLook.w] - 90) + 'px');
+  p.classList.toggle('folded', !!pickerLook.fold);
+  $('pickerFold').textContent = (pickerLook.fold ? '▸' : '▾') + ' ピッカー';
+  $('pickerSmaller').disabled = pickerLook.w === 0; $('pickerBigger').disabled = pickerLook.w === PICKER_SIZES.length - 1;
+  try { localStorage.setItem('soma_anim.picker', JSON.stringify(pickerLook)); } catch { /* (not kept: fine) */ }
+}
+function foldPicker() { pickerLook.fold = !pickerLook.fold; layoutPicker(); }
+$('pickerFold').onclick = foldPicker;
+$('pickerSmaller').onclick = () => { pickerLook.w--; layoutPicker(); };
+$('pickerBigger').onclick = () => { pickerLook.w++; layoutPicker(); };
+layoutPicker();
+addEventListener('resize', layoutPicker);
 
 function buildPicker(data) {
   picker = new Picker($('picker'), data, {
@@ -749,6 +770,7 @@ function bindUI() {
     else if (k === 'n') run(naturalizeNow);
     else if (k === 'r') run(regenerate);
     else if (k === 'g') run(() => resetFeet(false));
+    else if (k === 'p' && !mod) run(foldPicker);
     else if (k === 'arrowleft') run(() => showFrame(frame - 1));
     else if (k === 'arrowright') run(() => showFrame(frame + 1));
     else if (k === ',') run(actions.prevKey);

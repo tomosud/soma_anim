@@ -34,7 +34,17 @@
 </header>
 
 <main>
-  <div id="view"><canvas id="gl"></canvas><div id="status">読み込み中…</div><div id="hint"></div></div>
+  <div id="view"><canvas id="gl"></canvas><div id="status">読み込み中…</div><div id="hint"></div>
+    <div id="pickerPanel" class="float">
+      <div class="head">
+        <button id="pickerFold" title="ピッカーをたたむ / 開く (P)">▾ ピッカー</button>
+        <span class="grow"></span>
+        <button id="pickerSmaller" title="小さく">−</button>
+        <button id="pickerBigger" title="大きく">＋</button>
+      </div>
+      <div id="picker"></div>
+    </div>
+  </div>
 
   <aside>
     <section>
@@ -57,11 +67,6 @@
       <h2>ポーズの見本</h2>
       <div class="note">マウスを乗せるとそのポーズを試しに表示し、クリックすると今のフレームのキーにします（立っている場所と向きはそのまま、着いている足は今の位置に合わせる）。Shift を押しながらだと左右反転。</div>
       <div id="poseBook"></div>
-    </section>
-
-    <section>
-      <h2>ピッカー</h2>
-      <div id="picker"></div>
     </section>
 
     <section>

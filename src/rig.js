@@ -286,18 +286,46 @@ export class BnsRig {
    * order and a number of passes that settles a strongly posed rig.
    */
   _order() {
+    // The nodes in the order of what they read (every target of a constraint counts, whatever the options make
+    // of its weight): a node that is in no loop is evaluated once, after everything it reads.  The loops (strongly
+    // connected parts of the graph) are passed over until they settle, before what hangs on them.
+    const deps = n => [
+      n.inherits ? n.parent : null, ...n.cons.flatMap(c => [...c.targets, c.upObject]), n.pairBlend?.from, n.neckTwist?.aim,
+      n.twist?.src, n.ik?.handle, n.ik?.pv, n.ikMid?.start,
+    ].filter(Boolean);
+    // (Tarjan: the strongly connected parts come out with what they read before them)
+    const low = new Map(), num = new Map(), stack = [], on = new Set(), parts = [];
+    let count = 0;
+    const visit = n => {
+      num.set(n, count); low.set(n, count); count++; stack.push(n); on.add(n);
+      for (const d of deps(n)) {
+        if (!num.has(d)) { visit(d); low.set(n, Math.min(low.get(n), low.get(d))); } else if (on.has(d)) low.set(n, Math.min(low.get(n), num.get(d)));
+      }
+      if (low.get(n) === num.get(n)) {
+        const part = [];
+        let m;
+        do { m = stack.pop(); on.delete(m); part.push(m); } while (m !== n);
+        parts.push(part.sort((a, b) => a.index - b.index));
+      }
+    };
+    for (const n of this.nodes) if (!num.has(n)) visit(n);
+    this.steps = parts.map(p => (p.length > 1 ? p : p[0]));
+    this.loops = parts.filter(p => p.length > 1);
+
     this.passes = 12;
     const probe = {};
     let s = 1;
     for (const c of this.controls) for (const ch of c.channels) { s = -s; probe[c.name + '.' + ch] = s * (ch[0] === 't' ? 6 : 9); }
     const saved = this.getValues();
     this.setValues(probe);
-    this._run(40);
+    this.passes = 40;
+    this.evaluate();
     const settled = this.nodes.map(n => n.world.slice());
-    for (const n of this.nodes) { n.world = n.restWorld.slice(); }
     let need = 40;
     for (let p = 1; p <= 40; p++) {
-      this._pass();
+      for (const n of this.nodes) { n.world = n.restWorld.slice(); }
+      this.passes = p;
+      this.evaluate();
       let err = 0;
       for (const n of this.nodes) for (let i = 0; i < 16; i++) err = Math.max(err, Math.abs(n.world[i] - settled[n.index][i]));
       if (err < 1e-9) { need = p; break; }
@@ -307,7 +335,12 @@ export class BnsRig {
     this.evaluate();
   }
 
-  _run(passes) { for (let i = 0; i < passes; i++) this._pass(); }
+  _run(passes) {
+    for (const s of this.steps) {
+      if (!Array.isArray(s)) { this._node(s); continue; }
+      for (let i = 0; i < passes; i++) for (const n of s) this._node(n);
+    }
+  }
 
   evaluate() {
     this._expr();
@@ -324,10 +357,6 @@ export class BnsRig {
   _expr() {
     this.exprValue.clear();
     for (const f of this.expr) f(this);
-  }
-
-  _pass() {
-    for (const n of this.nodes) this._node(n);
   }
 
   _node(n) {

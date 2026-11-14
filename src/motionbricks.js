@@ -14,6 +14,9 @@ export const FPS = 30, NJ = 30, FEAT = 366, MAX_FRAMES = 64;
 const MB_REV = '54fc563aeaaf819a753d72cc9fdc6713989cdd43';
 export const MODEL_URL = `https://media.githubusercontent.com/media/NVlabs/motionbricks/${MB_REV}/motionbricks/assets/onnx/soma/mmm_v6_soma_fp16.onnx`;
 const ID = [0, 0, 0, 1];
+// Requests run in batches of this many on the GPU (measured on a desktop GPU: a batch of 8 takes as long as one,
+// ~90 ms); on the CPU one at a time (the worker says which: this.batch).
+export const BATCH = 8;
 
 function emptyBatch(n) {
   return {
@@ -23,8 +26,8 @@ function emptyBatch(n) {
   };
 }
 
-/** Four context poses, 1-4 target poses, the allowed token counts -> tensors (request 0 of a batch of 1). */
-function encode(soma, batch, context, targets, tokens) {
+/** Four context poses, 1-4 target poses, the allowed token counts -> tensors (request `slot` of the batch). */
+function encode(soma, batch, slot, context, targets, tokens) {
   const nT = targets.length, poses = [...context, ...targets];
   while (poses.length < 8) poses.push(targets[nT - 1]);
   const world = poses.map(p => soma.positions(p));
@@ -33,7 +36,9 @@ function encode(soma, batch, context, targets, tokens) {
   const alignQ = qyaw(yaw), inv = qinv(alignQ), origin = [last[0][0], 0, last[0][2]];
   const aligned = world.map(P => P.map(v => qrot(inv, [v[0] - origin[0], v[1] - origin[1], v[2] - origin[2]])));
   const headings = aligned.map(P => soma.heading(P));
-  const g = batch.global_root_values, l = batch.local_root_values, lp = batch.local_poses;
+  const at = (a, size) => a.subarray(slot * 8 * size, (slot + 1) * 8 * size);
+  const g = at(batch.global_root_values, 5), l = at(batch.local_root_values, 4), lp = at(batch.local_poses, 267);
+  const hasG = at(batch.has_global_root_values, 1), hasLP = at(batch.has_local_poses, 1), hasL = at(batch.has_local_root_values, 1);
   for (let f = 0; f < 8; f++) {
     const next = f === 3 ? f : Math.min(f + 1, 7);
     const hip = aligned[f][0], nhip = aligned[next][0];
@@ -48,12 +53,12 @@ function encode(soma, batch, context, targets, tokens) {
       lp.set([xa[0], xa[1], xa[2], ya[0], ya[1], ya[2]], base + 87 + j * 6);
     }
     const given = f < 4 + nT ? 1 : 0;
-    batch.has_global_root_values[f] = given;
+    hasG[f] = given;
     // a target marked `free` says only where the hips are and which way they face; the body is the model's
-    batch.has_local_poses[f] = given && !(f >= 4 && poses[f].free) ? 1 : 0;
-    batch.has_local_root_values[f] = (f === 3 || f === 4 + nT - 1) ? 0 : given;
+    hasLP[f] = given && !(f >= 4 && poses[f].free) ? 1 : 0;
+    hasL[f] = (f === 3 || f === 4 + nT - 1) ? 0 : given;
   }
-  for (let i = 0; i < 11; i++) batch.allowed_pred_num_tokens[i] = tokens.includes(6 + i) ? 1 : 0;
+  for (let i = 0; i < 11; i++) batch.allowed_pred_num_tokens[slot * 11 + i] = tokens.includes(6 + i) ? 1 : 0;
   return { origin, q: alignQ };
 }
 
@@ -130,6 +135,7 @@ export class MotionBricks {
     this.waiting = new Map();
     this.serial = 0;
     this.chain = Promise.resolve();
+    this.queue = [];
   }
 
   /** Download (or read from the cache) the model and start the session.  onProgress({phase, loaded, total}). */
@@ -142,8 +148,8 @@ export class MotionBricks {
         if (data.type === 'progress') onProgress(data);
         else if (data.type === 'ready') {
           // (the first run compiles the shaders - a few seconds: done here, behind the wait screen)
-          this.backend = data.backend;
-          const warm = emptyBatch(1); warm.allowed_pred_num_tokens[2] = 1;
+          this.backend = data.backend; this.batch = data.batch || 1;
+          const warm = emptyBatch(this.batch); for (let i = 0; i < this.batch; i++) warm.allowed_pred_num_tokens[i * 11 + 2] = 1;
           this._run(warm).catch(() => {}).then(() => { this.state = 'ready'; resolve(data.backend); });
         }
         else if (data.type === 'result') { this.waiting.get(data.id)?.resolve(data); this.waiting.delete(data.id); }
@@ -153,7 +159,7 @@ export class MotionBricks {
       };
       w.onerror = e => { this.state = 'failed'; reject(Error(e.message || 'worker failed')); };
       const ep = new URLSearchParams(location.search).get('ep');
-      w.postMessage({ type: 'load', url, ep, batch: 1 });
+      w.postMessage({ type: 'load', url, ep, batch: BATCH });
     });
     return this.loading;
   }
@@ -163,19 +169,41 @@ export class MotionBricks {
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => { this.waiting.delete(id); reject(Error('MotionBricks did not answer in 30 s')); }, 30000);
       this.waiting.set(id, { resolve: d => { clearTimeout(timer); resolve(d); }, reject: e => { clearTimeout(timer); reject(e); } });
-      this.worker.postMessage({ type: 'run', id, n: 1, inputs: batch });
+      this.worker.postMessage({ type: 'run', id, n: this.batch, inputs: batch });
     });
   }
 
   /**
    * One generation, as the model gives it: context = four SOMA poses, targets = one to four, tokens = the
    * allowed token counts.  Returns {frames (the three boundary frames at each end removed), tokens, ms}.
+   * Requests made at about the same time (the ways of making one stretch, tried side by side) go to the model
+   * together, in one batch.
    */
-  async raw(context, targets, tokens) {
-    const batch = emptyBatch(1);
-    const align = encode(this.soma, batch, context, targets, tokens);
-    const out = await this._run(batch);
-    return { frames: decode(this.soma, out.motions, out.tokens[0], align), tokens: out.tokens[0], ms: out.ms };
+  raw(context, targets, tokens) {
+    return new Promise((resolve, reject) => {
+      this.queue.push({ context, targets, tokens, resolve, reject });
+      if (!this.flushing) { this.flushing = true; setTimeout(() => this._flush(), 0); }
+    });
+  }
+
+  async _flush() {
+    while (this.queue.length) {
+      const B = this.batch, jobs = this.queue.splice(0, B), batch = emptyBatch(B);
+      // (an empty slot asks for the shortest motion; its answer is not read)
+      for (let i = jobs.length; i < B; i++) batch.allowed_pred_num_tokens[i * 11] = 1;
+      const aligns = jobs.map((j, i) => encode(this.soma, batch, i, j.context, j.targets, j.tokens));
+      let out;
+      try { out = await this._run(batch); } catch (e) { for (const j of jobs) j.reject(e); continue; }
+      const size = out.motions.length / B;
+      jobs.forEach((j, i) => {
+        try {
+          j.resolve({ frames: decode(this.soma, out.motions.subarray(i * size, (i + 1) * size), out.tokens[i], aligns[i]), tokens: out.tokens[i], ms: out.ms / jobs.length });
+        } catch (e) { j.reject(e); }
+      });
+      // (the answers just handed out ask their next pieces right away: wait a turn so that they share a batch)
+      await new Promise(r => setTimeout(r, 0));
+    }
+    this.flushing = false;
   }
 
   /**
@@ -262,14 +290,19 @@ export class MotionBricks {
    * One way of making the stretch.  plan: {kind: 'single', tokens: [...]} or {kind: 'walk'}.
    * Returns the SOMA frames (frame 0 = at A ... the last at B) and how long the model took.
    */
-  async _attempt(plan, a, b, c, n, ctx, nextLen, after = null) {
+  async _attempt(plan, a, b, c, n, ctx, nextLen, after = null, stop = null) {
     const soma = this.soma;
     // (plan.plain: the key as a pose to stop in, without the frames around it; plan.free: only where the hips
     //  end up and which way they face - the body is the model's, and is brought onto key B afterwards)
     const goal = plan.free ? [{ ...b, free: true }] : after && !plan.plain ? [b, ...after] : c && nextLen > 1 ? [b, lerpPose(b, c, 1 / nextLen)] : [b];
     if (plan.plain) ctx = [ctx[3], ctx[3], ctx[3], ctx[3]];
     let ms = 0;
-    const one = async (context, targets, tokens) => { const r = await this.raw(context, targets, tokens); ms += r.ms; if (r.frames.length < 4) throw Error('MotionBricks returned no motion'); return r.frames; };
+    const one = async (context, targets, tokens) => {
+      if (stop?.done) throw Error('not needed');
+      const r = await this.raw(context, targets, tokens); ms += r.ms;
+      if (r.frames.length < 4) throw Error('MotionBricks returned no motion');
+      return r.frames;
+    };
     if (plan.kind === 'single') {
       const part = await one(ctx, goal, plan.tokens);
       return { frames: correctEndpoints(soma, part, ctx[3], b), ms };
@@ -400,10 +433,18 @@ export class MotionBricks {
     const tries = [];
     // (a move whose feet slide is not taken as it is: the other ways are tried too, and the best is kept)
     const good = (score, plan) => score.total < (plan.kind === 'walk' ? 0.9 : 0.6) && (plan.kind === 'walk' || score.parts.slide < 0.6);
+    // (all the ways of a list are asked at once - the model answers a batch as fast as one request - and then
+    //  looked at in the order of preference, as if they had been made one after another; once one is taken,
+    //  the rest stop asking)
     const tryAll = async list => {
-      for (const plan of list) {
-        let r;
-        try { r = await this._attempt(plan, a, b, c, n, ctx, nextLen, after); } catch (e) { if (plan.kind === 'single' && !best && !tried) throw e; continue; }
+      const stop = { done: false };
+      const runs = list.map(plan => this._attempt(plan, a, b, c, n, ctx, nextLen, after, stop).then(r => ({ r }), e => ({ e })));
+      try { return await pick(list, runs); } finally { stop.done = true; }
+    };
+    const pick = async (list, runs) => {
+      for (let i = 0; i < list.length; i++) {
+        const plan = list[i], { r, e } = await runs[i];
+        if (e) { if (plan.kind === 'single' && !best && !tried) throw e; continue; }
         tried++; ms += r.ms;
         const made = this._place(A, B, n, r.frames, true);
         const score = this._score(A, B, made.frames, plan.kind === 'walk' ? (r.run ? 'run' : 'walk') : '');
