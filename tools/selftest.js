@@ -58,6 +58,13 @@ export const STRESS = {
   'slow hand raise over 90 f': [[0, {}, []], [90, { 'R_Hand_trans.ty': 70, 'R_Hand_trans.tz': 25 }, ['R_Hand_trans']]],
   'crouch over 70 f, then walk 1.5 m in 30 f': [[0, {}, []], [70, { 'Hip_trans.ty': -30 }, ['Hip_trans']], [100, { 'world_ctl.tz': 150 }, []]],
   'short hop of the whole body (40 cm in 14 f)': [[0, {}, []], [14, { 'world_ctl.tz': 40 }, []]],
+  // (where the in-between used to give up and fall back to the plain one)
+  'too fast: 3 m in 15 f': [[0, {}, []], [15, { 'world_ctl.tz': 300 }, []]],
+  'far: 8 m in 110 f': [[0, {}, []], [110, { 'world_ctl.tz': 800 }, []]],
+  'knee up and hips down, back over 53 f': [[0, {}, []], [72, { 'Hip_trans.ty': -30, 'R_Foot_trans.ty': 45, 'R_Foot_trans.tz': 35, 'R_knee_pv.tz': 40 }, ['Hip_trans', 'R_Foot_trans', 'R_knee_pv']], [125, { 'Hip_trans.ty': 30, 'R_Foot_trans.ty': -45, 'R_Foot_trans.tz': -35, 'R_knee_pv.tz': -40 }, ['Hip_trans', 'R_Foot_trans', 'R_knee_pv']]],
+  'knees out, deep squat, 53 f': [[0, {}, []], [72, { 'R_Hand_trans.ty': 30 }, ['R_Hand_trans']], [125, { 'Hip_trans.ty': -55, 'L_knee_pv.tx': 50, 'R_knee_pv.tx': -50 }, ['Hip_trans', 'L_knee_pv', 'R_knee_pv']]],
+  'two far-apart poses (squat, hands up -> lunge turned) in 30 f': [[0, { 'Hip_trans.ty': -45, 'R_Hand_trans.ty': 70, 'L_Hand_trans.ty': 70 }, ['Hip_trans', 'R_Hand_trans', 'L_Hand_trans']], [30, { 'Hip_trans.ty': 25, 'R_Hand_trans.ty': -90, 'L_Hand_trans.ty': -70, 'L_Foot_trans.tz': 60, 'Spine_trans.tz': 25, 'world_ctl.ry': 120 }, ['Hip_trans', 'R_Hand_trans', 'L_Hand_trans', 'L_Foot_trans', 'Spine_trans']]],
+  'leg high to the side and lean, 40 f': [[0, {}, []], [40, { 'R_Foot_trans.ty': 60, 'R_Foot_trans.tx': -50, 'Spine_trans.tx': 30 }, ['R_Foot_trans', 'Spine_trans']], [80, 'start', []]],
 };
 
 export const METHODS = { ease: { mode: 'ease' }, mb: { mode: 'mb', flow: false }, 'mb flow': { mode: 'mb', flow: true } };
@@ -133,6 +140,10 @@ export async function run({ set = SCENARIOS, scenarios = Object.keys(set), metho
     const sum = k => rs.reduce((a, r) => a + r.penalty.parts[k], 0);
     const avg = k => (rs.reduce((a, r) => a + r.metrics.live[k], 0) / rs.length).toFixed(2);
     lines.push(pad('MOTION ' + method, 34) + `still ${avg('still')}  snap ${avg('snap')}  arc ${avg('arc')}  overlap ${avg('overlap')}   (plain interpolation: snap 1.5, arc ~0, overlap ~0)`);
+    // (stretches the model did not make: given up for the plain in-between, and why)
+    const segs = rs.flatMap(r => r.segments.map(m => ({ r, m })));
+    const plainSegs = segs.filter(x => !x.m || x.m.clip !== 'MotionBricks');
+    if (method !== 'ease') lines.push(pad('PLAIN ' + method, 34) + `${plainSegs.length} of ${segs.length} stretches` + (plainSegs.length ? '   ' + plainSegs.map(x => `[${x.r.scenario}] ${x.m ? x.m.why || x.m.reason?.code || '' : 'short gap'}`).join('; ') : ''));
     lines.push(pad('TOTAL ' + method, 34) + 'penalty ' + rs.reduce((a, r) => a + r.penalty.total, 0).toFixed(2) + '   ' + Object.keys(rs[0].penalty.parts).map(k => `${k} ${sum(k).toFixed(1)}`).join('  '));
   }
   const text = lines.join('\n');
