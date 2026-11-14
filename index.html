@@ -20,7 +20,7 @@
   <button id="loadSkip" hidden>待たずに始める（準備ができるまで単純な補間）</button></div></div>
 <header>
   <h1 id="title">SOMA Anim</h1>
-  <span class="sub">キーポーズ → 自然なポーズ → モーションマッチングで中割り（Manny + BNS リグ）</span>
+  <span class="sub">キーポーズ → 自然なポーズ → 生成モデルで中割り</span>
   <span class="grow"></span>
   <button id="newScene" title="新しいシーンを始める（Ctrl+Z で戻せます）">新規</button>
   <button id="undo" title="元に戻す (Ctrl+Z)">↶</button>
@@ -28,8 +28,8 @@
   <button id="save" title="プロジェクトを保存 (.json)">保存</button>
   <button id="load" title="プロジェクトを開く">開く</button>
   <button id="sample" title="サンプルのアクション（300 フレーム）を開く。ポーズの見本だけで組んだもの">サンプル</button>
-  <button id="export" title="全フレームのコントロール値を書き出す（Maya の Rig_Manny_BNS 用）">Maya 用に書き出し</button>
-  <button id="exportFbx" title="Manny の骨のアニメーションを FBX で書き出す（メッシュなし。Maya・Unreal 用）">FBX 書き出し</button>
+  <button id="export" title="全フレームのコントロール値を書き出す（Maya の同じリグ用）">Maya 用に書き出し</button>
+  <button id="exportFbx" title="骨のアニメーションを FBX で書き出す（メッシュなし。Maya・Unreal 用）">FBX 書き出し</button>
   <input id="file" type="file" accept=".json" hidden>
 </header>
 
