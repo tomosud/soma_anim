@@ -198,7 +198,8 @@ function refreshControlLook() {
   const pins = key ? key.pins : new Set();
   for (const [name, v] of ctlView) {
     const finger = v.c.group === 'finger';
-    v.g.visible = $('showCtl').checked && (!finger || $('showFinger').checked);
+    // (while playing only the character: the controls come back when it stops)
+    v.g.visible = !playing && $('showCtl').checked && (!finger || $('showFinger').checked);
     v.mat.color.setHex(name === selected ? 0xffffff : pins.has(name) ? 0x6fe3a0 : colorOf(v.c));
     v.mat.opacity = name === selected ? 1 : 0.85;
   }
@@ -552,7 +553,7 @@ const actions = {
   },
   undo() { if (project.undo()) { afterLoad(); wantMotionBricks(); } },
   redo() { if (project.redo()) { afterLoad(); wantMotionBricks(); } },
-  play() { playing = !playing; $('play').textContent = playing ? '⏸' : '▶'; last = 0; acc = 0; refreshGhosts(); $('pickerPanel').hidden = playing; if (project.styled) showFrame(frame); },
+  play() { playing = !playing; $('play').textContent = playing ? '⏸' : '▶'; last = 0; acc = 0; refreshGhosts(); refreshControlLook(); gizmo.getHelper().visible = !playing; gizmo.enabled = !playing; $('pickerPanel').hidden = playing; dirty = true; if (project.styled) showFrame(frame); },
   prevKey() { const k = [...project.keys].reverse().find(k => k.frame < frame); showFrame(k ? k.frame : 0); },
   nextKey() { const k = project.keys.find(k => k.frame > frame); if (k) showFrame(k.frame); },
   resetSel() {
