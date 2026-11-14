@@ -11,6 +11,9 @@ const rgb = c => `rgba(${c[0]},${c[1]},${c[2]},${(c[3] ?? 255) / 255})`;
 export class Picker {
   constructor(box, data, api) {
     this.box = box; this.data = data; this.api = api; this.tab = 0;
+    // (every tab at the same scale - a button is as big on one tab as on the other: the tallest tab fits `height`)
+    this.frames = data.tabs.map(t => frameOf(t.items));
+    this.height = 420;
     this.visible = new Map();
     for (const t of data.tabs) for (const it of t.items) if (it.visible) this.visible.set(it, compile(it.visible));
     this.build();
@@ -30,12 +33,12 @@ export class Picker {
     });
     box.append(bar);
     const items = this.data.tabs[this.tab].items;
-    // the frame of the picture: everything any button can cover
-    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-    for (const it of items) { const w = it.size[0] / 2, h = it.size[1] / 2; x0 = Math.min(x0, it.x - w); x1 = Math.max(x1, it.x + w); y0 = Math.min(y0, it.y - h); y1 = Math.max(y1, it.y + h); }
+    const [x0, x1, y0, y1] = this.frames[this.tab];
     const pad = 4, svg = document.createElementNS(NS, 'svg');
     svg.setAttribute('viewBox', `${x0 - pad} ${-y1 - pad} ${x1 - x0 + 2 * pad} ${y1 - y0 + 2 * pad}`);
     svg.setAttribute('class', 'picker');
+    const unit = this.height / Math.max(...this.frames.map(f => f[3] - f[2] + 2 * pad));
+    svg.style.width = (x1 - x0 + 2 * pad) * unit + 'px'; svg.style.height = (y1 - y0 + 2 * pad) * unit + 'px';
     this.nodes = [];
     for (const it of items) {
       const g = document.createElementNS(NS, 'g');
@@ -101,6 +104,9 @@ export class Picker {
     }
   }
 
+  /** The height (px) the tallest tab is drawn at. */
+  setHeight(px) { if (Math.abs(px - this.height) < 1) return; this.height = px; this.build(); }
+
   /** Show / hide by the options, and mark the selected control. */
   refresh() {
     if (!this.nodes) return;
@@ -120,6 +126,13 @@ export class Picker {
       }
     }
   }
+}
+
+/** [x0, x1, y0, y1]: everything a button of the tab covers. */
+function frameOf(items) {
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (const it of items) { const w = it.size[0] / 2, h = it.size[1] / 2; x0 = Math.min(x0, it.x - w); x1 = Math.max(x1, it.x + w); y0 = Math.min(y0, it.y - h); y1 = Math.max(y1, it.y + h); }
+  return [x0, x1, y0, y1];
 }
 
 /** "((L_Hand_rot.pvFollow == 0) * L_Hand_rot.IKFK)" -> (get) => number */

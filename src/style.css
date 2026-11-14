@@ -79,6 +79,6 @@ footer { background: var(--panel); border-top: 1px solid var(--line); }
 #pickerPanel.folded #pickerSmaller, #pickerPanel.folded #pickerBigger { display: none; }
 #picker { overflow: auto; padding: 0 6px 6px; min-height: 0; }
 #picker .pick { margin-top: 0; }
-#picker svg.picker { height: var(--pick-h, 420px); width: auto; max-width: 100%; display: block; margin-top: 6px; user-select: none; }
+#picker svg.picker { display: block; margin-top: 6px; user-select: none; }
 #picker svg text { pointer-events: none; font-family: system-ui, sans-serif; }
 #channels select.option, #channels input.option { width: 100%; }

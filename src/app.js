@@ -609,12 +609,14 @@ function handOp(op, side) {
 // (the panel over the view: how much of the height of the view it takes, and whether it is folded, are
 //  remembered in this browser; the width follows the picture)
 const PICKER_SIZES = [0.45, 0.65, 0.85, 1];
+let pickerHeight = 420;
 const pickerLook = (() => { try { return { w: 2, fold: false, ...JSON.parse(localStorage.getItem('soma_anim.picker') || '{}') }; } catch { return { w: 2, fold: false }; } })();
 function layoutPicker() {
   const p = $('pickerPanel');
   pickerLook.w = Math.max(0, Math.min(PICKER_SIZES.length - 1, pickerLook.w | 0));
   // (the title bar and the tabs above the picture: about 70 px)
-  p.style.setProperty('--pick-h', Math.max(160, $('view').clientHeight * PICKER_SIZES[pickerLook.w] - 90) + 'px');
+  pickerHeight = Math.max(160, $('view').clientHeight * PICKER_SIZES[pickerLook.w] - 90);
+  picker?.setHeight(pickerHeight);
   p.classList.toggle('folded', !!pickerLook.fold);
   $('pickerFold').textContent = (pickerLook.fold ? '▸' : '▾') + ' ピッカー';
   $('pickerSmaller').disabled = pickerLook.w === 0; $('pickerBigger').disabled = pickerLook.w === PICKER_SIZES.length - 1;
@@ -648,6 +650,7 @@ function buildPicker(data) {
       else handOp(op, side);
     },
   });
+  picker.setHeight(pickerHeight);
 }
 
 // ---------------------------------------------------------------- pose book

@@ -48,6 +48,8 @@ const tabs = src.tabs.map(tab => {
       ...(vis ? { visible: vis } : {}), ...(it.tooltip ? { tip: tip(it.tooltip) } : {}),
     });
   }
+  // (the two hands side by side make a wide picture; the panel is tall: the left hand goes under the right one)
+  if (tab.name === 'Fingers') for (const it of items) if (it.x > 1) { it.x = r1(it.x - 192); it.y = r1(it.y - 168); }
   return { name: tab.name === 'Body' ? '体' : tab.name === 'Fingers' ? '指' : tab.name, items };
 });
 writeFileSync(new URL('../assets/picker.json', import.meta.url), JSON.stringify({ about: 'picker of the page (tools/make_picker.mjs)', tabs }));
