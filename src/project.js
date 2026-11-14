@@ -1,6 +1,7 @@
 // The animation: whole-body key poses on one timeline, and the frames baked from them.
 // A key is {frame, v, pins}: v is the pose vector (one number per rig channel), pins the controls the
-// animator placed by hand (natural posing never moves those).
+// animator placed by hand (natural posing never moves those).  natural / feet: the pose of this key is made
+// natural when it is edited, and its feet are put on the floor and held there (both on unless turned off).
 export class Project {
   constructor(rig) {
     this.rig = rig;
@@ -31,8 +32,20 @@ export class Project {
    */
   setKey(frame, v, pins = null, ref = null) {
     let k = this.keyAt(frame);
-    if (!k) { k = { frame, v: v.slice(), pins: new Set(pins || []), ref: ref === 'keep' ? null : ref }; this.keys.push(k); this.sort(); } else { k.v = v.slice(); if (pins) k.pins = new Set(pins); if (ref !== 'keep') k.ref = ref; }
+    if (!k) { k = { frame, v: v.slice(), pins: new Set(pins || []), ref: ref === 'keep' ? null : ref, natural: this.newFlags?.natural !== false, feet: this.newFlags?.feet !== false }; this.keys.push(k); this.sort(); } else { k.v = v.slice(); if (pins) k.pins = new Set(pins); if (ref !== 'keep') k.ref = ref; }
     return k;
+  }
+
+  /** Move keys together by `delta` frames (Shift + drag on the timeline: a key and every key after it). */
+  moveKeys(keys, delta) {
+    if (!delta || !keys.length) return false;
+    const moving = new Set(keys), first = Math.min(...keys.map(k => k.frame)) + delta, last = Math.max(...keys.map(k => k.frame)) + delta;
+    if (first < 0 || last > this.length) return false;
+    // (they may not pass over a key that stays)
+    for (const k of this.keys) if (!moving.has(k) && k.frame >= first && k.frame <= last) return false;
+    for (const k of keys) k.frame += delta;
+    this.sort();
+    return true;
   }
 
   removeKey(frame) { this.keys = this.keys.filter(k => k.frame !== frame); }
@@ -58,7 +71,10 @@ export class Project {
     for (let f = keys[keys.length - 1].frame; f <= n; f++) out[f] = keys[keys.length - 1].v;
     const used = new Set();
     const useMb = this.mode === 'mb' && inb && mb && mb.state === 'ready';
-    let prevId = '';
+    // (ctx: how the motion arrives at key a - the last frames of the stretch before, null from standing.  A stretch
+    //  made from about the same arrival is kept: an edit or a move of a key remakes the stretches around it, and
+    //  the ones after only as far as the change carries on)
+    let ctx = null, ctxKnown = true;
     for (let i = 0; i + 1 < keys.length; i++) {
       const a = keys[i], b = keys[i + 1], len = b.frame - a.frame;
       let seg = null, pending = false, reason = null;
@@ -67,15 +83,20 @@ export class Project {
       if (useMb && len >= 5) {
         // (the model continues from the motion that arrives at this key, so a stretch depends on the one before)
         const next = this.flow ? keys[i + 2] : null;
-        const id = 'mb|' + len + '|' + sig(a.v) + '|' + sig(b.v) + '|' + refSig(a.ref) + refSig(b.ref) + '|' + hash(prevId) + (this.flow ? '|flow|' + (next ? sig(next.v) + '|' + (next.frame - b.frame) : '') : '');
+        const id = 'mb|' + len + '|' + sig(a.v) + '|' + sig(b.v) + '|' + refSig(a.ref) + refSig(b.ref) + (this.flow ? '|flow|' + (next ? sig(next.v) + '|' + (next.frame - b.frame) : '') : '');
         seg = this.cache.get(id);
         used.add(id);
-        if (seg && seg.failed) { if (seg.failed < 3) { this.cache.delete(id); this.tries.set(id, seg.failed); } else reason = { code: 'failed', error: seg.error }; seg = null; }
-        if (!this.cache.has(id)) { this.todo.push({ id, a: a.v, b: b.v, len, prevId, opts: { flow: this.flow, next: next?.v ?? null, nextLen: next ? next.frame - b.frame : 0, refA: a.ref || null, refB: b.ref || null } }); pending = true; }
-        prevId = id;
+        const gaveUp = seg?.failed >= 3;
+        if (seg && seg.failed) { if (!gaveUp) { this.cache.delete(id); this.tries.set(id, seg.failed); } else reason = { code: 'failed', error: seg.error }; seg = null; }
+        // (made from another arrival: shown until it is made again - or kept, once the stretch before is made and
+        //  arrives as it did)
+        const fresh = seg && ctxKnown && mb.sameContext(seg.ctx ?? null, ctx);
+        if (!fresh && !gaveUp) { this.todo.push({ id, a: a.v, b: b.v, len, ctx: ctxKnown ? ctx : undefined, opts: { flow: this.flow, next: next?.v ?? null, nextLen: next ? next.frame - b.frame : 0, refA: a.ref || null, refB: b.ref || null } }); pending = true; }
+        ctxKnown = !pending;
+        ctx = pending ? null : seg?.tail ?? null;
         if (seg?.match?.reason) reason = seg.match.reason;
       } else {
-        prevId = '';
+        ctx = null; ctxKnown = true;
         // (why the model is not asked: what the timeline tells the animator)
         if (this.mode === 'mb') reason = len < 5 ? { code: 'short', n: len } : mb?.state === 'failed' ? { code: 'unavailable' } : { code: 'loading' };
       }
@@ -101,9 +122,13 @@ export class Project {
   async fill(inb, mb, onUpdate) {
     const version = this.fillVersion = (this.fillVersion || 0) + 1;
     while (version === this.fillVersion && this.todo.length) {
+      // (nothing is made while the animator drags a control: the drag goes first)
+      while (mb.hold?.()) await new Promise(r => setTimeout(r, 30));
+      if (version !== this.fillVersion) return;
       const t = this.todo[0];
+      // (the first of the list always has the stretch before it made: its arrival is known)
       let r;
-      try { r = await mb.generate(t.a, t.b, t.len, this.cache.get(t.prevId)?.tail ?? null, t.opts); } catch (e) {
+      try { r = await mb.generate(t.a, t.b, t.len, t.ctx ?? null, t.opts); r.ctx = t.ctx ?? null; } catch (e) {
         console.error(e);
         r = { failed: (this.tries.get(t.id) || 0) + 1, error: String(e?.message ?? e) };
       }
@@ -126,14 +151,14 @@ export class Project {
   toJSON() {
     return {
       format: 'soma_anim', version: 1, rig: 'Rig_Manny_BNS', fps: this.fps, length: this.length, mode: this.mode, flow: this.flow,
-      keys: this.keys.map(k => ({ frame: k.frame, pins: [...k.pins], ...(k.ref ? { ref: k.ref } : {}), values: this.rig.valuesFromVector(k.v) })),
+      keys: this.keys.map(k => ({ frame: k.frame, pins: [...k.pins], ...(k.ref ? { ref: k.ref } : {}), ...(k.natural === false ? { natural: false } : {}), ...(k.feet === false ? { feet: false } : {}), values: this.rig.valuesFromVector(k.v) })),
     };
   }
 
   fromJSON(d) {
     if (d.format !== 'soma_anim') throw Error('soma_anim のファイルではありません');
     this.fps = d.fps || 30; this.length = d.length || 300; this.mode = d.mode === 'ease' ? 'ease' : 'mb'; this.flow = !!d.flow;
-    this.keys = d.keys.map(k => ({ frame: k.frame, pins: new Set(k.pins || []), ref: k.ref || null, v: this.rig.vectorFromValues(k.values) }));
+    this.keys = d.keys.map(k => ({ frame: k.frame, pins: new Set(k.pins || []), ref: k.ref || null, natural: k.natural !== false, feet: k.feet !== false, v: this.rig.vectorFromValues(k.values) }));
     this.sort();
   }
 

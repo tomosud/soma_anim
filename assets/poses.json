@@ -174,6 +174,204 @@
    "label": "ダッキング",
    "clip": "block_boxing_dodge_advance_c9c619",
    "frame": 47
+  },
+  {
+   "group": "ジャンプ",
+   "label": "踏み切りの溜め",
+   "clip": "jump_idle",
+   "frame": 10
+  },
+  {
+   "group": "ジャンプ",
+   "label": "跳び上がる",
+   "clip": "jump_idle",
+   "frame": 16
+  },
+  {
+   "group": "ジャンプ",
+   "label": "ジャンプの頂点",
+   "clip": "jump_idle",
+   "frame": 23
+  },
+  {
+   "group": "ジャンプ",
+   "label": "着地",
+   "clip": "jump_idle",
+   "frame": 40
+  },
+  {
+   "group": "ジャンプ",
+   "label": "喜びのジャンプ",
+   "clip": "jump_joy",
+   "frame": 25
+  },
+  {
+   "group": "ジャンプ",
+   "label": "その場で跳ぶ",
+   "clip": "jump_place",
+   "frame": 31
+  },
+  {
+   "group": "ジャンプ",
+   "label": "バク宙の踏み切り",
+   "clip": "backflip",
+   "frame": 10
+  },
+  {
+   "group": "ジャンプ",
+   "label": "バク宙（逆さま）",
+   "clip": "backflip",
+   "frame": 35
+  },
+  {
+   "group": "ジャンプ",
+   "label": "前宙の踏み切り",
+   "clip": "running_forward_flip",
+   "frame": 8
+  },
+  {
+   "group": "ジャンプ",
+   "label": "前宙（逆さま）",
+   "clip": "running_forward_flip",
+   "frame": 17
+  },
+  {
+   "group": "倒れる・寝る",
+   "label": "後ろに倒れかける",
+   "clip": "fall_dying_falling_backward_c9cdb3",
+   "frame": 14
+  },
+  {
+   "group": "倒れる・寝る",
+   "label": "前に倒れかける",
+   "clip": "fall_dying_falling_forward_c9cdb2",
+   "frame": 22
+  },
+  {
+   "group": "倒れる・寝る",
+   "label": "つまずく",
+   "clip": "tripping_forward_while_walking_c9c776",
+   "frame": 36
+  },
+  {
+   "group": "倒れる・寝る",
+   "label": "足を滑らせる",
+   "clip": "hit_slip_and_fall_backwards_c9c8fe",
+   "frame": 33
+  },
+  {
+   "group": "倒れる・寝る",
+   "label": "尻もち",
+   "clip": "hit_slip_and_fall_backwards_c9c8fe",
+   "frame": 90
+  },
+  {
+   "group": "倒れる・寝る",
+   "label": "仰向け",
+   "clip": "hit_knocked_out_falling_to_back_c9c725",
+   "frame": 120
+  },
+  {
+   "group": "倒れる・寝る",
+   "label": "うつ伏せ",
+   "clip": "hit_knocked_out_falling_to_stomach_c9c721",
+   "frame": 140
+  },
+  {
+   "group": "倒れる・寝る",
+   "label": "起き上がる途中",
+   "clip": "getup_getting_up_from_back_c9c727",
+   "frame": 130
+  },
+  {
+   "group": "倒れる・寝る",
+   "label": "手をついてしゃがむ",
+   "clip": "standing_from_crouched_hands_on_grou_c9c804",
+   "frame": 10
+  },
+  {
+   "group": "倒れる・寝る",
+   "label": "寝ている",
+   "clip": "sleeping_deeply_c9ccd4",
+   "frame": 100
+  },
+  {
+   "group": "日常",
+   "label": "歩く",
+   "clip": "standard_walk_c9ccc2",
+   "frame": 12
+  },
+  {
+   "group": "日常",
+   "label": "走る",
+   "clip": "running_forward_c9ceee",
+   "frame": 15
+  },
+  {
+   "group": "日常",
+   "label": "こっそり歩く",
+   "clip": "sneaking_forward_quickly_c9c8c6",
+   "frame": 20
+  },
+  {
+   "group": "日常",
+   "label": "手を振る",
+   "clip": "intercept_and_wave_to_stop_c9c8c0",
+   "frame": 20
+  },
+  {
+   "group": "日常",
+   "label": "指さす",
+   "clip": "pointing_onward_charge_c9c773",
+   "frame": 56
+  },
+  {
+   "group": "日常",
+   "label": "親指を立てる",
+   "clip": "giving_thumbs_up_while_standing_c9c7a1",
+   "frame": 30
+  },
+  {
+   "group": "日常",
+   "label": "考える",
+   "clip": "thinking_while_standing_c9c990",
+   "frame": 50
+  },
+  {
+   "group": "日常",
+   "label": "肩をすくめる",
+   "clip": "shoulder_shrug_c9c695",
+   "frame": 22
+  },
+  {
+   "group": "日常",
+   "label": "手を伸ばす",
+   "clip": "reach_out",
+   "frame": 108
+  },
+  {
+   "group": "日常",
+   "label": "遠くを見る",
+   "clip": "looking_with_hand_shading_eyes_c9c862",
+   "frame": 50
+  },
+  {
+   "group": "日常",
+   "label": "水を飲む",
+   "clip": "stopping_to_drink_from_drinking_foun_c9c9f2",
+   "frame": 120
+  },
+  {
+   "group": "日常",
+   "label": "のぞき込む",
+   "clip": "crouch_looking_around_corner_c9cc0b",
+   "frame": 30
+  },
+  {
+   "group": "日常",
+   "label": "大喜び",
+   "clip": "big_vegas_victory_idle_c9cd95",
+   "frame": 22
   }
  ]
 }

@@ -1,5 +1,5 @@
 // The timeline: one row of whole-body keys.  Drag on the ruler to scrub, drag a key to move it
-// (Alt + drag copies it).  The band between two keys says how the in-between was made - and, where it is the
+// (Alt + drag copies it, Shift + drag moves it and every key after it).  The band between two keys says how the in-between was made - and, where it is the
 // plain in-between, why (hover for the whole reason, click to see it in the status line).
 import { text as whyText, line as whyLine } from './why.js';
 export class Timeline {
@@ -51,7 +51,7 @@ export class Timeline {
     const seg = k ? null : this.segmentAt(x, y);
     if (seg?.reason || seg?.match?.warn) this.api.explain?.(this.describe(seg));
     if (k) {
-      this.drag = { key: k, started: false, copy: e.altKey, from: k.frame };
+      this.drag = { key: k, started: false, copy: e.altKey, from: k.frame, after: e.shiftKey && !e.altKey ? this.project.keys.filter(o => o.frame >= k.frame) : null };
       this.api.seek(k.frame);
     } else {
       this.drag = { scrub: true };
@@ -76,7 +76,7 @@ export class Timeline {
       this.api.beforeMove();
       if (d.copy) { d.key = this.project.setKey(f, d.key.v, d.key.pins); this.api.seek(f); this.draw(); return; }
     }
-    if (this.project.moveKey(d.key, f)) this.api.seek(f), this.draw();
+    if (d.after ? this.project.moveKeys(d.after, f - d.key.frame) : this.project.moveKey(d.key, f)) this.api.seek(f), this.draw();
   }
 
   up() {

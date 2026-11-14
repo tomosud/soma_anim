@@ -48,9 +48,9 @@
 
   <aside>
     <section>
-      <h2>ポーズの自動補正</h2>
-      <label class="row"><input id="auto" type="checkbox" checked> 動かしたら自然なポーズに直す</label>
-      <label class="row"><input id="lockFeet" type="checkbox" checked> 足は今の位置に留める</label>
+      <h2>ポーズの自動補正（このフレームのキーごと）</h2>
+      <label class="row" title="このキーのポーズを動かしたとき、自然なポーズに直す。キーごとに覚えます（新しいキーはオン）"><input id="auto" type="checkbox" checked> 動かしたら自然なポーズに直す</label>
+      <label class="row" title="このキーの足を床に着け、今の位置に留める。ジャンプ・倒れるなどのキーはオフにすると、見本のポーズが空中・寝た姿勢のまま置かれます。キーごとに覚えます（新しいキーはオン）"><input id="lockFeet" type="checkbox" checked> 足を床に着けて留める</label>
       <label class="row">強さ <input id="strength" type="range" min="0" max="1" step="0.05" value="0.8"><span id="strengthV">80%</span></label>
       <label class="row" title="人が保てないポーズを直す: 重心を足の上へ、手足が届くように体を寄せる、足を床の上へ"><input id="balance" type="checkbox" checked> バランスと届く範囲を直す</label>
       <div class="buttons">

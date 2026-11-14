@@ -150,11 +150,15 @@ function syncProxy() {
 function currentPose() { return working ?? project.pose(frame); }
 
 function showFrame(f, keepWorking = false) {
-  frame = Math.max(0, Math.min(project.length, Math.round(f)));
+  const to = Math.max(0, Math.min(project.length, Math.round(f)));
+  // (on another frame a new key starts with both checks on again)
+  if (to !== frame) { looseFlags.natural = true; looseFlags.feet = true; }
+  frame = to;
   if (!keepWorking) working = null;
   rig.setVector(currentPose()).evaluate();
   syncView(); syncProxy(); refreshPanel(); refreshGhosts();
   picker?.refresh();
+  showFlags();
   $('frame').value = frame;
   timeline.draw();
 }
@@ -190,7 +194,7 @@ const plainLine = () => { const n = project.segments.filter(s => s.reason && !s.
  */
 function wantMotionBricks() {
   if (!inb || project.mode !== 'mb') { wait(null); return; }
-  if (!mb) mb = new MotionBricks(inb);
+  if (!mb) { mb = new MotionBricks(inb); mb.hold = () => gizmo.dragging; }
   if (mb.state !== 'idle') { if (mb.state !== 'loading') wait(null); return; }
   const mbytes = x => (x / 1048576).toFixed(0);
   let skipped = false;
@@ -205,21 +209,36 @@ function wantMotionBricks() {
     .catch(e => { console.error(e); wait(null); status('MotionBricks を使えませんでした（単純な補間で中割りします）: ' + e.message); });
 }
 
+// The two checks of the posing panel are those of the key on this frame (each key has its own; a new key has
+// them on).  On a frame with no key they are what the key made there gets.
+let looseFlags = { natural: true, feet: true };
+const flagsHere = () => project.keyAt(frame) ?? looseFlags;
+const naturalHere = () => flagsHere().natural !== false;
+const feetHere = (key = project.keyAt(frame)) => (key ?? looseFlags).feet !== false;
+function showFlags() { $('auto').checked = naturalHere(); $('lockFeet').checked = feetHere(); }
+function setFlag(name, on) {
+  const key = project.keyAt(frame);
+  if (!key) { looseFlags[name] = on; return; }
+  project.pushUndo();
+  key[name] = on;
+  status(`フレーム ${frame} のキー: ${name === 'natural' ? '自然なポーズに直す' : '足を床に着けて留める'}を${on ? 'オン' : 'オフ'}にしました`);
+}
+
 function effectivePins(key) {
   const p = new Set(key.pins);
-  if ($('lockFeet').checked) for (const n of FOOT_PINS) p.add(n);
+  if (feetHere(key)) for (const n of FOOT_PINS) p.add(n);
   return p;
 }
 
 /** What stays where it is in the world during an edit: the edited controls and the feet (locked, or placed by hand). */
 function heldFor(key, touched) {
   const h = new Set(touched);
-  for (const n of FOOT_PINS) if ($('lockFeet').checked || key?.pins.has(n)) h.add(n);
+  for (const n of FOOT_PINS) if (feetHere(key) || key?.pins.has(n)) h.add(n);
   return h;
 }
 
 /** The rig holds an edited pose: make it the key of this frame. */
-function commit(touched, { natural = $('auto').checked, before = null } = {}) {
+function commit(touched, { natural = naturalHere(), before = null } = {}) {
   // (the pose before the edit: the body follows from it)
   before = before ?? dragStart ?? project.pose(frame);
   dragStart = null;
@@ -227,7 +246,7 @@ function commit(touched, { natural = $('auto').checked, before = null } = {}) {
   project.pushUndo();
   // (moving the whole body, or a finger, changes nothing about the pose of the body)
   const posed = touched.some(n => n !== 'world_ctl' && rig.controlByName.get(n)?.group !== 'finger');
-  const key = project.setKey(frame, edited, null, posed ? null : 'keep');
+  const key = (project.setKey(frame, edited, null, posed ? null : 'keep'));
   for (const n of touched) key.pins.add(n);
   if (natural && nat && posed) {
     const r = nat.naturalize(key.v, key.pins, +$('strength').value, { before, touched, held: heldFor(key, touched), balance: $('balance').checked });
@@ -289,13 +308,16 @@ function setGizmoMode(mode) {
 
 gizmo.addEventListener('dragging-changed', e => {
   orbit.enabled = !e.value;
+  if (!e.value && dragDue) dragUpdate(true); // (the last move before the drop)
   if (e.value) { working = rig.getVector(); dragStart = working.slice(); moved = false; } else if (selected && moved) { commit([selected]); } else { working = null; dragStart = null; }
 });
 
-let moved = false, dragStart = null;
-gizmo.addEventListener('objectChange', () => {
-  if (!selected) return;
-  moved = true;
+let moved = false, dragStart = null, dragDue = false;
+// (the pointer can move many times between two drawn frames: the pose follows once per frame, in tick())
+gizmo.addEventListener('objectChange', () => { if (selected) { moved = true; dragDue = true; } });
+function dragUpdate(drop = false) {
+  dragDue = false;
+  if (!selected || (!gizmo.dragging && !drop)) return;
   const c = rig.controlByName.get(selected), n = c.node;
   proxy.updateMatrixWorld(true);
   if (gizmo.mode === 'translate') {
@@ -311,11 +333,11 @@ gizmo.addEventListener('objectChange', () => {
   rig.evaluate();
   working = rig.getVector();
   // the body comes along while it is dragged (hips, chest: every other control sits in the world)
-  if (nat && dragStart && $('auto').checked && CARRIES.has(selected)) {
+  if (nat && dragStart && naturalHere() && CARRIES.has(selected)) {
     working = nat.follow(working, heldFor(project.keyAt(frame), [selected]), dragStart);
   }
   syncView(); refreshChannels();
-});
+}
 gizmo.addEventListener('change', () => { dirty = true; });
 
 // picking: the control whose curve passes nearest the pointer
@@ -461,7 +483,8 @@ function keepPlace(v) {
 /** Feet flat on the floor (this key, or every key). */
 function resetFeet(all = false) {
   project.pushUndo();
-  const keys = all ? project.keys : [project.setKey(frame, currentPose())];
+  // (every key: those whose feet are left free - a jump, a fall - are left as they are)
+  const keys = all ? project.keys.filter(k => k.feet !== false) : [(project.setKey(frame, currentPose()))];
   for (const k of keys) { k.v = footReset.apply(k.v); for (const n of FOOT_CONTROLS) k.pins.add(n); }
   working = null; rebake(); showFrame(frame);
   flash(all ? 'feetAll' : 'feet');
@@ -662,12 +685,15 @@ function bookPose(label, mirror = false) {
   // feet are now, so that going from one pose of the book to the next does not shuffle the feet about.
   const yaw = M.toEuler(M.rotation(rig.controlWorld('world_ctl')), 'xyz')[1] * M.DEG;
   const pose = db.pose(clip, entry.frame, mirror);
+  const grounded = feetHere();
   const placed0 = soma.place(pose, yaw, 0, 0), P = soma.positions(placed0);
   const feet = [['LeftFoot', 'foot_l'], ['RightFoot', 'foot_r']].map(([s, m]) => ({ at: P[soma.index[s]], now: re.toSoma(M.pos(rig.jointWorld(m))) }));
   const down = feet.filter(f => f.at[1] < soma.ankleHeight + 0.06), use = down.length ? down : feet;
   const dx = use.reduce((a, f) => a + f.now[0] - f.at[0], 0) / use.length, dz = use.reduce((a, f) => a + f.now[2] - f.at[2], 0) / use.length;
   rig.setVector(here);
   fitter.fit(re.targets(soma.place(pose, yaw, dx, dz)));
+  // (feet left free: the pose as it is in the clip - in the air, lying down - not put on the floor)
+  if (!grounded) { rig.evaluate(); return recenter(rig.getVector()); }
   // (poses of an action are caught in mid move: only the floor and the reach of the legs are seen to)
   const v = physical.fix(rig.getVector(), new Set(), [], 999).vector;
   // a foot that stands in the pose (the ankle and the ball both near the floor) stands flat
@@ -701,7 +727,7 @@ function applyPose(label, { mirror = false } = {}) {
   if (!v) return false;
   project.pushUndo();
   const entry = poseBook.find(p => p.label === label);
-  project.setKey(frame, v, [], { clip: entry.clip, frame: entry.frame, mirror: !!mirror });
+  (project.setKey(frame, v, [], { clip: entry.clip, frame: entry.frame, mirror: !!mirror }));
   working = null; rebake(); showFrame(frame);
   status(`「${label}」をフレーム ${frame} に置きました${mirror ? '（左右反転）' : ''}`);
   return true;
@@ -721,6 +747,8 @@ function bindUI() {
   $('paste').onclick = () => actions.paste(false);
   $('pasteMirror').onclick = () => actions.paste(true);
   $('naturalize').onclick = naturalizeNow;
+  $('auto').onchange = e => setFlag('natural', e.target.checked);
+  $('lockFeet').onchange = e => setFlag('feet', e.target.checked);
   $('modeMove').onclick = () => setGizmoMode('translate');
   $('modeTurn').onclick = () => setGizmoMode('rotate');
   $('pickWorld').onclick = () => select('world_ctl');
@@ -831,6 +859,7 @@ function tick(t) {
     const step = Math.floor(acc * project.fps);
     if (step > 0) { acc -= step / project.fps; showFrame((frame + step) % (project.length + 1)); }
   }
+  if (dragDue) dragUpdate();
   if (dirty) { dirty = false; renderer.render(scene, camera); }
 }
 
@@ -840,6 +869,7 @@ async function start() {
   const spec = await fetch(asset('assets/bns_rig.json')).then(r => r.json());
   rig = new BnsRig(spec);
   project = new Project(rig);
+  project.newFlags = looseFlags;
   project.rest = rig.vectorFromValues((await fetch(asset('assets/start_pose.json')).then(r => r.json())).values);
   footReset = new FootReset(rig);
   physical = new Physical(rig);

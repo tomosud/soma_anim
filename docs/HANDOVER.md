@@ -55,5 +55,8 @@ SOMA Anim を続けるときは、まずこれを読む。仕組みの説明は 
 
 - キー: `{frame, v, pins, ref}`。`ref = {clip, frame, mirror}` は見本から置いたキーで、MotionBricks に前後 3 フレームずつを渡す（`MotionBricks._around`）。
 - 中割り: `src/motionbricks.js` の `_generate` が作り方の候補（歩行・小分け・1 回）を試し、`_score` で採点して選ぶ。5 フレーム以上の間隔は生成（17 未満は最短の動きを速める）。どれも良くなければ追加の候補（長さ違い・間のポーズで 2〜3 分割・止まった状態から・腰の行き先だけ・長さをモデル任せ）を試す。補間には落とさない（本人の指示 2026-11-14「飛んでもいいので埋める」）。崩れている（採点 1.0 超）か人に不可能な速さ（`src/why.js` の `infeasible`）のときは、一番よい生成を使い、`match.warn` に理由を入れる。タイムラインの帯の名前・ツールチップ・クリックで出る。2026-11-14 の結果: ランダム 43 区間で plain 11 → 1、通過モード 28 区間で 7 → 0、自己テスト 64 区間で 1 → 1（3 m を 15 f。理由「速すぎる」）、STRESS の点 30.74 → 29.89。同日、補間に落とすのをやめた後: ランダム 68 区間・通過モード 43 区間とも plain 0（採点 1.0 超は 5 と 2。注意つき）。
-- 見本: `tools/make_poses.mjs` → `assets/poses.json`（クリップと、拳が遠い・足が高いなどで選んだフレーム）。
+- 見本: `tools/make_poses.mjs` → `assets/poses.json`（クリップと、拳が遠い・足が高いなどで選んだフレーム）。DB に無い動き（ジャンプなど）は、Mixamo の FBX を soma-fighter-web の `tools/mixamo_clips.mjs` で JSON にして `node tools/add_clips.mjs <json> <tag> [名前…]` で足す。**MotionBricks 公式の BVH（乗り越え・椅子など）は NVIDIA Sample Data Evaluation License なので、公開リポには入れない。**
+- キーごとの `natural` / `feet`（既定 true、false のときだけ保存）: 画面の 2 つのチェック。`feet` が false のキーは見本を床に下ろさない・全キーの接地の対象外。
+- 中割りの使い回し: 区間の id に前の区間を含めず、作ったときの到着（前の区間の最後の 4 フレーム）を `seg.ctx` に持つ。今の到着と主な関節で 3 cm 以内なら作り直さない（`MotionBricks.sameContext`）。キーを 1 つ直しても作り直すのは 1〜3 区間。
+- ドラッグ中は生成を止める（`mb.hold`）。生成の当てはめは 8 ms ごとに画面に譲る（`Inbetweener.finishAsync`）。ドラッグの更新は描画 1 回に 1 度（`dragUpdate`）。
 - シェルの heredoc に長い Python を渡すと壊れることがある。Write でファイルにしてから実行する。

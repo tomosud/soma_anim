@@ -446,7 +446,7 @@ export class MotionBricks {
         const plan = list[i], { r, e } = await runs[i];
         if (e) { if (plan.kind === 'single' && !best && !tried) throw e; continue; }
         tried++; ms += r.ms;
-        const made = this._place(A, B, n, r.frames, true);
+        const made = await this._place(A, B, n, r.frames, true);
         const score = this._score(A, B, made.frames, plan.kind === 'walk' ? (r.run ? 'run' : 'walk') : '');
         tries.push(`${planName(plan)}: ${score.total.toFixed(2)} ${worst(score)}`);
         // (a walk is preferred to a single move of about the same score: it does not leap)
@@ -489,8 +489,38 @@ export class MotionBricks {
   }
 
   /** SOMA frames -> pose vectors for frames 1..n-1.  exact: the motion fills the gap; else it is played as made and B held. */
-  _place(A, B, n, frames, exact) {
-    const { rig } = this.inb;
+  /**
+   * The page sets hold() (true while the animator drags a control): the work on the main thread gives way to it -
+   * it stops while hold() is true, and otherwise lets a frame of the page through every 8 ms.
+   */
+  get pause() {
+    if (this._pause) return this._pause;
+    let since = performance.now();
+    const p = async () => {
+      do await new Promise(r => setTimeout(r, this.hold?.() ? 30 : 0)); while (this.hold?.());
+      since = performance.now();
+    };
+    p.due = () => this.hold?.() || performance.now() - since > 8;
+    return this._pause = p;
+  }
+
+  /**
+   * The same arrival at a key (the last frames of the stretch before, or both none): the hips, chest, head, wrists,
+   * ankles and balls of the feet within 3 cm.  (Finger tips and the like swing far for a small turn; a difference
+   * this small in how a key is reached does not show in what is made from it.)
+   */
+  sameContext(a, b) {
+    if (!a || !b) return !a && !b;
+    if (a.length !== b.length) return false;
+    const soma = this.soma, J = this._ctxJoints ??= ['Hips', 'Chest', 'Head', 'LeftHand', 'RightHand', 'LeftFoot', 'RightFoot', 'LeftToeBase', 'RightToeBase'].map(n => soma.index[n]);
+    for (let f = 0; f < a.length; f++) {
+      const P = soma.positions(a[f]), Q = soma.positions(b[f]);
+      for (const j of J) if (Math.hypot(P[j][0] - Q[j][0], P[j][1] - Q[j][1], P[j][2] - Q[j][2]) > 0.03) return false;
+    }
+    return true;
+  }
+
+  async _place(A, B, n, frames, exact) {
     const len = frames.length - 1, m = exact ? n : Math.min(n, len), placed = [], contact = [[], []];
     for (let k = 0; k <= m; k++) {
       const f = k * len / m, i = Math.min(len - 1, Math.floor(f));
@@ -499,16 +529,17 @@ export class MotionBricks {
       contact[0].push(Math.max(q.contact[0], q.contact[1]) > 0.55);
       contact[1].push(Math.max(q.contact[2], q.contact[3]) > 0.55);
     }
-    const held = rig.getVector();
-    const out = this.inb.finish(A, B, m, placed, contact).frames;
-    rig.setVector(held).evaluate();
+    const out = (await this.inb.finishAsync(A, B, m, placed, contact, this.pause)).frames;
     for (let k = m; k < n; k++) out.push(B);
     return { frames: out, hold: n - m };
   }
 
   _score(A, B, frames, gait = '') {
     if (!this.ev) this.ev = new Evaluator(this.inb.rig, this.inb.db, this.inb.re);
+    // (the rig is the page's: put back as it was)
+    const held = this.inb.rig.getVector();
     const p = penalty(this.ev.measure([A, ...frames, B], [0, frames.length + 1], 30, { ref: false })).parts;
+    this.inb.rig.setVector(held).evaluate();
     // (a walk turns into the way it goes - that is not spinning; a run leans and leaves the floor)
     if (gait) { p.spin = 0; p.tilt *= gait === 'run' ? 0.2 : 0.6; p.hips *= 0.6; if (gait === 'run') p.air = 0; }
     // (what the eye forgives least counts most)

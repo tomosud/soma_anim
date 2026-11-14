@@ -41,6 +41,41 @@ const BOOK = [
   ['防御・よけ', '両腕ガード', 'block_blocking_the_chest_area_with_both_', 'handHigh'],
   ['防御・よけ', '下がってよける', 'block_boxing_dodge_retreat', 'lean'],
   ['防御・よけ', 'ダッキング', 'block_boxing_dodge_advance', 'hipLow'],
+  // (jumps, flips: clips added with tools/add_clips.mjs - put them on keys with the feet check off, so that they stay
+  //  in the air)
+  ['ジャンプ', '踏み切りの溜め', 'jump_idle', 'hipLow'],
+  ['ジャンプ', '跳び上がる', 'jump_idle', 16],
+  ['ジャンプ', 'ジャンプの頂点', 'jump_idle', 'hipHigh'],
+  ['ジャンプ', '着地', 'jump_idle', 40],
+  ['ジャンプ', '喜びのジャンプ', 'jump_joy', 'hipHigh'],
+  ['ジャンプ', 'その場で跳ぶ', 'jump_place', 'hipHigh'],
+  ['ジャンプ', 'バク宙の踏み切り', 'backflip', 'hipLow'],
+  ['ジャンプ', 'バク宙（逆さま）', 'backflip', 'upside'],
+  ['ジャンプ', '前宙の踏み切り', 'running_forward_flip', 8],
+  ['ジャンプ', '前宙（逆さま）', 'running_forward_flip', 'upside'],
+  ['倒れる・寝る', '後ろに倒れかける', 'fall_dying_falling_backward', 14],
+  ['倒れる・寝る', '前に倒れかける', 'fall_dying_falling_forward', 22],
+  ['倒れる・寝る', 'つまずく', 'tripping_forward_while_walking', 36],
+  ['倒れる・寝る', '足を滑らせる', 'hit_slip_and_fall_backwards', 33],
+  ['倒れる・寝る', '尻もち', 'hit_slip_and_fall_backwards', 90],
+  ['倒れる・寝る', '仰向け', 'hit_knocked_out_falling_to_back', 120],
+  ['倒れる・寝る', 'うつ伏せ', 'hit_knocked_out_falling_to_stomach', 140],
+  ['倒れる・寝る', '起き上がる途中', 'getup_getting_up_from_back', 130],
+  ['倒れる・寝る', '手をついてしゃがむ', 'standing_from_crouched_hands_on', 10],
+  ['倒れる・寝る', '寝ている', 'sleeping_deeply', 100],
+  ['日常', '歩く', 'standard_walk', 12],
+  ['日常', '走る', 'running_forward_c9', 15],
+  ['日常', 'こっそり歩く', 'sneaking_forward_quickly', 20],
+  ['日常', '手を振る', 'intercept_and_wave_to_stop', 20],
+  ['日常', '指さす', 'pointing_onward_charge', 56],
+  ['日常', '親指を立てる', 'giving_thumbs_up', 30],
+  ['日常', '考える', 'thinking_while_standing', 50],
+  ['日常', '肩をすくめる', 'shoulder_shrug', 22],
+  ['日常', '手を伸ばす', 'reach_out', 108],
+  ['日常', '遠くを見る', 'looking_with_hand_shading', 50],
+  ['日常', '水を飲む', 'stopping_to_drink', 120],
+  ['日常', 'のぞき込む', 'crouch_looking_around_corner', 30],
+  ['日常', '大喜び', 'big_vegas_victory_idle', 22],
 ];
 
 const J = n => soma.index[n];
@@ -57,6 +92,8 @@ function measure(pose) {
     elbowFwd: Math.max(elbows[0][2], elbows[1][2]), footHigh: Math.max(feet[0][1], feet[1][1]),
     footFar: Math.max(Math.hypot(feet[0][0], feet[0][2]), Math.hypot(feet[1][0], feet[1][2])) + Math.max(feet[0][1], feet[1][1]),
     kneeHigh: Math.max(knees[0][1], knees[1][1]), hipLow: -hip[1], lean: -head[2],
+    // (a jump at its top; a flip upside down: the head under the hips)
+    hipHigh: hip[1], upside: hip[1] - head[1],
   };
 }
 

@@ -66,16 +66,19 @@ footer { background: var(--panel); border-top: 1px solid var(--line); }
 
 /* the picker: over the view, on the right; folds to its title bar, and is out of the way while playing */
 #pickerPanel { position: absolute; right: 10px; top: 10px; max-width: calc(100% - 20px); max-height: calc(100% - 20px);
-  display: flex; flex-direction: column; background: rgba(36,39,45,0.92); border: 1px solid var(--line); border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.4); overflow: hidden; z-index: 5; }
+  display: flex; flex-direction: column; overflow: hidden; z-index: 5;
+  /* only the buttons are drawn and take the pointer: the view shows (and is clicked) through the rest */
+  pointer-events: none; }
+#pickerPanel button, #picker svg g { pointer-events: auto; }
+#picker svg text { text-shadow: 0 1px 2px #000; }
 #pickerPanel[hidden] { display: none; }
 #pickerPanel .head { display: flex; align-items: center; gap: 4px; padding: 4px 6px; }
 #pickerPanel .head button { padding: 2px 8px; }
-#pickerPanel #pickerFold { border: 0; background: none; font-weight: 600; color: var(--dim); }
+#pickerPanel #pickerFold { font-weight: 600; }
 #pickerPanel.folded #picker { display: none; }
 #pickerPanel.folded #pickerSmaller, #pickerPanel.folded #pickerBigger { display: none; }
 #picker { overflow: auto; padding: 0 6px 6px; min-height: 0; }
 #picker .pick { margin-top: 0; }
-#picker svg.picker { height: var(--pick-h, 420px); width: auto; max-width: 100%; display: block; margin-top: 6px; background: #2b2e33; border-radius: 4px; user-select: none; }
+#picker svg.picker { height: var(--pick-h, 420px); width: auto; max-width: 100%; display: block; margin-top: 6px; user-select: none; }
 #picker svg text { pointer-events: none; font-family: system-ui, sans-serif; }
 #channels select.option, #channels input.option { width: 100%; }

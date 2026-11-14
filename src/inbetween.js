@@ -23,6 +23,24 @@ export class Inbetweener {
    * onto the keys.  contact: [left[], right[]] booleans per frame (the foot is planted).
    */
   finish(A, B, n, placedAll, contact) {
+    const it = this._finish(A, B, n, placedAll, contact);
+    for (let r = it.next(); ; r = it.next()) if (r.done) return r.value;
+  }
+
+  /**
+   * finish() that gives way to the page now and then: `pause()` is awaited between frames (it returns soon, or
+   * waits while the animator drags a control).  The rig is put back as the page has it before each pause and at
+   * the end - the page uses it.
+   */
+  async finishAsync(A, B, n, placedAll, contact, pause) {
+    const { rig } = this, held = rig.getVector(), it = this._finish(A, B, n, placedAll, contact);
+    for (let r = it.next(); ; r = it.next()) {
+      if (r.done) { rig.setVector(held).evaluate(); return r.value; }
+      if (pause.due()) { const mine = rig.getVector(); rig.setVector(held).evaluate(); await pause(); held.set(rig.getVector()); rig.setVector(mine).evaluate(); }
+    }
+  }
+
+  *_finish(A, B, n, placedAll, contact) {
     const { rig, re, fitter } = this;
     // everything the reference does not drive (fingers, the whole-body control): plain ease from A to B
     // (the switches - follow, pvFollow ... - are not in-betweened: the stretch keeps those of key A, and key B
@@ -35,6 +53,7 @@ export class Inbetweener {
       rig.setVector(other(k));
       fitter.fit(re.targets(placedAll[k]));
       V.push(rig.getVector());
+      yield;
     }
     // continuous Euler angles along the stretch
     for (let k = 1; k <= n; k++) for (let i = 0; i < V[k].length; i++) if (this.isRot[i]) V[k][i] = V[k - 1][i] + wrap(V[k][i] - V[k - 1][i]);
