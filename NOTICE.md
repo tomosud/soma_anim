@@ -15,13 +15,13 @@
 
 [NVlabs/motionbricks](https://github.com/NVlabs/motionbricks) の `soma_base_skel_minimal_no_root.usd` から取り出した 30 関節のレスト姿勢です。© 2026 NVIDIA CORPORATION & AFFILIATES. 元のライセンス表記は [licenses/MotionBricks-LICENSE.txt](licenses/MotionBricks-LICENSE.txt)。
 
-## リグ（`assets/bns_rig.json`, `rigspec/`）
+## リグ（`assets/rig.json`）
 
-mgear（Shifter）で UE5 マネキン骨格に組んだ `Rig_Manny_BNS` のノードグラフと検証ケースです。コントロールの名前と操作感は BNS FreeRIG（バンダイナムコスタジオ配布の練習用リグ）にならっています。BNS FreeRIG 本体は含みません。
+mgear（Shifter）で UE5 マネキン骨格に組んだ Maya の IK リグ（`Rig_Manny`）のノードグラフです。
 
 ## UE5 Manny
 
-`assets/manny.json` と `assets/manny.bin` は UE5 マネキン（`SKM_Manny_Simple`）のスキンメッシュ、`assets/bns_rig.json` と `rigspec/` はその骨格の名前・階層・静止姿勢を含みます。UE5 マネキンは Epic Games のコンテンツで、Unreal Engine の使用許諾の条件に従います。このリポジトリの Apache License 2.0 はこれらには及びません。
+`assets/manny.json` と `assets/manny.bin` は UE5 マネキン（`SKM_Manny_Simple`）のスキンメッシュ、`assets/rig.json` はその骨格の名前・階層・静止姿勢を含みます。UE5 マネキンは Epic Games のコンテンツで、Unreal Engine の使用許諾の条件に従います。このリポジトリの Apache License 2.0 はこれらには及びません。
 
 ## ライブラリ（CDN から読み込み）
 

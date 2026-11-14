@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Check in Maya that a bake plays the same on the real rig as in the web app.
 
-    mayapy tools/maya_check.py <Rig_Manny_BNS.ma> samples/sample_bake.json
+    mayapy tools/maya_check.py <Rig_Manny.ma> samples/sample_bake.json
 
 Opens the rig scene (nothing is saved), imports the bake with maya/soma_anim_import.py and compares the
 world positions of some joints at every frame with the positions the web rig computed (bake["check"]).

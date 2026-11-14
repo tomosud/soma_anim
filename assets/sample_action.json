@@ -1,7 +1,7 @@
 {
  "format": "soma_anim",
  "version": 1,
- "rig": "Rig_Manny_BNS",
+ "rig": "Rig_Manny",
  "fps": 30,
  "length": 300,
  "mode": "mb",

@@ -1,9 +1,9 @@
-// SOMA Anim: pose-to-pose animation on UE5 Manny with a BNS style rig.
+// SOMA Anim: pose-to-pose animation on UE5 Manny with a Maya-style IK rig.
 import * as T from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { TransformControls } from 'three/addons/controls/TransformControls.js';
 import * as M from './m4.js';
-import { BnsRig } from './rig.js';
+import { ControlRig } from './rig.js';
 import { SomaRig, MotionDB } from './motiondb.js';
 import { SomaToManny, rigHeading } from './retarget.js';
 import { RigFitter } from './fit.js';
@@ -960,8 +960,8 @@ function tick(t) {
 // ---------------------------------------------------------------- start
 async function start() {
   $('title').title = 'version ' + VERSION;
-  const spec = await fetch(asset('assets/bns_rig.json')).then(r => r.json());
-  rig = new BnsRig(spec);
+  const spec = await fetch(asset('assets/rig.json')).then(r => r.json());
+  rig = new ControlRig(spec);
   project = new Project(rig);
   project.newFlags = looseFlags;
   project.limit = v => limited(v);

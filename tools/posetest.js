@@ -127,14 +127,14 @@ export async function draw(names = Object.keys(CASES), tag = '') {
 // node tools/posetest.js
 if (typeof process !== 'undefined' && process.argv[1] && process.argv[1].endsWith('posetest.js')) {
   const { readFileSync } = await import('node:fs');
-  const { BnsRig } = await import('../src/rig.js');
+  const { ControlRig } = await import('../src/rig.js');
   const { SomaRig, MotionDB } = await import('../src/motiondb.js');
   const { SomaToManny } = await import('../src/retarget.js');
   const { RigFitter } = await import('../src/fit.js');
   const { Naturalizer } = await import('../src/natural.js');
   const { Physical } = await import('../src/physical.js');
   const read = p => readFileSync(new URL(p, import.meta.url));
-  const rig = new BnsRig(JSON.parse(read('../assets/bns_rig.json')));
+  const rig = new ControlRig(JSON.parse(read('../assets/rig.json')));
   const soma = new SomaRig(JSON.parse(read('../assets/soma_rig.json')));
   const bin = read('../assets/motiondb.bin');
   const db = new MotionDB(soma, JSON.parse(read('../assets/motiondb.json')), bin.buffer.slice(bin.byteOffset, bin.byteOffset + bin.byteLength));

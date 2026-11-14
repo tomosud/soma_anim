@@ -4,14 +4,14 @@ import assert from 'node:assert';
 // The cases come from the Maya side and are kept out of this repository (rigspec/ is local): without them
 // only the euler test runs.  FK cases (IKFK below 1) are left out: this tool holds the rig at IK.
 import { readFileSync, existsSync } from 'node:fs';
-import { BnsRig } from '../src/rig.js';
+import { ControlRig } from '../src/rig.js';
 import * as M from '../src/m4.js';
 
-const spec = JSON.parse(readFileSync(new URL('../assets/bns_rig.json', import.meta.url)));
-const casesFile = new URL('../rigspec/bns_rig_cases.json', import.meta.url);
+const spec = JSON.parse(readFileSync(new URL('../assets/rig.json', import.meta.url)));
+const casesFile = new URL('../rigspec/rig_cases.json', import.meta.url);
 const cases = existsSync(casesFile) ? JSON.parse(readFileSync(casesFile)) : { cases: [] };
 export const ikOnly = c => !Object.entries(c.controls).some(([k, v]) => /\.IKFK$/.test(k) && v !== 1);
-const rig = new BnsRig(spec);
+const rig = new ControlRig(spec);
 
 export function compare(c) {
   rig.setValues(c.controls);

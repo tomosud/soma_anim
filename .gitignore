@@ -6,3 +6,5 @@ rigspec/manny_bind.fbx
 
 # the rig materials from the Maya side stay local (not in this public repo)
 rigspec/
+# the handover notes of the work (local paths, accounts): kept on this machine only
+docs/HANDOVER.md

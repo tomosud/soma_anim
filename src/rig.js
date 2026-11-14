@@ -1,4 +1,4 @@
-// The control rig, evaluated from the node graph exported from the Maya scene (assets/bns_rig.json).
+// The control rig, evaluated from the node graph exported from the Maya scene (assets/rig.json).
 //
 //   control values -> control / helper transforms -> drv skeleton -> bind skeleton
 //
@@ -24,7 +24,7 @@ function split(m) {
   return { mirrored, r, t: M.pos(m) };
 }
 
-export class BnsRig {
+export class ControlRig {
   constructor(spec) {
     this.spec = spec;
     this.nodes = [];
@@ -144,9 +144,9 @@ export class BnsRig {
       }
     }
 
-    // neck: the neck joints take 40% of the head yaw (rotateZ of bns_head_aim)
-    const aim = this.byName.get('bns_head_aim');
-    const necks = this.nodes.filter(n => /^bns_neck_twist\d+$/.test(n.name));
+    // neck: the neck joints take 40% of the head yaw (rotateZ of rig_head_aim)
+    const aim = this.byName.get('rig_head_aim');
+    const necks = this.nodes.filter(n => /^rig_neck_twist\d+$/.test(n.name));
     for (const n of necks) n.neckTwist = { aim, share: 0.4 / necks.length };
 
     // bind skeleton: same local values as the drv skeleton

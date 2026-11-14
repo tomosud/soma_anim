@@ -3,13 +3,13 @@
 // split into the twist about the bone and the swing of the bone (two angles).  The range kept is where nearly
 // every pose is (0.5 - 99.5 %), a little widened.          node tools/make_limits.mjs   -> assets/limits.json
 import { readFileSync, writeFileSync } from 'node:fs';
-import { BnsRig } from '../src/rig.js';
+import { ControlRig } from '../src/rig.js';
 import { SomaRig, MotionDB } from '../src/motiondb.js';
 import { SomaToManny } from '../src/retarget.js';
 import { jointTurn, LIMIT_JOINTS } from '../src/limits.js';
 
 const read = p => readFileSync(new URL(p, import.meta.url));
-const rig = new BnsRig(JSON.parse(read('../assets/bns_rig.json')));
+const rig = new ControlRig(JSON.parse(read('../assets/rig.json')));
 const soma = new SomaRig(JSON.parse(read('../assets/soma_rig.json')));
 const bin = read('../assets/motiondb.bin');
 const db = new MotionDB(soma, JSON.parse(read('../assets/motiondb.json')), bin.buffer.slice(bin.byteOffset, bin.byteOffset + bin.byteLength));

@@ -2,12 +2,12 @@
 import test from 'node:test';
 import assert from 'node:assert';
 import { readFileSync } from 'node:fs';
-import { BnsRig } from '../src/rig.js';
+import { ControlRig } from '../src/rig.js';
 import { RigFitter } from '../src/fit.js';
 import { Limits } from '../src/limits.js';
 
 const read = p => JSON.parse(readFileSync(new URL(p, import.meta.url)));
-const rig = new BnsRig(read('../assets/bns_rig.json')), fitter = new RigFitter(rig);
+const rig = new ControlRig(read('../assets/rig.json')), fitter = new RigFitter(rig);
 const L = new Limits(rig, fitter, read('../assets/limits.json'));
 const pose = values => { rig.setValues(values); rig.evaluate(); return rig.getVector(); };
 

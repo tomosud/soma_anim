@@ -2,10 +2,10 @@
 import test from 'node:test';
 import assert from 'node:assert';
 import { readFileSync } from 'node:fs';
-import { BnsRig } from '../src/rig.js';
+import { ControlRig } from '../src/rig.js';
 import { cogTo, cogOffset } from '../src/cog.js';
 
-const rig = new BnsRig(JSON.parse(readFileSync(new URL('../assets/bns_rig.json', import.meta.url))));
+const rig = new ControlRig(JSON.parse(readFileSync(new URL('../assets/rig.json', import.meta.url))));
 const bones = () => rig.joints.map(j => Array.from(rig.jointWorld(j.name)));
 const poses = [
   { 'COG_ctl.ty': 40, 'COG_ctl.tz': 15, 'Hip_trans.ty': -30, 'Hip_trans.tx': 12, 'Spine_trans.tz': 8, 'L_Hand_trans.ty': 20 },

@@ -1,10 +1,10 @@
 // How long the rig takes to evaluate and to fit a pose.     node tools/bench_rig.mjs
 import { readFileSync } from 'node:fs';
-import { BnsRig } from '../src/rig.js';
+import { ControlRig } from '../src/rig.js';
 import { RigFitter } from '../src/fit.js';
 
-const spec = JSON.parse(readFileSync(new URL('../assets/bns_rig.json', import.meta.url)));
-const rig = new BnsRig(spec), fitter = new RigFitter(rig);
+const spec = JSON.parse(readFileSync(new URL('../assets/rig.json', import.meta.url)));
+const rig = new ControlRig(spec), fitter = new RigFitter(rig);
 let s = 7;
 const rnd = () => { s = (s * 16807) % 2147483647; return s / 2147483647 - 0.5; };
 const poses = Array.from({ length: 60 }, () => {

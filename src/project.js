@@ -152,7 +152,7 @@ export class Project {
   // -- files --------------------------------------------------------------
   toJSON() {
     return {
-      format: 'soma_anim', version: 1, rig: 'Rig_Manny_BNS', fps: this.fps, length: this.length, mode: this.mode, flow: this.flow,
+      format: 'soma_anim', version: 1, rig: 'Rig_Manny', fps: this.fps, length: this.length, mode: this.mode, flow: this.flow,
       keys: this.keys.map(k => ({ frame: k.frame, pins: [...k.pins], ...(k.ref ? { ref: k.ref } : {}), ...(k.natural === false ? { natural: false } : {}), ...(k.feet === false ? { feet: false } : {}), values: this.rig.valuesFromVector(k.v) })),
     };
   }
@@ -167,8 +167,8 @@ export class Project {
   /** Every frame as control values, for Maya (maya/soma_anim_import.py). */
   toBake() {
     return {
-      format: 'soma_anim_bake', version: 1, rig: 'Rig_Manny_BNS', fps: this.fps, start: 0, end: this.length,
-      note: 'values are offsets from the rest value of each channel (the rest of every control of Rig_Manny_BNS is 0)',
+      format: 'soma_anim_bake', version: 1, rig: 'Rig_Manny', fps: this.fps, start: 0, end: this.length,
+      note: 'values are offsets from the rest value of each channel (the rest of every control of Rig_Manny is 0)',
       channels: this.rig.channelKeys, keys: this.keys.map(k => k.frame),
       frames: this.baked.map(v => Array.from(v, x => +x.toFixed(4))),
     };

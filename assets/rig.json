@@ -1,6 +1,6 @@
 {
  "meta": {
-  "source": "Rig_Manny_BNS.ma",
+  "source": "Rig_Manny.ma",
   "unit": "cm",
   "up_axis": "y",
   "forward": "+Z (the character faces +Z)",
@@ -1713,7 +1713,7 @@
    "side": "L",
    "group": "body",
    "parent_control": "COG_ctl",
-   "dag_parent": "L_Shoulder_rot_bnsdrv",
+   "dag_parent": "L_Shoulder_rot_rigdrv",
    "world_matrix": [
     0.987223,
     -0.15259,
@@ -3781,7 +3781,7 @@
    "side": "R",
    "group": "body",
    "parent_control": "COG_ctl",
-   "dag_parent": "R_Shoulder_rot_bnsdrv",
+   "dag_parent": "R_Shoulder_rot_rigdrv",
    "world_matrix": [
     0.98722,
     0.152614,
@@ -6582,7 +6582,7 @@
    "side": "L",
    "group": "finger",
    "parent_control": "finger_base_L_OFFSET",
-   "dag_parent": "L_Thumb1_bnsopp_back",
+   "dag_parent": "L_Thumb1_rigopp_back",
    "world_matrix": [
     -0.236777,
     -0.467446,
@@ -7207,7 +7207,7 @@
    "side": "L",
    "group": "finger",
    "parent_control": "finger_base_L_OFFSET",
-   "dag_parent": "L_Index1_bnsdrv",
+   "dag_parent": "L_Index1_rigdrv",
    "world_matrix": [
     0.112825,
     -0.833399,
@@ -7416,7 +7416,7 @@
    "side": "L",
    "group": "finger",
    "parent_control": "L_Index1",
-   "dag_parent": "L_Index2_bnsdrv",
+   "dag_parent": "L_Index2_rigdrv",
    "world_matrix": [
     -0.071879,
     -0.921402,
@@ -7623,7 +7623,7 @@
    "side": "L",
    "group": "finger",
    "parent_control": "L_Index2",
-   "dag_parent": "L_Index3_bnsdrv",
+   "dag_parent": "L_Index3_rigdrv",
    "world_matrix": [
     -0.071879,
     -0.921402,
@@ -7830,7 +7830,7 @@
    "side": "L",
    "group": "finger",
    "parent_control": "finger_base_L_OFFSET",
-   "dag_parent": "L_Middle0_bnsdrv",
+   "dag_parent": "L_Middle0_rigdrv",
    "world_matrix": [
     0.512116,
     -0.550735,
@@ -8051,7 +8051,7 @@
    "side": "L",
    "group": "finger",
    "parent_control": "L_Middle0",
-   "dag_parent": "L_Middle1_bnsdrv",
+   "dag_parent": "L_Middle1_rigdrv",
    "world_matrix": [
     0.062226,
     -0.893591,
@@ -8260,7 +8260,7 @@
    "side": "L",
    "group": "finger",
    "parent_control": "L_Middle1",
-   "dag_parent": "L_Middle2_bnsdrv",
+   "dag_parent": "L_Middle2_rigdrv",
    "world_matrix": [
     -0.234319,
     -0.94077,
@@ -8467,7 +8467,7 @@
    "side": "L",
    "group": "finger",
    "parent_control": "L_Middle2",
-   "dag_parent": "L_Middle3_bnsdrv",
+   "dag_parent": "L_Middle3_rigdrv",
    "world_matrix": [
     -0.234319,
     -0.94077,
@@ -8674,7 +8674,7 @@
    "side": "L",
    "group": "finger",
    "parent_control": "finger_base_L_OFFSET",
-   "dag_parent": "L_Ring0_bnsdrv",
+   "dag_parent": "L_Ring0_rigdrv",
    "world_matrix": [
     0.512116,
     -0.550735,
@@ -8895,7 +8895,7 @@
    "side": "L",
    "group": "finger",
    "parent_control": "L_Ring0",
-   "dag_parent": "L_Ring1_bnsdrv",
+   "dag_parent": "L_Ring1_rigdrv",
    "world_matrix": [
     0.156238,
     -0.909931,
@@ -9104,7 +9104,7 @@
    "side": "L",
    "group": "finger",
    "parent_control": "L_Ring1",
-   "dag_parent": "L_Ring2_bnsdrv",
+   "dag_parent": "L_Ring2_rigdrv",
    "world_matrix": [
     -0.13914,
     -0.959038,
@@ -9311,7 +9311,7 @@
    "side": "L",
    "group": "finger",
    "parent_control": "L_Ring2",
-   "dag_parent": "L_Ring3_bnsdrv",
+   "dag_parent": "L_Ring3_rigdrv",
    "world_matrix": [
     -0.13914,
     -0.959038,
@@ -9518,7 +9518,7 @@
    "side": "L",
    "group": "finger",
    "parent_control": "finger_base_L_OFFSET",
-   "dag_parent": "L_Pinky0_bnsdrv",
+   "dag_parent": "L_Pinky0_rigdrv",
    "world_matrix": [
     0.512116,
     -0.550735,
@@ -9739,7 +9739,7 @@
    "side": "L",
    "group": "finger",
    "parent_control": "L_Pinky0",
-   "dag_parent": "L_Pinky1_bnsdrv",
+   "dag_parent": "L_Pinky1_rigdrv",
    "world_matrix": [
     0.263541,
     -0.917789,
@@ -9948,7 +9948,7 @@
    "side": "L",
    "group": "finger",
    "parent_control": "L_Pinky1",
-   "dag_parent": "L_Pinky2_bnsdrv",
+   "dag_parent": "L_Pinky2_rigdrv",
    "world_matrix": [
     -0.092201,
     -0.972497,
@@ -10155,7 +10155,7 @@
    "side": "L",
    "group": "finger",
    "parent_control": "L_Pinky2",
-   "dag_parent": "L_Pinky3_bnsdrv",
+   "dag_parent": "L_Pinky3_rigdrv",
    "world_matrix": [
     -0.092201,
     -0.972497,
@@ -11096,7 +11096,7 @@
    "side": "R",
    "group": "finger",
    "parent_control": "finger_base_R_OFFSET",
-   "dag_parent": "R_Thumb1_bnsopp_back",
+   "dag_parent": "R_Thumb1_rigopp_back",
    "world_matrix": [
     0.236784,
     -0.467355,
@@ -11721,7 +11721,7 @@
    "side": "R",
    "group": "finger",
    "parent_control": "finger_base_R_OFFSET",
-   "dag_parent": "R_Index1_bnsdrv",
+   "dag_parent": "R_Index1_rigdrv",
    "world_matrix": [
     -0.112821,
     -0.833396,
@@ -11930,7 +11930,7 @@
    "side": "R",
    "group": "finger",
    "parent_control": "R_Index1",
-   "dag_parent": "R_Index2_bnsdrv",
+   "dag_parent": "R_Index2_rigdrv",
    "world_matrix": [
     0.071867,
     -0.921399,
@@ -12137,7 +12137,7 @@
    "side": "R",
    "group": "finger",
    "parent_control": "R_Index2",
-   "dag_parent": "R_Index3_bnsdrv",
+   "dag_parent": "R_Index3_rigdrv",
    "world_matrix": [
     0.071867,
     -0.921399,
@@ -12344,7 +12344,7 @@
    "side": "R",
    "group": "finger",
    "parent_control": "finger_base_R_OFFSET",
-   "dag_parent": "R_Middle0_bnsdrv",
+   "dag_parent": "R_Middle0_rigdrv",
    "world_matrix": [
     -0.512138,
     -0.550711,
@@ -12565,7 +12565,7 @@
    "side": "R",
    "group": "finger",
    "parent_control": "R_Middle0",
-   "dag_parent": "R_Middle1_bnsdrv",
+   "dag_parent": "R_Middle1_rigdrv",
    "world_matrix": [
     -0.062217,
     -0.893598,
@@ -12774,7 +12774,7 @@
    "side": "R",
    "group": "finger",
    "parent_control": "R_Middle1",
-   "dag_parent": "R_Middle2_bnsdrv",
+   "dag_parent": "R_Middle2_rigdrv",
    "world_matrix": [
     0.234312,
     -0.940766,
@@ -12981,7 +12981,7 @@
    "side": "R",
    "group": "finger",
    "parent_control": "R_Middle2",
-   "dag_parent": "R_Middle3_bnsdrv",
+   "dag_parent": "R_Middle3_rigdrv",
    "world_matrix": [
     0.234312,
     -0.940766,
@@ -13188,7 +13188,7 @@
    "side": "R",
    "group": "finger",
    "parent_control": "finger_base_R_OFFSET",
-   "dag_parent": "R_Ring0_bnsdrv",
+   "dag_parent": "R_Ring0_rigdrv",
    "world_matrix": [
     -0.512138,
     -0.550711,
@@ -13409,7 +13409,7 @@
    "side": "R",
    "group": "finger",
    "parent_control": "R_Ring0",
-   "dag_parent": "R_Ring1_bnsdrv",
+   "dag_parent": "R_Ring1_rigdrv",
    "world_matrix": [
     -0.156237,
     -0.909933,
@@ -13618,7 +13618,7 @@
    "side": "R",
    "group": "finger",
    "parent_control": "R_Ring1",
-   "dag_parent": "R_Ring2_bnsdrv",
+   "dag_parent": "R_Ring2_rigdrv",
    "world_matrix": [
     0.139119,
     -0.959039,
@@ -13825,7 +13825,7 @@
    "side": "R",
    "group": "finger",
    "parent_control": "R_Ring2",
-   "dag_parent": "R_Ring3_bnsdrv",
+   "dag_parent": "R_Ring3_rigdrv",
    "world_matrix": [
     0.139119,
     -0.959039,
@@ -14032,7 +14032,7 @@
    "side": "R",
    "group": "finger",
    "parent_control": "finger_base_R_OFFSET",
-   "dag_parent": "R_Pinky0_bnsdrv",
+   "dag_parent": "R_Pinky0_rigdrv",
    "world_matrix": [
     -0.512138,
     -0.550711,
@@ -14253,7 +14253,7 @@
    "side": "R",
    "group": "finger",
    "parent_control": "R_Pinky0",
-   "dag_parent": "R_Pinky1_bnsdrv",
+   "dag_parent": "R_Pinky1_rigdrv",
    "world_matrix": [
     -0.263546,
     -0.917785,
@@ -14462,7 +14462,7 @@
    "side": "R",
    "group": "finger",
    "parent_control": "R_Pinky1",
-   "dag_parent": "R_Pinky2_bnsdrv",
+   "dag_parent": "R_Pinky2_rigdrv",
    "world_matrix": [
     0.092206,
     -0.9725,
@@ -14669,7 +14669,7 @@
    "side": "R",
    "group": "finger",
    "parent_control": "R_Pinky2",
-   "dag_parent": "R_Pinky3_bnsdrv",
+   "dag_parent": "R_Pinky3_rigdrv",
    "world_matrix": [
     0.092206,
     -0.9725,
@@ -17275,16 +17275,16 @@
      "drv_hand_l"
     ],
     "ik_chain": [
-     "bnsik_upperarm_l",
-     "bnsik_lowerarm_l",
-     "bnsik_hand_l"
+     "rigik_upperarm_l",
+     "rigik_lowerarm_l",
+     "rigik_hand_l"
     ],
     "fk_chain": [
-     "bnsfk_upperarm_l",
-     "bnsfk_lowerarm_l",
-     "bnsfk_hand_l"
+     "rigfk_upperarm_l",
+     "rigfk_lowerarm_l",
+     "rigfk_hand_l"
     ],
-    "ik_handle": "bns_L_arm_ik",
+    "ik_handle": "rig_L_arm_ik",
     "attributes": {
      "IKFK": {
       "default": 1.0,
@@ -17352,16 +17352,16 @@
      "drv_foot_l"
     ],
     "ik_chain": [
-     "bnsik_thigh_l",
-     "bnsik_calf_l",
-     "bnsik_foot_l"
+     "rigik_thigh_l",
+     "rigik_calf_l",
+     "rigik_foot_l"
     ],
     "fk_chain": [
-     "bnsfk_thigh_l",
-     "bnsfk_calf_l",
-     "bnsfk_foot_l"
+     "rigfk_thigh_l",
+     "rigfk_calf_l",
+     "rigfk_foot_l"
     ],
-    "ik_handle": "bns_L_leg_ik",
+    "ik_handle": "rig_L_leg_ik",
     "attributes": {
      "IKFK": {
       "default": 1.0,
@@ -17423,16 +17423,16 @@
      "drv_hand_r"
     ],
     "ik_chain": [
-     "bnsik_upperarm_r",
-     "bnsik_lowerarm_r",
-     "bnsik_hand_r"
+     "rigik_upperarm_r",
+     "rigik_lowerarm_r",
+     "rigik_hand_r"
     ],
     "fk_chain": [
-     "bnsfk_upperarm_r",
-     "bnsfk_lowerarm_r",
-     "bnsfk_hand_r"
+     "rigfk_upperarm_r",
+     "rigfk_lowerarm_r",
+     "rigfk_hand_r"
     ],
-    "ik_handle": "bns_R_arm_ik",
+    "ik_handle": "rig_R_arm_ik",
     "attributes": {
      "IKFK": {
       "default": 1.0,
@@ -17499,16 +17499,16 @@
      "drv_foot_r"
     ],
     "ik_chain": [
-     "bnsik_thigh_r",
-     "bnsik_calf_r",
-     "bnsik_foot_r"
+     "rigik_thigh_r",
+     "rigik_calf_r",
+     "rigik_foot_r"
     ],
     "fk_chain": [
-     "bnsfk_thigh_r",
-     "bnsfk_calf_r",
-     "bnsfk_foot_r"
+     "rigfk_thigh_r",
+     "rigfk_calf_r",
+     "rigfk_foot_r"
     ],
-    "ik_handle": "bns_R_leg_ik",
+    "ik_handle": "rig_R_leg_ik",
     "attributes": {
      "IKFK": {
       "default": 1.0,
@@ -17623,37 +17623,37 @@
    }
   ],
   "how": [
-   "Two extra chains next to the drv chain: bnsik_* (solved by the IK handle, goal = *_trans, pole = *_pv) and bnsfk_* (each joint = the world orientation of its FK control, orientConstraint mo=False).",
-   "drv upper / mid joints: orientConstraint(ik, fk), interp shortest; weight of ik = IKFK, of fk = 1 - IKFK (node bns_<s>_<limb>_ikfk_rev). The drv end joint (hand / foot) is oriented by the end control as before.",
-   "FK controls: <s>_UpperArm_fk / _LowerArm_fk, <s>_Thigh_fk / _Calf_fk. The first sits under bns_<s>_<limb>_fk_root (parentConstraint, mo, to the parent of the chain: clavicle / pelvis), the second is its child. The mid FK control turns about one axis only (fk_mid_hinge_axis), the other axes are locked.",
+   "Two extra chains next to the drv chain: rigik_* (solved by the IK handle, goal = *_trans, pole = *_pv) and rigfk_* (each joint = the world orientation of its FK control, orientConstraint mo=False).",
+   "drv upper / mid joints: orientConstraint(ik, fk), interp shortest; weight of ik = IKFK, of fk = 1 - IKFK (node rig_<s>_<limb>_ikfk_rev). The drv end joint (hand / foot) is oriented by the end control as before.",
+   "FK controls: <s>_UpperArm_fk / _LowerArm_fk, <s>_Thigh_fk / _Calf_fk. The first sits under rig_<s>_<limb>_fk_root (parentConstraint, mo, to the parent of the chain: clavicle / pelvis), the second is its child. The mid FK control turns about one axis only (fk_mid_hinge_axis), the other axes are locked.",
    "IKFK is a float 0..1: in-between values blend the two chains (shortest slerp per joint). The tools key it with step tangents at 0 or 1; the in-between cases are there to check the blend math.",
-   "Switching with the pose kept (match / snap) is done by the tools (bns_rig.fkik.switch), not by the rig: the rig itself has no snapping. FK -> IK puts Hand_trans / pv where the FK hand / elbow are; IK -> FK turns the FK controls to the IK chain.",
-   "follow (enum): weights of the parentConstraint on the goal's ik_cns = (follow == i) per target (condition nodes bns_<s>_<limb>_follow<i>). Targets: arm bns_world_follow / chest drv_spine_05 / drv_pelvis (/ drv_hand_r for L), leg bns_world_follow / drv_pelvis.",
+   "Switching with the pose kept (match / snap) is done by the tools (rig_rig.fkik.switch), not by the rig: the rig itself has no snapping. FK -> IK puts Hand_trans / pv where the FK hand / elbow are; IK -> FK turns the FK controls to the IK chain.",
+   "follow (enum): weights of the parentConstraint on the goal's ik_cns = (follow == i) per target (condition nodes rig_<s>_<limb>_follow<i>). Targets: arm rig_world_follow / chest drv_spine_05 / drv_pelvis (/ drv_hand_r for L), leg rig_world_follow / drv_pelvis.",
    "End control (Hand_rot / Foot_rot) ik_cns orientation: orientConstraint over end_space<i> helpers (children of the follow targets, rest orientation of ik_cns) + end_fk (child of the mid drv joint). weight(space i) = (follow == i) * fixed, weight(end_fk) = 1 - fixed, fixed = (wrist/ankleFollow == 1) * IKFK. Arm: its position follows the mid drv joint (parentConstraint, rotate skipped).",
-   "pvFollow (enum): pole vector ik_cns parentConstraint, weights: Body target(s) = (pvFollow == 0) [leg: x (follow == i)], last target = (pvFollow == 1). Arm Hand: the goal Hand_trans. Leg Foot: bns_<s>_kneepv_aim, a frame at the hip aiming at Foot_trans with the pelvis side axis as up (aimConstraint).",
-   "autoShoulder (keyable 0..1, arm): Shoulder_rot_bnsdrv.rotate = pairBlend(0, bns_<s>_autoShoulder_aim.rotate, weight = autoShoulder * IKFK * 0.5), quaternion slerp. The aim node aims at Hand_trans (aimConstraint, mo).",
-   "Display only: bns_<s>_<limb>_ikvis / _fkvis hide the controls of the inactive mode; bns_<s>_<limb>_ui_* feed the picker."
+   "pvFollow (enum): pole vector ik_cns parentConstraint, weights: Body target(s) = (pvFollow == 0) [leg: x (follow == i)], last target = (pvFollow == 1). Arm Hand: the goal Hand_trans. Leg Foot: rig_<s>_kneepv_aim, a frame at the hip aiming at Foot_trans with the pelvis side axis as up (aimConstraint).",
+   "autoShoulder (keyable 0..1, arm): Shoulder_rot_rigdrv.rotate = pairBlend(0, rig_<s>_autoShoulder_aim.rotate, weight = autoShoulder * IKFK * 0.5), quaternion slerp. The aim node aims at Hand_trans (aimConstraint, mo).",
+   "Display only: rig_<s>_<limb>_ikvis / _fkvis hide the controls of the inactive mode; rig_<s>_<limb>_ui_* feed the picker."
   ]
  },
  "utility_nodes": [
   {
-   "node": "bns_L_anklefix_ik",
+   "node": "rig_L_anklefix_ik",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_L_anklefix_on.outColorR",
-     "bns_L_anklefix_ik.input1"
+     "rig_L_anklefix_on.outColorR",
+     "rig_L_anklefix_ik.input1"
     ],
     [
      "L_Foot_rot.IKFK",
-     "bns_L_anklefix_ik.input2"
+     "rig_L_anklefix_ik.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_L_anklefix_on",
+   "node": "rig_L_anklefix_on",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -17664,13 +17664,13 @@
    "inputs": [
     [
      "L_Foot_rot.ankleFollow",
-     "bns_L_anklefix_on.firstTerm"
+     "rig_L_anklefix_on.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_L_arm_end_fk_w",
+   "node": "rig_L_arm_end_fk_w",
    "type": "reverse",
    "settings": {
     "inputY": 0.0,
@@ -17678,78 +17678,78 @@
    },
    "inputs": [
     [
-     "bns_L_wristfix_ik.output",
-     "bns_L_arm_end_fk_w.inputX"
+     "rig_L_wristfix_ik.output",
+     "rig_L_arm_end_fk_w.inputX"
     ]
    ],
    "note": "output = 1 - input"
   },
   {
-   "node": "bns_L_arm_end_space0_w",
+   "node": "rig_L_arm_end_space0_w",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_L_arm_follow0.outColorR",
-     "bns_L_arm_end_space0_w.input1"
+     "rig_L_arm_follow0.outColorR",
+     "rig_L_arm_end_space0_w.input1"
     ],
     [
-     "bns_L_wristfix_ik.output",
-     "bns_L_arm_end_space0_w.input2"
+     "rig_L_wristfix_ik.output",
+     "rig_L_arm_end_space0_w.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_L_arm_end_space1_w",
+   "node": "rig_L_arm_end_space1_w",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_L_arm_follow1.outColorR",
-     "bns_L_arm_end_space1_w.input1"
+     "rig_L_arm_follow1.outColorR",
+     "rig_L_arm_end_space1_w.input1"
     ],
     [
-     "bns_L_wristfix_ik.output",
-     "bns_L_arm_end_space1_w.input2"
+     "rig_L_wristfix_ik.output",
+     "rig_L_arm_end_space1_w.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_L_arm_end_space2_w",
+   "node": "rig_L_arm_end_space2_w",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_L_arm_follow2.outColorR",
-     "bns_L_arm_end_space2_w.input1"
+     "rig_L_arm_follow2.outColorR",
+     "rig_L_arm_end_space2_w.input1"
     ],
     [
-     "bns_L_wristfix_ik.output",
-     "bns_L_arm_end_space2_w.input2"
+     "rig_L_wristfix_ik.output",
+     "rig_L_arm_end_space2_w.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_L_arm_end_space3_w",
+   "node": "rig_L_arm_end_space3_w",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_L_arm_follow3.outColorR",
-     "bns_L_arm_end_space3_w.input1"
+     "rig_L_arm_follow3.outColorR",
+     "rig_L_arm_end_space3_w.input1"
     ],
     [
-     "bns_L_wristfix_ik.output",
-     "bns_L_arm_end_space3_w.input2"
+     "rig_L_wristfix_ik.output",
+     "rig_L_arm_end_space3_w.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_L_arm_fkvis",
+   "node": "rig_L_arm_fkvis",
    "type": "condition",
    "settings": {
     "operation": 4,
@@ -17760,13 +17760,13 @@
    "inputs": [
     [
      "L_Hand_rot.IKFK",
-     "bns_L_arm_fkvis.firstTerm"
+     "rig_L_arm_fkvis.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_L_arm_follow0",
+   "node": "rig_L_arm_follow0",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -17777,13 +17777,13 @@
    "inputs": [
     [
      "L_Hand_rot.follow",
-     "bns_L_arm_follow0.firstTerm"
+     "rig_L_arm_follow0.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_L_arm_follow1",
+   "node": "rig_L_arm_follow1",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -17794,13 +17794,13 @@
    "inputs": [
     [
      "L_Hand_rot.follow",
-     "bns_L_arm_follow1.firstTerm"
+     "rig_L_arm_follow1.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_L_arm_follow2",
+   "node": "rig_L_arm_follow2",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -17811,13 +17811,13 @@
    "inputs": [
     [
      "L_Hand_rot.follow",
-     "bns_L_arm_follow2.firstTerm"
+     "rig_L_arm_follow2.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_L_arm_follow3",
+   "node": "rig_L_arm_follow3",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -17828,13 +17828,13 @@
    "inputs": [
     [
      "L_Hand_rot.follow",
-     "bns_L_arm_follow3.firstTerm"
+     "rig_L_arm_follow3.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_L_arm_ikfk_rev",
+   "node": "rig_L_arm_ikfk_rev",
    "type": "reverse",
    "settings": {
     "inputY": 0.0,
@@ -17843,13 +17843,13 @@
    "inputs": [
     [
      "L_Hand_rot.IKFK",
-     "bns_L_arm_ikfk_rev.inputX"
+     "rig_L_arm_ikfk_rev.inputX"
     ]
    ],
    "note": "output = 1 - input"
   },
   {
-   "node": "bns_L_arm_ikvis",
+   "node": "rig_L_arm_ikvis",
    "type": "condition",
    "settings": {
     "operation": 2,
@@ -17860,13 +17860,13 @@
    "inputs": [
     [
      "L_Hand_rot.IKFK",
-     "bns_L_arm_ikvis.firstTerm"
+     "rig_L_arm_ikvis.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_L_arm_pvfollow_off",
+   "node": "rig_L_arm_pvfollow_off",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -17877,13 +17877,13 @@
    "inputs": [
     [
      "L_Hand_rot.pvFollow",
-     "bns_L_arm_pvfollow_off.firstTerm"
+     "rig_L_arm_pvfollow_off.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_L_arm_pvfollow_on",
+   "node": "rig_L_arm_pvfollow_on",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -17894,13 +17894,13 @@
    "inputs": [
     [
      "L_Hand_rot.pvFollow",
-     "bns_L_arm_pvfollow_on.firstTerm"
+     "rig_L_arm_pvfollow_on.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_L_autoShoulder_pb",
+   "node": "rig_L_autoShoulder_pb",
    "type": "pairBlend",
    "settings": {
     "rotInterpolation": 1,
@@ -17926,70 +17926,70 @@
    },
    "inputs": [
     [
-     "bns_L_autoShoulder_aim.rotate",
-     "bns_L_autoShoulder_pb.inRotate2"
+     "rig_L_autoShoulder_aim.rotate",
+     "rig_L_autoShoulder_pb.inRotate2"
     ],
     [
-     "bns_L_autoShoulder_w.output",
-     "bns_L_autoShoulder_pb.weight"
+     "rig_L_autoShoulder_w.output",
+     "rig_L_autoShoulder_pb.weight"
     ]
    ],
    "note": "outRotate = slerp(inRotate1, inRotate2, weight) (rotInterpolation 1 = quaternion)",
    "weight_expr": "((L_Hand_rot.autoShoulder * L_Hand_rot.IKFK) * 0.5)",
    "outputs": [
     [
-     "bns_L_autoShoulder_pb.outRotate",
-     "L_Shoulder_rot_bnsdrv.rotate"
+     "rig_L_autoShoulder_pb.outRotate",
+     "L_Shoulder_rot_rigdrv.rotate"
     ]
    ],
-   "inRotate2_from": "bns_L_autoShoulder_aim.rotate"
+   "inRotate2_from": "rig_L_autoShoulder_aim.rotate"
   },
   {
-   "node": "bns_L_autoShoulder_w",
+   "node": "rig_L_autoShoulder_w",
    "type": "multDL",
    "settings": {
     "input2": 0.5
    },
    "inputs": [
     [
-     "bns_L_autoShoulder_w1.output",
-     "bns_L_autoShoulder_w.input1"
+     "rig_L_autoShoulder_w1.output",
+     "rig_L_autoShoulder_w.input1"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_L_autoShoulder_w1",
+   "node": "rig_L_autoShoulder_w1",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
      "L_Hand_rot.autoShoulder",
-     "bns_L_autoShoulder_w1.input1"
+     "rig_L_autoShoulder_w1.input1"
     ],
     [
      "L_Hand_rot.IKFK",
-     "bns_L_autoShoulder_w1.input2"
+     "rig_L_autoShoulder_w1.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_L_calf_twist_dm",
+   "node": "rig_L_calf_twist_dm",
    "type": "decomposeMatrix",
    "settings": {
     "inputRotateOrder": 0
    },
    "inputs": [
     [
-     "bns_L_calf_twist_mm.matrixSum",
-     "bns_L_calf_twist_dm.inputMatrix"
+     "rig_L_calf_twist_mm.matrixSum",
+     "rig_L_calf_twist_dm.inputMatrix"
     ]
    ],
    "note": "outputQuat = rotation of inputMatrix as a quaternion"
   },
   {
-   "node": "bns_L_calf_twist_mm",
+   "node": "rig_L_calf_twist_mm",
    "type": "multMatrix",
    "settings": {
     "matrixIn[0]": [
@@ -18014,75 +18014,75 @@
    "inputs": [
     [
      "drv_foot_l.matrix",
-     "bns_L_calf_twist_mm.matrixIn[1]"
+     "rig_L_calf_twist_mm.matrixIn[1]"
     ]
    ],
    "note": "matrixSum = matrixIn[0] * matrixIn[1] * ... (row vectors)"
   },
   {
-   "node": "bns_L_calf_twist_qe",
+   "node": "rig_L_calf_twist_qe",
    "type": "quatToEuler",
    "settings": {
     "inputRotateOrder": 0
    },
    "inputs": [
     [
-     "bns_L_calf_twist_qn.outputQuat",
-     "bns_L_calf_twist_qe.inputQuat"
+     "rig_L_calf_twist_qn.outputQuat",
+     "rig_L_calf_twist_qe.inputQuat"
     ]
    ],
    "note": "outputRotateX = 2 * atan2(x, w) in degrees for a quaternion (x, 0, 0, w)"
   },
   {
-   "node": "bns_L_calf_twist_qn",
+   "node": "rig_L_calf_twist_qn",
    "type": "quatNormalize",
    "settings": {},
    "inputs": [
     [
-     "bns_L_calf_twist_dm.outputQuatX",
-     "bns_L_calf_twist_qn.inputQuatX"
+     "rig_L_calf_twist_dm.outputQuatX",
+     "rig_L_calf_twist_qn.inputQuatX"
     ],
     [
-     "bns_L_calf_twist_dm.outputQuatW",
-     "bns_L_calf_twist_qn.inputQuatW"
+     "rig_L_calf_twist_dm.outputQuatW",
+     "rig_L_calf_twist_qn.inputQuatW"
     ]
    ],
    "note": "outputQuat = normalize(inputQuat) (only X and W are connected: the twist about X)"
   },
   {
-   "node": "bns_L_kneepv_body0_w",
+   "node": "rig_L_kneepv_body0_w",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_L_leg_follow0.outColorR",
-     "bns_L_kneepv_body0_w.input1"
+     "rig_L_leg_follow0.outColorR",
+     "rig_L_kneepv_body0_w.input1"
     ],
     [
-     "bns_L_leg_pvfollow_off.outColorR",
-     "bns_L_kneepv_body0_w.input2"
+     "rig_L_leg_pvfollow_off.outColorR",
+     "rig_L_kneepv_body0_w.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_L_kneepv_body1_w",
+   "node": "rig_L_kneepv_body1_w",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_L_leg_follow1.outColorR",
-     "bns_L_kneepv_body1_w.input1"
+     "rig_L_leg_follow1.outColorR",
+     "rig_L_kneepv_body1_w.input1"
     ],
     [
-     "bns_L_leg_pvfollow_off.outColorR",
-     "bns_L_kneepv_body1_w.input2"
+     "rig_L_leg_pvfollow_off.outColorR",
+     "rig_L_kneepv_body1_w.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_L_leg_end_fk_w",
+   "node": "rig_L_leg_end_fk_w",
    "type": "reverse",
    "settings": {
     "inputY": 0.0,
@@ -18090,46 +18090,46 @@
    },
    "inputs": [
     [
-     "bns_L_anklefix_ik.output",
-     "bns_L_leg_end_fk_w.inputX"
+     "rig_L_anklefix_ik.output",
+     "rig_L_leg_end_fk_w.inputX"
     ]
    ],
    "note": "output = 1 - input"
   },
   {
-   "node": "bns_L_leg_end_space0_w",
+   "node": "rig_L_leg_end_space0_w",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_L_leg_follow0.outColorR",
-     "bns_L_leg_end_space0_w.input1"
+     "rig_L_leg_follow0.outColorR",
+     "rig_L_leg_end_space0_w.input1"
     ],
     [
-     "bns_L_anklefix_ik.output",
-     "bns_L_leg_end_space0_w.input2"
+     "rig_L_anklefix_ik.output",
+     "rig_L_leg_end_space0_w.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_L_leg_end_space1_w",
+   "node": "rig_L_leg_end_space1_w",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_L_leg_follow1.outColorR",
-     "bns_L_leg_end_space1_w.input1"
+     "rig_L_leg_follow1.outColorR",
+     "rig_L_leg_end_space1_w.input1"
     ],
     [
-     "bns_L_anklefix_ik.output",
-     "bns_L_leg_end_space1_w.input2"
+     "rig_L_anklefix_ik.output",
+     "rig_L_leg_end_space1_w.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_L_leg_fkvis",
+   "node": "rig_L_leg_fkvis",
    "type": "condition",
    "settings": {
     "operation": 4,
@@ -18140,13 +18140,13 @@
    "inputs": [
     [
      "L_Foot_rot.IKFK",
-     "bns_L_leg_fkvis.firstTerm"
+     "rig_L_leg_fkvis.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_L_leg_follow0",
+   "node": "rig_L_leg_follow0",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -18157,13 +18157,13 @@
    "inputs": [
     [
      "L_Foot_rot.follow",
-     "bns_L_leg_follow0.firstTerm"
+     "rig_L_leg_follow0.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_L_leg_follow1",
+   "node": "rig_L_leg_follow1",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -18174,13 +18174,13 @@
    "inputs": [
     [
      "L_Foot_rot.follow",
-     "bns_L_leg_follow1.firstTerm"
+     "rig_L_leg_follow1.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_L_leg_ikfk_rev",
+   "node": "rig_L_leg_ikfk_rev",
    "type": "reverse",
    "settings": {
     "inputY": 0.0,
@@ -18189,13 +18189,13 @@
    "inputs": [
     [
      "L_Foot_rot.IKFK",
-     "bns_L_leg_ikfk_rev.inputX"
+     "rig_L_leg_ikfk_rev.inputX"
     ]
    ],
    "note": "output = 1 - input"
   },
   {
-   "node": "bns_L_leg_ikvis",
+   "node": "rig_L_leg_ikvis",
    "type": "condition",
    "settings": {
     "operation": 2,
@@ -18206,13 +18206,13 @@
    "inputs": [
     [
      "L_Foot_rot.IKFK",
-     "bns_L_leg_ikvis.firstTerm"
+     "rig_L_leg_ikvis.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_L_leg_pvfollow_off",
+   "node": "rig_L_leg_pvfollow_off",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -18223,13 +18223,13 @@
    "inputs": [
     [
      "L_Foot_rot.pvFollow",
-     "bns_L_leg_pvfollow_off.firstTerm"
+     "rig_L_leg_pvfollow_off.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_L_leg_pvfollow_on",
+   "node": "rig_L_leg_pvfollow_on",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -18240,27 +18240,27 @@
    "inputs": [
     [
      "L_Foot_rot.pvFollow",
-     "bns_L_leg_pvfollow_on.firstTerm"
+     "rig_L_leg_pvfollow_on.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_L_lowerarm_twist_dm",
+   "node": "rig_L_lowerarm_twist_dm",
    "type": "decomposeMatrix",
    "settings": {
     "inputRotateOrder": 0
    },
    "inputs": [
     [
-     "bns_L_lowerarm_twist_mm.matrixSum",
-     "bns_L_lowerarm_twist_dm.inputMatrix"
+     "rig_L_lowerarm_twist_mm.matrixSum",
+     "rig_L_lowerarm_twist_dm.inputMatrix"
     ]
    ],
    "note": "outputQuat = rotation of inputMatrix as a quaternion"
   },
   {
-   "node": "bns_L_lowerarm_twist_mm",
+   "node": "rig_L_lowerarm_twist_mm",
    "type": "multMatrix",
    "settings": {
     "matrixIn[0]": [
@@ -18285,57 +18285,57 @@
    "inputs": [
     [
      "drv_hand_l.matrix",
-     "bns_L_lowerarm_twist_mm.matrixIn[1]"
+     "rig_L_lowerarm_twist_mm.matrixIn[1]"
     ]
    ],
    "note": "matrixSum = matrixIn[0] * matrixIn[1] * ... (row vectors)"
   },
   {
-   "node": "bns_L_lowerarm_twist_qe",
+   "node": "rig_L_lowerarm_twist_qe",
    "type": "quatToEuler",
    "settings": {
     "inputRotateOrder": 0
    },
    "inputs": [
     [
-     "bns_L_lowerarm_twist_qn.outputQuat",
-     "bns_L_lowerarm_twist_qe.inputQuat"
+     "rig_L_lowerarm_twist_qn.outputQuat",
+     "rig_L_lowerarm_twist_qe.inputQuat"
     ]
    ],
    "note": "outputRotateX = 2 * atan2(x, w) in degrees for a quaternion (x, 0, 0, w)"
   },
   {
-   "node": "bns_L_lowerarm_twist_qn",
+   "node": "rig_L_lowerarm_twist_qn",
    "type": "quatNormalize",
    "settings": {},
    "inputs": [
     [
-     "bns_L_lowerarm_twist_dm.outputQuatX",
-     "bns_L_lowerarm_twist_qn.inputQuatX"
+     "rig_L_lowerarm_twist_dm.outputQuatX",
+     "rig_L_lowerarm_twist_qn.inputQuatX"
     ],
     [
-     "bns_L_lowerarm_twist_dm.outputQuatW",
-     "bns_L_lowerarm_twist_qn.inputQuatW"
+     "rig_L_lowerarm_twist_dm.outputQuatW",
+     "rig_L_lowerarm_twist_qn.inputQuatW"
     ]
    ],
    "note": "outputQuat = normalize(inputQuat) (only X and W are connected: the twist about X)"
   },
   {
-   "node": "bns_L_thigh_twist_dm",
+   "node": "rig_L_thigh_twist_dm",
    "type": "decomposeMatrix",
    "settings": {
     "inputRotateOrder": 0
    },
    "inputs": [
     [
-     "bns_L_thigh_twist_mm.matrixSum",
-     "bns_L_thigh_twist_dm.inputMatrix"
+     "rig_L_thigh_twist_mm.matrixSum",
+     "rig_L_thigh_twist_dm.inputMatrix"
     ]
    ],
    "note": "outputQuat = rotation of inputMatrix as a quaternion"
   },
   {
-   "node": "bns_L_thigh_twist_mm",
+   "node": "rig_L_thigh_twist_mm",
    "type": "multMatrix",
    "settings": {
     "matrixIn[1]": [
@@ -18360,57 +18360,57 @@
    "inputs": [
     [
      "drv_thigh_l.matrix",
-     "bns_L_thigh_twist_mm.matrixIn[0]"
+     "rig_L_thigh_twist_mm.matrixIn[0]"
     ]
    ],
    "note": "matrixSum = matrixIn[0] * matrixIn[1] * ... (row vectors)"
   },
   {
-   "node": "bns_L_thigh_twist_qe",
+   "node": "rig_L_thigh_twist_qe",
    "type": "quatToEuler",
    "settings": {
     "inputRotateOrder": 0
    },
    "inputs": [
     [
-     "bns_L_thigh_twist_qn.outputQuat",
-     "bns_L_thigh_twist_qe.inputQuat"
+     "rig_L_thigh_twist_qn.outputQuat",
+     "rig_L_thigh_twist_qe.inputQuat"
     ]
    ],
    "note": "outputRotateX = 2 * atan2(x, w) in degrees for a quaternion (x, 0, 0, w)"
   },
   {
-   "node": "bns_L_thigh_twist_qn",
+   "node": "rig_L_thigh_twist_qn",
    "type": "quatNormalize",
    "settings": {},
    "inputs": [
     [
-     "bns_L_thigh_twist_dm.outputQuatX",
-     "bns_L_thigh_twist_qn.inputQuatX"
+     "rig_L_thigh_twist_dm.outputQuatX",
+     "rig_L_thigh_twist_qn.inputQuatX"
     ],
     [
-     "bns_L_thigh_twist_dm.outputQuatW",
-     "bns_L_thigh_twist_qn.inputQuatW"
+     "rig_L_thigh_twist_dm.outputQuatW",
+     "rig_L_thigh_twist_qn.inputQuatW"
     ]
    ],
    "note": "outputQuat = normalize(inputQuat) (only X and W are connected: the twist about X)"
   },
   {
-   "node": "bns_L_upperarm_twist_dm",
+   "node": "rig_L_upperarm_twist_dm",
    "type": "decomposeMatrix",
    "settings": {
     "inputRotateOrder": 0
    },
    "inputs": [
     [
-     "bns_L_upperarm_twist_mm.matrixSum",
-     "bns_L_upperarm_twist_dm.inputMatrix"
+     "rig_L_upperarm_twist_mm.matrixSum",
+     "rig_L_upperarm_twist_dm.inputMatrix"
     ]
    ],
    "note": "outputQuat = rotation of inputMatrix as a quaternion"
   },
   {
-   "node": "bns_L_upperarm_twist_mm",
+   "node": "rig_L_upperarm_twist_mm",
    "type": "multMatrix",
    "settings": {
     "matrixIn[1]": [
@@ -18435,59 +18435,59 @@
    "inputs": [
     [
      "drv_upperarm_l.matrix",
-     "bns_L_upperarm_twist_mm.matrixIn[0]"
+     "rig_L_upperarm_twist_mm.matrixIn[0]"
     ]
    ],
    "note": "matrixSum = matrixIn[0] * matrixIn[1] * ... (row vectors)"
   },
   {
-   "node": "bns_L_upperarm_twist_qe",
+   "node": "rig_L_upperarm_twist_qe",
    "type": "quatToEuler",
    "settings": {
     "inputRotateOrder": 0
    },
    "inputs": [
     [
-     "bns_L_upperarm_twist_qn.outputQuat",
-     "bns_L_upperarm_twist_qe.inputQuat"
+     "rig_L_upperarm_twist_qn.outputQuat",
+     "rig_L_upperarm_twist_qe.inputQuat"
     ]
    ],
    "note": "outputRotateX = 2 * atan2(x, w) in degrees for a quaternion (x, 0, 0, w)"
   },
   {
-   "node": "bns_L_upperarm_twist_qn",
+   "node": "rig_L_upperarm_twist_qn",
    "type": "quatNormalize",
    "settings": {},
    "inputs": [
     [
-     "bns_L_upperarm_twist_dm.outputQuatX",
-     "bns_L_upperarm_twist_qn.inputQuatX"
+     "rig_L_upperarm_twist_dm.outputQuatX",
+     "rig_L_upperarm_twist_qn.inputQuatX"
     ],
     [
-     "bns_L_upperarm_twist_dm.outputQuatW",
-     "bns_L_upperarm_twist_qn.inputQuatW"
+     "rig_L_upperarm_twist_dm.outputQuatW",
+     "rig_L_upperarm_twist_qn.inputQuatW"
     ]
    ],
    "note": "outputQuat = normalize(inputQuat) (only X and W are connected: the twist about X)"
   },
   {
-   "node": "bns_L_wristfix_ik",
+   "node": "rig_L_wristfix_ik",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_L_wristfix_on.outColorR",
-     "bns_L_wristfix_ik.input1"
+     "rig_L_wristfix_on.outColorR",
+     "rig_L_wristfix_ik.input1"
     ],
     [
      "L_Hand_rot.IKFK",
-     "bns_L_wristfix_ik.input2"
+     "rig_L_wristfix_ik.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_L_wristfix_on",
+   "node": "rig_L_wristfix_on",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -18498,29 +18498,29 @@
    "inputs": [
     [
      "L_Hand_rot.wristFollow",
-     "bns_L_wristfix_on.firstTerm"
+     "rig_L_wristfix_on.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_R_anklefix_ik",
+   "node": "rig_R_anklefix_ik",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_R_anklefix_on.outColorR",
-     "bns_R_anklefix_ik.input1"
+     "rig_R_anklefix_on.outColorR",
+     "rig_R_anklefix_ik.input1"
     ],
     [
      "R_Foot_rot.IKFK",
-     "bns_R_anklefix_ik.input2"
+     "rig_R_anklefix_ik.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_R_anklefix_on",
+   "node": "rig_R_anklefix_on",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -18531,13 +18531,13 @@
    "inputs": [
     [
      "R_Foot_rot.ankleFollow",
-     "bns_R_anklefix_on.firstTerm"
+     "rig_R_anklefix_on.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_R_arm_end_fk_w",
+   "node": "rig_R_arm_end_fk_w",
    "type": "reverse",
    "settings": {
     "inputY": 0.0,
@@ -18545,62 +18545,62 @@
    },
    "inputs": [
     [
-     "bns_R_wristfix_ik.output",
-     "bns_R_arm_end_fk_w.inputX"
+     "rig_R_wristfix_ik.output",
+     "rig_R_arm_end_fk_w.inputX"
     ]
    ],
    "note": "output = 1 - input"
   },
   {
-   "node": "bns_R_arm_end_space0_w",
+   "node": "rig_R_arm_end_space0_w",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_R_arm_follow0.outColorR",
-     "bns_R_arm_end_space0_w.input1"
+     "rig_R_arm_follow0.outColorR",
+     "rig_R_arm_end_space0_w.input1"
     ],
     [
-     "bns_R_wristfix_ik.output",
-     "bns_R_arm_end_space0_w.input2"
+     "rig_R_wristfix_ik.output",
+     "rig_R_arm_end_space0_w.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_R_arm_end_space1_w",
+   "node": "rig_R_arm_end_space1_w",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_R_arm_follow1.outColorR",
-     "bns_R_arm_end_space1_w.input1"
+     "rig_R_arm_follow1.outColorR",
+     "rig_R_arm_end_space1_w.input1"
     ],
     [
-     "bns_R_wristfix_ik.output",
-     "bns_R_arm_end_space1_w.input2"
+     "rig_R_wristfix_ik.output",
+     "rig_R_arm_end_space1_w.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_R_arm_end_space2_w",
+   "node": "rig_R_arm_end_space2_w",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_R_arm_follow2.outColorR",
-     "bns_R_arm_end_space2_w.input1"
+     "rig_R_arm_follow2.outColorR",
+     "rig_R_arm_end_space2_w.input1"
     ],
     [
-     "bns_R_wristfix_ik.output",
-     "bns_R_arm_end_space2_w.input2"
+     "rig_R_wristfix_ik.output",
+     "rig_R_arm_end_space2_w.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_R_arm_fkvis",
+   "node": "rig_R_arm_fkvis",
    "type": "condition",
    "settings": {
     "operation": 4,
@@ -18611,13 +18611,13 @@
    "inputs": [
     [
      "R_Hand_rot.IKFK",
-     "bns_R_arm_fkvis.firstTerm"
+     "rig_R_arm_fkvis.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_R_arm_follow0",
+   "node": "rig_R_arm_follow0",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -18628,13 +18628,13 @@
    "inputs": [
     [
      "R_Hand_rot.follow",
-     "bns_R_arm_follow0.firstTerm"
+     "rig_R_arm_follow0.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_R_arm_follow1",
+   "node": "rig_R_arm_follow1",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -18645,13 +18645,13 @@
    "inputs": [
     [
      "R_Hand_rot.follow",
-     "bns_R_arm_follow1.firstTerm"
+     "rig_R_arm_follow1.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_R_arm_follow2",
+   "node": "rig_R_arm_follow2",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -18662,13 +18662,13 @@
    "inputs": [
     [
      "R_Hand_rot.follow",
-     "bns_R_arm_follow2.firstTerm"
+     "rig_R_arm_follow2.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_R_arm_ikfk_rev",
+   "node": "rig_R_arm_ikfk_rev",
    "type": "reverse",
    "settings": {
     "inputY": 0.0,
@@ -18677,13 +18677,13 @@
    "inputs": [
     [
      "R_Hand_rot.IKFK",
-     "bns_R_arm_ikfk_rev.inputX"
+     "rig_R_arm_ikfk_rev.inputX"
     ]
    ],
    "note": "output = 1 - input"
   },
   {
-   "node": "bns_R_arm_ikvis",
+   "node": "rig_R_arm_ikvis",
    "type": "condition",
    "settings": {
     "operation": 2,
@@ -18694,13 +18694,13 @@
    "inputs": [
     [
      "R_Hand_rot.IKFK",
-     "bns_R_arm_ikvis.firstTerm"
+     "rig_R_arm_ikvis.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_R_arm_pvfollow_off",
+   "node": "rig_R_arm_pvfollow_off",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -18711,13 +18711,13 @@
    "inputs": [
     [
      "R_Hand_rot.pvFollow",
-     "bns_R_arm_pvfollow_off.firstTerm"
+     "rig_R_arm_pvfollow_off.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_R_arm_pvfollow_on",
+   "node": "rig_R_arm_pvfollow_on",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -18728,13 +18728,13 @@
    "inputs": [
     [
      "R_Hand_rot.pvFollow",
-     "bns_R_arm_pvfollow_on.firstTerm"
+     "rig_R_arm_pvfollow_on.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_R_autoShoulder_pb",
+   "node": "rig_R_autoShoulder_pb",
    "type": "pairBlend",
    "settings": {
     "rotInterpolation": 1,
@@ -18760,70 +18760,70 @@
    },
    "inputs": [
     [
-     "bns_R_autoShoulder_aim.rotate",
-     "bns_R_autoShoulder_pb.inRotate2"
+     "rig_R_autoShoulder_aim.rotate",
+     "rig_R_autoShoulder_pb.inRotate2"
     ],
     [
-     "bns_R_autoShoulder_w.output",
-     "bns_R_autoShoulder_pb.weight"
+     "rig_R_autoShoulder_w.output",
+     "rig_R_autoShoulder_pb.weight"
     ]
    ],
    "note": "outRotate = slerp(inRotate1, inRotate2, weight) (rotInterpolation 1 = quaternion)",
    "weight_expr": "((R_Hand_rot.autoShoulder * R_Hand_rot.IKFK) * 0.5)",
    "outputs": [
     [
-     "bns_R_autoShoulder_pb.outRotate",
-     "R_Shoulder_rot_bnsdrv.rotate"
+     "rig_R_autoShoulder_pb.outRotate",
+     "R_Shoulder_rot_rigdrv.rotate"
     ]
    ],
-   "inRotate2_from": "bns_R_autoShoulder_aim.rotate"
+   "inRotate2_from": "rig_R_autoShoulder_aim.rotate"
   },
   {
-   "node": "bns_R_autoShoulder_w",
+   "node": "rig_R_autoShoulder_w",
    "type": "multDL",
    "settings": {
     "input2": 0.5
    },
    "inputs": [
     [
-     "bns_R_autoShoulder_w1.output",
-     "bns_R_autoShoulder_w.input1"
+     "rig_R_autoShoulder_w1.output",
+     "rig_R_autoShoulder_w.input1"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_R_autoShoulder_w1",
+   "node": "rig_R_autoShoulder_w1",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
      "R_Hand_rot.autoShoulder",
-     "bns_R_autoShoulder_w1.input1"
+     "rig_R_autoShoulder_w1.input1"
     ],
     [
      "R_Hand_rot.IKFK",
-     "bns_R_autoShoulder_w1.input2"
+     "rig_R_autoShoulder_w1.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_R_calf_twist_dm",
+   "node": "rig_R_calf_twist_dm",
    "type": "decomposeMatrix",
    "settings": {
     "inputRotateOrder": 0
    },
    "inputs": [
     [
-     "bns_R_calf_twist_mm.matrixSum",
-     "bns_R_calf_twist_dm.inputMatrix"
+     "rig_R_calf_twist_mm.matrixSum",
+     "rig_R_calf_twist_dm.inputMatrix"
     ]
    ],
    "note": "outputQuat = rotation of inputMatrix as a quaternion"
   },
   {
-   "node": "bns_R_calf_twist_mm",
+   "node": "rig_R_calf_twist_mm",
    "type": "multMatrix",
    "settings": {
     "matrixIn[0]": [
@@ -18848,75 +18848,75 @@
    "inputs": [
     [
      "drv_foot_r.matrix",
-     "bns_R_calf_twist_mm.matrixIn[1]"
+     "rig_R_calf_twist_mm.matrixIn[1]"
     ]
    ],
    "note": "matrixSum = matrixIn[0] * matrixIn[1] * ... (row vectors)"
   },
   {
-   "node": "bns_R_calf_twist_qe",
+   "node": "rig_R_calf_twist_qe",
    "type": "quatToEuler",
    "settings": {
     "inputRotateOrder": 0
    },
    "inputs": [
     [
-     "bns_R_calf_twist_qn.outputQuat",
-     "bns_R_calf_twist_qe.inputQuat"
+     "rig_R_calf_twist_qn.outputQuat",
+     "rig_R_calf_twist_qe.inputQuat"
     ]
    ],
    "note": "outputRotateX = 2 * atan2(x, w) in degrees for a quaternion (x, 0, 0, w)"
   },
   {
-   "node": "bns_R_calf_twist_qn",
+   "node": "rig_R_calf_twist_qn",
    "type": "quatNormalize",
    "settings": {},
    "inputs": [
     [
-     "bns_R_calf_twist_dm.outputQuatX",
-     "bns_R_calf_twist_qn.inputQuatX"
+     "rig_R_calf_twist_dm.outputQuatX",
+     "rig_R_calf_twist_qn.inputQuatX"
     ],
     [
-     "bns_R_calf_twist_dm.outputQuatW",
-     "bns_R_calf_twist_qn.inputQuatW"
+     "rig_R_calf_twist_dm.outputQuatW",
+     "rig_R_calf_twist_qn.inputQuatW"
     ]
    ],
    "note": "outputQuat = normalize(inputQuat) (only X and W are connected: the twist about X)"
   },
   {
-   "node": "bns_R_kneepv_body0_w",
+   "node": "rig_R_kneepv_body0_w",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_R_leg_follow0.outColorR",
-     "bns_R_kneepv_body0_w.input1"
+     "rig_R_leg_follow0.outColorR",
+     "rig_R_kneepv_body0_w.input1"
     ],
     [
-     "bns_R_leg_pvfollow_off.outColorR",
-     "bns_R_kneepv_body0_w.input2"
+     "rig_R_leg_pvfollow_off.outColorR",
+     "rig_R_kneepv_body0_w.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_R_kneepv_body1_w",
+   "node": "rig_R_kneepv_body1_w",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_R_leg_follow1.outColorR",
-     "bns_R_kneepv_body1_w.input1"
+     "rig_R_leg_follow1.outColorR",
+     "rig_R_kneepv_body1_w.input1"
     ],
     [
-     "bns_R_leg_pvfollow_off.outColorR",
-     "bns_R_kneepv_body1_w.input2"
+     "rig_R_leg_pvfollow_off.outColorR",
+     "rig_R_kneepv_body1_w.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_R_leg_end_fk_w",
+   "node": "rig_R_leg_end_fk_w",
    "type": "reverse",
    "settings": {
     "inputY": 0.0,
@@ -18924,46 +18924,46 @@
    },
    "inputs": [
     [
-     "bns_R_anklefix_ik.output",
-     "bns_R_leg_end_fk_w.inputX"
+     "rig_R_anklefix_ik.output",
+     "rig_R_leg_end_fk_w.inputX"
     ]
    ],
    "note": "output = 1 - input"
   },
   {
-   "node": "bns_R_leg_end_space0_w",
+   "node": "rig_R_leg_end_space0_w",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_R_leg_follow0.outColorR",
-     "bns_R_leg_end_space0_w.input1"
+     "rig_R_leg_follow0.outColorR",
+     "rig_R_leg_end_space0_w.input1"
     ],
     [
-     "bns_R_anklefix_ik.output",
-     "bns_R_leg_end_space0_w.input2"
+     "rig_R_anklefix_ik.output",
+     "rig_R_leg_end_space0_w.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_R_leg_end_space1_w",
+   "node": "rig_R_leg_end_space1_w",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_R_leg_follow1.outColorR",
-     "bns_R_leg_end_space1_w.input1"
+     "rig_R_leg_follow1.outColorR",
+     "rig_R_leg_end_space1_w.input1"
     ],
     [
-     "bns_R_anklefix_ik.output",
-     "bns_R_leg_end_space1_w.input2"
+     "rig_R_anklefix_ik.output",
+     "rig_R_leg_end_space1_w.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_R_leg_fkvis",
+   "node": "rig_R_leg_fkvis",
    "type": "condition",
    "settings": {
     "operation": 4,
@@ -18974,13 +18974,13 @@
    "inputs": [
     [
      "R_Foot_rot.IKFK",
-     "bns_R_leg_fkvis.firstTerm"
+     "rig_R_leg_fkvis.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_R_leg_follow0",
+   "node": "rig_R_leg_follow0",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -18991,13 +18991,13 @@
    "inputs": [
     [
      "R_Foot_rot.follow",
-     "bns_R_leg_follow0.firstTerm"
+     "rig_R_leg_follow0.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_R_leg_follow1",
+   "node": "rig_R_leg_follow1",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -19008,13 +19008,13 @@
    "inputs": [
     [
      "R_Foot_rot.follow",
-     "bns_R_leg_follow1.firstTerm"
+     "rig_R_leg_follow1.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_R_leg_ikfk_rev",
+   "node": "rig_R_leg_ikfk_rev",
    "type": "reverse",
    "settings": {
     "inputY": 0.0,
@@ -19023,13 +19023,13 @@
    "inputs": [
     [
      "R_Foot_rot.IKFK",
-     "bns_R_leg_ikfk_rev.inputX"
+     "rig_R_leg_ikfk_rev.inputX"
     ]
    ],
    "note": "output = 1 - input"
   },
   {
-   "node": "bns_R_leg_ikvis",
+   "node": "rig_R_leg_ikvis",
    "type": "condition",
    "settings": {
     "operation": 2,
@@ -19040,13 +19040,13 @@
    "inputs": [
     [
      "R_Foot_rot.IKFK",
-     "bns_R_leg_ikvis.firstTerm"
+     "rig_R_leg_ikvis.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_R_leg_pvfollow_off",
+   "node": "rig_R_leg_pvfollow_off",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -19057,13 +19057,13 @@
    "inputs": [
     [
      "R_Foot_rot.pvFollow",
-     "bns_R_leg_pvfollow_off.firstTerm"
+     "rig_R_leg_pvfollow_off.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_R_leg_pvfollow_on",
+   "node": "rig_R_leg_pvfollow_on",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -19074,27 +19074,27 @@
    "inputs": [
     [
      "R_Foot_rot.pvFollow",
-     "bns_R_leg_pvfollow_on.firstTerm"
+     "rig_R_leg_pvfollow_on.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_R_lowerarm_twist_dm",
+   "node": "rig_R_lowerarm_twist_dm",
    "type": "decomposeMatrix",
    "settings": {
     "inputRotateOrder": 0
    },
    "inputs": [
     [
-     "bns_R_lowerarm_twist_mm.matrixSum",
-     "bns_R_lowerarm_twist_dm.inputMatrix"
+     "rig_R_lowerarm_twist_mm.matrixSum",
+     "rig_R_lowerarm_twist_dm.inputMatrix"
     ]
    ],
    "note": "outputQuat = rotation of inputMatrix as a quaternion"
   },
   {
-   "node": "bns_R_lowerarm_twist_mm",
+   "node": "rig_R_lowerarm_twist_mm",
    "type": "multMatrix",
    "settings": {
     "matrixIn[0]": [
@@ -19119,57 +19119,57 @@
    "inputs": [
     [
      "drv_hand_r.matrix",
-     "bns_R_lowerarm_twist_mm.matrixIn[1]"
+     "rig_R_lowerarm_twist_mm.matrixIn[1]"
     ]
    ],
    "note": "matrixSum = matrixIn[0] * matrixIn[1] * ... (row vectors)"
   },
   {
-   "node": "bns_R_lowerarm_twist_qe",
+   "node": "rig_R_lowerarm_twist_qe",
    "type": "quatToEuler",
    "settings": {
     "inputRotateOrder": 0
    },
    "inputs": [
     [
-     "bns_R_lowerarm_twist_qn.outputQuat",
-     "bns_R_lowerarm_twist_qe.inputQuat"
+     "rig_R_lowerarm_twist_qn.outputQuat",
+     "rig_R_lowerarm_twist_qe.inputQuat"
     ]
    ],
    "note": "outputRotateX = 2 * atan2(x, w) in degrees for a quaternion (x, 0, 0, w)"
   },
   {
-   "node": "bns_R_lowerarm_twist_qn",
+   "node": "rig_R_lowerarm_twist_qn",
    "type": "quatNormalize",
    "settings": {},
    "inputs": [
     [
-     "bns_R_lowerarm_twist_dm.outputQuatX",
-     "bns_R_lowerarm_twist_qn.inputQuatX"
+     "rig_R_lowerarm_twist_dm.outputQuatX",
+     "rig_R_lowerarm_twist_qn.inputQuatX"
     ],
     [
-     "bns_R_lowerarm_twist_dm.outputQuatW",
-     "bns_R_lowerarm_twist_qn.inputQuatW"
+     "rig_R_lowerarm_twist_dm.outputQuatW",
+     "rig_R_lowerarm_twist_qn.inputQuatW"
     ]
    ],
    "note": "outputQuat = normalize(inputQuat) (only X and W are connected: the twist about X)"
   },
   {
-   "node": "bns_R_thigh_twist_dm",
+   "node": "rig_R_thigh_twist_dm",
    "type": "decomposeMatrix",
    "settings": {
     "inputRotateOrder": 0
    },
    "inputs": [
     [
-     "bns_R_thigh_twist_mm.matrixSum",
-     "bns_R_thigh_twist_dm.inputMatrix"
+     "rig_R_thigh_twist_mm.matrixSum",
+     "rig_R_thigh_twist_dm.inputMatrix"
     ]
    ],
    "note": "outputQuat = rotation of inputMatrix as a quaternion"
   },
   {
-   "node": "bns_R_thigh_twist_mm",
+   "node": "rig_R_thigh_twist_mm",
    "type": "multMatrix",
    "settings": {
     "matrixIn[1]": [
@@ -19194,57 +19194,57 @@
    "inputs": [
     [
      "drv_thigh_r.matrix",
-     "bns_R_thigh_twist_mm.matrixIn[0]"
+     "rig_R_thigh_twist_mm.matrixIn[0]"
     ]
    ],
    "note": "matrixSum = matrixIn[0] * matrixIn[1] * ... (row vectors)"
   },
   {
-   "node": "bns_R_thigh_twist_qe",
+   "node": "rig_R_thigh_twist_qe",
    "type": "quatToEuler",
    "settings": {
     "inputRotateOrder": 0
    },
    "inputs": [
     [
-     "bns_R_thigh_twist_qn.outputQuat",
-     "bns_R_thigh_twist_qe.inputQuat"
+     "rig_R_thigh_twist_qn.outputQuat",
+     "rig_R_thigh_twist_qe.inputQuat"
     ]
    ],
    "note": "outputRotateX = 2 * atan2(x, w) in degrees for a quaternion (x, 0, 0, w)"
   },
   {
-   "node": "bns_R_thigh_twist_qn",
+   "node": "rig_R_thigh_twist_qn",
    "type": "quatNormalize",
    "settings": {},
    "inputs": [
     [
-     "bns_R_thigh_twist_dm.outputQuatX",
-     "bns_R_thigh_twist_qn.inputQuatX"
+     "rig_R_thigh_twist_dm.outputQuatX",
+     "rig_R_thigh_twist_qn.inputQuatX"
     ],
     [
-     "bns_R_thigh_twist_dm.outputQuatW",
-     "bns_R_thigh_twist_qn.inputQuatW"
+     "rig_R_thigh_twist_dm.outputQuatW",
+     "rig_R_thigh_twist_qn.inputQuatW"
     ]
    ],
    "note": "outputQuat = normalize(inputQuat) (only X and W are connected: the twist about X)"
   },
   {
-   "node": "bns_R_upperarm_twist_dm",
+   "node": "rig_R_upperarm_twist_dm",
    "type": "decomposeMatrix",
    "settings": {
     "inputRotateOrder": 0
    },
    "inputs": [
     [
-     "bns_R_upperarm_twist_mm.matrixSum",
-     "bns_R_upperarm_twist_dm.inputMatrix"
+     "rig_R_upperarm_twist_mm.matrixSum",
+     "rig_R_upperarm_twist_dm.inputMatrix"
     ]
    ],
    "note": "outputQuat = rotation of inputMatrix as a quaternion"
   },
   {
-   "node": "bns_R_upperarm_twist_mm",
+   "node": "rig_R_upperarm_twist_mm",
    "type": "multMatrix",
    "settings": {
     "matrixIn[1]": [
@@ -19269,59 +19269,59 @@
    "inputs": [
     [
      "drv_upperarm_r.matrix",
-     "bns_R_upperarm_twist_mm.matrixIn[0]"
+     "rig_R_upperarm_twist_mm.matrixIn[0]"
     ]
    ],
    "note": "matrixSum = matrixIn[0] * matrixIn[1] * ... (row vectors)"
   },
   {
-   "node": "bns_R_upperarm_twist_qe",
+   "node": "rig_R_upperarm_twist_qe",
    "type": "quatToEuler",
    "settings": {
     "inputRotateOrder": 0
    },
    "inputs": [
     [
-     "bns_R_upperarm_twist_qn.outputQuat",
-     "bns_R_upperarm_twist_qe.inputQuat"
+     "rig_R_upperarm_twist_qn.outputQuat",
+     "rig_R_upperarm_twist_qe.inputQuat"
     ]
    ],
    "note": "outputRotateX = 2 * atan2(x, w) in degrees for a quaternion (x, 0, 0, w)"
   },
   {
-   "node": "bns_R_upperarm_twist_qn",
+   "node": "rig_R_upperarm_twist_qn",
    "type": "quatNormalize",
    "settings": {},
    "inputs": [
     [
-     "bns_R_upperarm_twist_dm.outputQuatX",
-     "bns_R_upperarm_twist_qn.inputQuatX"
+     "rig_R_upperarm_twist_dm.outputQuatX",
+     "rig_R_upperarm_twist_qn.inputQuatX"
     ],
     [
-     "bns_R_upperarm_twist_dm.outputQuatW",
-     "bns_R_upperarm_twist_qn.inputQuatW"
+     "rig_R_upperarm_twist_dm.outputQuatW",
+     "rig_R_upperarm_twist_qn.inputQuatW"
     ]
    ],
    "note": "outputQuat = normalize(inputQuat) (only X and W are connected: the twist about X)"
   },
   {
-   "node": "bns_R_wristfix_ik",
+   "node": "rig_R_wristfix_ik",
    "type": "multDL",
    "settings": {},
    "inputs": [
     [
-     "bns_R_wristfix_on.outColorR",
-     "bns_R_wristfix_ik.input1"
+     "rig_R_wristfix_on.outColorR",
+     "rig_R_wristfix_ik.input1"
     ],
     [
      "R_Hand_rot.IKFK",
-     "bns_R_wristfix_ik.input2"
+     "rig_R_wristfix_ik.input2"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_R_wristfix_on",
+   "node": "rig_R_wristfix_on",
    "type": "condition",
    "settings": {
     "operation": 0,
@@ -19332,13 +19332,13 @@
    "inputs": [
     [
      "R_Hand_rot.wristFollow",
-     "bns_R_wristfix_on.firstTerm"
+     "rig_R_wristfix_on.firstTerm"
     ]
    ],
    "note": "outColorR = (firstTerm OP secondTerm) ? colorIfTrueR : colorIfFalseR ; OP 0 ==, 1 !=, 2 >, 3 >=, 4 <, 5 <="
   },
   {
-   "node": "bns_neck_twist0_md",
+   "node": "rig_neck_twist0_md",
    "type": "multDL",
    "settings": {
     "input2": 0.2
@@ -19346,13 +19346,13 @@
    "inputs": [
     [
      "unitConversion1.output",
-     "bns_neck_twist0_md.input1"
+     "rig_neck_twist0_md.input1"
     ]
    ],
    "note": "output = input1 * input2"
   },
   {
-   "node": "bns_neck_twist1_md",
+   "node": "rig_neck_twist1_md",
    "type": "multDL",
    "settings": {
     "input2": 0.2
@@ -19360,7 +19360,7 @@
    "inputs": [
     [
      "unitConversion3.output",
-     "bns_neck_twist1_md.input1"
+     "rig_neck_twist1_md.input1"
     ]
    ],
    "note": "output = input1 * input2"
@@ -19385,7 +19385,7 @@
    },
    "inputs": [
     [
-     "bns_L_calf_twist_qe.outputRotateX",
+     "rig_L_calf_twist_qe.outputRotateX",
      "drv_calf_twist_01_l_twist_add.inputAX"
     ]
    ],
@@ -19411,7 +19411,7 @@
    },
    "inputs": [
     [
-     "bns_R_calf_twist_qe.outputRotateX",
+     "rig_R_calf_twist_qe.outputRotateX",
      "drv_calf_twist_01_r_twist_add.inputAX"
     ]
    ],
@@ -19437,7 +19437,7 @@
    },
    "inputs": [
     [
-     "bns_L_calf_twist_qe.outputRotateX",
+     "rig_L_calf_twist_qe.outputRotateX",
      "drv_calf_twist_02_l_twist_add.inputAX"
     ]
    ],
@@ -19463,7 +19463,7 @@
    },
    "inputs": [
     [
-     "bns_R_calf_twist_qe.outputRotateX",
+     "rig_R_calf_twist_qe.outputRotateX",
      "drv_calf_twist_02_r_twist_add.inputAX"
     ]
    ],
@@ -19489,7 +19489,7 @@
    },
    "inputs": [
     [
-     "bns_L_lowerarm_twist_qe.outputRotateX",
+     "rig_L_lowerarm_twist_qe.outputRotateX",
      "drv_lowerarm_twist_01_l_twist_add.inputAX"
     ]
    ],
@@ -19515,7 +19515,7 @@
    },
    "inputs": [
     [
-     "bns_R_lowerarm_twist_qe.outputRotateX",
+     "rig_R_lowerarm_twist_qe.outputRotateX",
      "drv_lowerarm_twist_01_r_twist_add.inputAX"
     ]
    ],
@@ -19541,7 +19541,7 @@
    },
    "inputs": [
     [
-     "bns_L_lowerarm_twist_qe.outputRotateX",
+     "rig_L_lowerarm_twist_qe.outputRotateX",
      "drv_lowerarm_twist_02_l_twist_add.inputAX"
     ]
    ],
@@ -19567,7 +19567,7 @@
    },
    "inputs": [
     [
-     "bns_R_lowerarm_twist_qe.outputRotateX",
+     "rig_R_lowerarm_twist_qe.outputRotateX",
      "drv_lowerarm_twist_02_r_twist_add.inputAX"
     ]
    ],
@@ -19593,7 +19593,7 @@
    },
    "inputs": [
     [
-     "bns_L_thigh_twist_qe.outputRotateX",
+     "rig_L_thigh_twist_qe.outputRotateX",
      "drv_thigh_twist_01_l_twist_add.inputAX"
     ]
    ],
@@ -19619,7 +19619,7 @@
    },
    "inputs": [
     [
-     "bns_R_thigh_twist_qe.outputRotateX",
+     "rig_R_thigh_twist_qe.outputRotateX",
      "drv_thigh_twist_01_r_twist_add.inputAX"
     ]
    ],
@@ -19645,7 +19645,7 @@
    },
    "inputs": [
     [
-     "bns_L_thigh_twist_qe.outputRotateX",
+     "rig_L_thigh_twist_qe.outputRotateX",
      "drv_thigh_twist_02_l_twist_add.inputAX"
     ]
    ],
@@ -19671,7 +19671,7 @@
    },
    "inputs": [
     [
-     "bns_R_thigh_twist_qe.outputRotateX",
+     "rig_R_thigh_twist_qe.outputRotateX",
      "drv_thigh_twist_02_r_twist_add.inputAX"
     ]
    ],
@@ -19697,7 +19697,7 @@
    },
    "inputs": [
     [
-     "bns_L_upperarm_twist_qe.outputRotateX",
+     "rig_L_upperarm_twist_qe.outputRotateX",
      "drv_upperarm_twist_01_l_twist_add.inputAX"
     ]
    ],
@@ -19723,7 +19723,7 @@
    },
    "inputs": [
     [
-     "bns_R_upperarm_twist_qe.outputRotateX",
+     "rig_R_upperarm_twist_qe.outputRotateX",
      "drv_upperarm_twist_01_r_twist_add.inputAX"
     ]
    ],
@@ -19749,7 +19749,7 @@
    },
    "inputs": [
     [
-     "bns_L_upperarm_twist_qe.outputRotateX",
+     "rig_L_upperarm_twist_qe.outputRotateX",
      "drv_upperarm_twist_02_l_twist_add.inputAX"
     ]
    ],
@@ -19775,7 +19775,7 @@
    },
    "inputs": [
     [
-     "bns_R_upperarm_twist_qe.outputRotateX",
+     "rig_R_upperarm_twist_qe.outputRotateX",
      "drv_upperarm_twist_02_r_twist_add.inputAX"
     ]
    ],
@@ -19789,7 +19789,7 @@
    },
    "inputs": [
     [
-     "bns_head_aim.rotateZ",
+     "rig_head_aim.rotateZ",
      "unitConversion1.input"
     ]
    ],
@@ -19831,7 +19831,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[19]",
+     "rig_exp_fin_R.output[19]",
      "unitConversion101.input"
     ]
    ],
@@ -19859,7 +19859,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[20]",
+     "rig_exp_fin_R.output[20]",
      "unitConversion103.input"
     ]
    ],
@@ -19887,7 +19887,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[21]",
+     "rig_exp_fin_R.output[21]",
      "unitConversion105.input"
     ]
    ],
@@ -19915,7 +19915,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[22]",
+     "rig_exp_fin_R.output[22]",
      "unitConversion107.input"
     ]
    ],
@@ -19943,7 +19943,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[23]",
+     "rig_exp_fin_R.output[23]",
      "unitConversion109.input"
     ]
    ],
@@ -19957,7 +19957,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[2]",
+     "rig_exp_fin_L.output[2]",
      "unitConversion11.input"
     ]
    ],
@@ -19985,7 +19985,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[24]",
+     "rig_exp_fin_R.output[24]",
      "unitConversion111.input"
     ]
    ],
@@ -19999,7 +19999,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[25]",
+     "rig_exp_fin_R.output[25]",
      "unitConversion112.input"
     ]
    ],
@@ -20027,7 +20027,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[26]",
+     "rig_exp_fin_R.output[26]",
      "unitConversion114.input"
     ]
    ],
@@ -20055,7 +20055,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[27]",
+     "rig_exp_fin_R.output[27]",
      "unitConversion116.input"
     ]
    ],
@@ -20083,7 +20083,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[28]",
+     "rig_exp_fin_R.output[28]",
      "unitConversion118.input"
     ]
    ],
@@ -20125,7 +20125,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[29]",
+     "rig_exp_fin_R.output[29]",
      "unitConversion120.input"
     ]
    ],
@@ -20139,7 +20139,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[3]",
+     "rig_exp_fin_L.output[3]",
      "unitConversion13.input"
     ]
    ],
@@ -20167,7 +20167,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[4]",
+     "rig_exp_fin_L.output[4]",
      "unitConversion15.input"
     ]
    ],
@@ -20195,7 +20195,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[5]",
+     "rig_exp_fin_L.output[5]",
      "unitConversion17.input"
     ]
    ],
@@ -20223,7 +20223,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[6]",
+     "rig_exp_fin_L.output[6]",
      "unitConversion19.input"
     ]
    ],
@@ -20237,7 +20237,7 @@
    },
    "inputs": [
     [
-     "bns_neck_twist0_md.output",
+     "rig_neck_twist0_md.output",
      "unitConversion2.input"
     ]
    ],
@@ -20265,7 +20265,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[7]",
+     "rig_exp_fin_L.output[7]",
      "unitConversion21.input"
     ]
    ],
@@ -20293,7 +20293,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[8]",
+     "rig_exp_fin_L.output[8]",
      "unitConversion23.input"
     ]
    ],
@@ -20307,7 +20307,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[9]",
+     "rig_exp_fin_L.output[9]",
      "unitConversion24.input"
     ]
    ],
@@ -20335,7 +20335,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[10]",
+     "rig_exp_fin_L.output[10]",
      "unitConversion26.input"
     ]
    ],
@@ -20363,7 +20363,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[11]",
+     "rig_exp_fin_L.output[11]",
      "unitConversion28.input"
     ]
    ],
@@ -20391,7 +20391,7 @@
    },
    "inputs": [
     [
-     "bns_head_aim.rotateZ",
+     "rig_head_aim.rotateZ",
      "unitConversion3.input"
     ]
    ],
@@ -20405,7 +20405,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[12]",
+     "rig_exp_fin_L.output[12]",
      "unitConversion30.input"
     ]
    ],
@@ -20433,7 +20433,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[13]",
+     "rig_exp_fin_L.output[13]",
      "unitConversion32.input"
     ]
    ],
@@ -20461,7 +20461,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[14]",
+     "rig_exp_fin_L.output[14]",
      "unitConversion34.input"
     ]
    ],
@@ -20489,7 +20489,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[15]",
+     "rig_exp_fin_L.output[15]",
      "unitConversion36.input"
     ]
    ],
@@ -20517,7 +20517,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[16]",
+     "rig_exp_fin_L.output[16]",
      "unitConversion38.input"
     ]
    ],
@@ -20531,7 +20531,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[17]",
+     "rig_exp_fin_L.output[17]",
      "unitConversion39.input"
     ]
    ],
@@ -20545,7 +20545,7 @@
    },
    "inputs": [
     [
-     "bns_neck_twist1_md.output",
+     "rig_neck_twist1_md.output",
      "unitConversion4.input"
     ]
    ],
@@ -20573,7 +20573,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[18]",
+     "rig_exp_fin_L.output[18]",
      "unitConversion41.input"
     ]
    ],
@@ -20601,7 +20601,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[19]",
+     "rig_exp_fin_L.output[19]",
      "unitConversion43.input"
     ]
    ],
@@ -20629,7 +20629,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[20]",
+     "rig_exp_fin_L.output[20]",
      "unitConversion45.input"
     ]
    ],
@@ -20657,7 +20657,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[21]",
+     "rig_exp_fin_L.output[21]",
      "unitConversion47.input"
     ]
    ],
@@ -20685,7 +20685,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[22]",
+     "rig_exp_fin_L.output[22]",
      "unitConversion49.input"
     ]
    ],
@@ -20727,7 +20727,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[23]",
+     "rig_exp_fin_L.output[23]",
      "unitConversion51.input"
     ]
    ],
@@ -20755,7 +20755,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[24]",
+     "rig_exp_fin_L.output[24]",
      "unitConversion53.input"
     ]
    ],
@@ -20769,7 +20769,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[25]",
+     "rig_exp_fin_L.output[25]",
      "unitConversion54.input"
     ]
    ],
@@ -20797,7 +20797,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[26]",
+     "rig_exp_fin_L.output[26]",
      "unitConversion56.input"
     ]
    ],
@@ -20825,7 +20825,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[27]",
+     "rig_exp_fin_L.output[27]",
      "unitConversion58.input"
     ]
    ],
@@ -20867,7 +20867,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[28]",
+     "rig_exp_fin_L.output[28]",
      "unitConversion60.input"
     ]
    ],
@@ -20895,7 +20895,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[29]",
+     "rig_exp_fin_L.output[29]",
      "unitConversion62.input"
     ]
    ],
@@ -20951,7 +20951,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[0]",
+     "rig_exp_fin_R.output[0]",
      "unitConversion66.input"
     ]
    ],
@@ -20965,7 +20965,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[1]",
+     "rig_exp_fin_R.output[1]",
      "unitConversion67.input"
     ]
    ],
@@ -20993,7 +20993,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[2]",
+     "rig_exp_fin_R.output[2]",
      "unitConversion69.input"
     ]
    ],
@@ -21035,7 +21035,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[3]",
+     "rig_exp_fin_R.output[3]",
      "unitConversion71.input"
     ]
    ],
@@ -21063,7 +21063,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[4]",
+     "rig_exp_fin_R.output[4]",
      "unitConversion73.input"
     ]
    ],
@@ -21091,7 +21091,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[5]",
+     "rig_exp_fin_R.output[5]",
      "unitConversion75.input"
     ]
    ],
@@ -21119,7 +21119,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[6]",
+     "rig_exp_fin_R.output[6]",
      "unitConversion77.input"
     ]
    ],
@@ -21147,7 +21147,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[7]",
+     "rig_exp_fin_R.output[7]",
      "unitConversion79.input"
     ]
    ],
@@ -21161,7 +21161,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[0]",
+     "rig_exp_fin_L.output[0]",
      "unitConversion8.input"
     ]
    ],
@@ -21189,7 +21189,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[8]",
+     "rig_exp_fin_R.output[8]",
      "unitConversion81.input"
     ]
    ],
@@ -21203,7 +21203,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[9]",
+     "rig_exp_fin_R.output[9]",
      "unitConversion82.input"
     ]
    ],
@@ -21231,7 +21231,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[10]",
+     "rig_exp_fin_R.output[10]",
      "unitConversion84.input"
     ]
    ],
@@ -21259,7 +21259,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[11]",
+     "rig_exp_fin_R.output[11]",
      "unitConversion86.input"
     ]
    ],
@@ -21287,7 +21287,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[12]",
+     "rig_exp_fin_R.output[12]",
      "unitConversion88.input"
     ]
    ],
@@ -21315,7 +21315,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_L.output[1]",
+     "rig_exp_fin_L.output[1]",
      "unitConversion9.input"
     ]
    ],
@@ -21329,7 +21329,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[13]",
+     "rig_exp_fin_R.output[13]",
      "unitConversion90.input"
     ]
    ],
@@ -21357,7 +21357,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[14]",
+     "rig_exp_fin_R.output[14]",
      "unitConversion92.input"
     ]
    ],
@@ -21385,7 +21385,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[15]",
+     "rig_exp_fin_R.output[15]",
      "unitConversion94.input"
     ]
    ],
@@ -21413,7 +21413,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[16]",
+     "rig_exp_fin_R.output[16]",
      "unitConversion96.input"
     ]
    ],
@@ -21427,7 +21427,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[17]",
+     "rig_exp_fin_R.output[17]",
      "unitConversion97.input"
     ]
    ],
@@ -21455,7 +21455,7 @@
    },
    "inputs": [
     [
-     "bns_exp_fin_R.output[18]",
+     "rig_exp_fin_R.output[18]",
      "unitConversion99.input"
     ]
    ],
@@ -21508,7 +21508,7 @@
    "is_control": false
   },
   {
-   "name": "bns_spine_hip_tgt",
+   "name": "rig_spine_hip_tgt",
    "type": "transform",
    "parent": "Hip2_rot",
    "world_matrix": [
@@ -21552,7 +21552,7 @@
    "is_control": false
   },
   {
-   "name": "bns_spine_hip_up",
+   "name": "rig_spine_hip_up",
    "type": "transform",
    "parent": "Hip2_rot",
    "world_matrix": [
@@ -21596,7 +21596,7 @@
    "is_control": false
   },
   {
-   "name": "bns_spine_up_hip",
+   "name": "rig_spine_up_hip",
    "type": "transform",
    "parent": "Hip2_rot",
    "world_matrix": [
@@ -22036,7 +22036,7 @@
    "is_control": false
   },
   {
-   "name": "bns_spine_chest_tgt",
+   "name": "rig_spine_chest_tgt",
    "type": "transform",
    "parent": "Spine_rot",
    "world_matrix": [
@@ -22080,7 +22080,7 @@
    "is_control": false
   },
   {
-   "name": "bns_spine_chest_up",
+   "name": "rig_spine_chest_up",
    "type": "transform",
    "parent": "Spine_rot",
    "world_matrix": [
@@ -22124,7 +22124,7 @@
    "is_control": false
   },
   {
-   "name": "bns_spine_up_chest",
+   "name": "rig_spine_up_chest",
    "type": "transform",
    "parent": "Spine_rot",
    "world_matrix": [
@@ -22300,7 +22300,7 @@
    "is_control": false
   },
   {
-   "name": "bns_head_aim",
+   "name": "rig_head_aim",
    "type": "transform",
    "parent": "Head_rot",
    "world_matrix": [
@@ -22476,9 +22476,9 @@
    "is_control": false
   },
   {
-   "name": "bns_neck_twist1",
+   "name": "rig_neck_twist1",
    "type": "transform",
-   "parent": "bns_neck_twist0",
+   "parent": "rig_neck_twist0",
    "world_matrix": [
     0.0,
     0.0,
@@ -22520,7 +22520,7 @@
    "is_control": false
   },
   {
-   "name": "bns_neck_twist0",
+   "name": "rig_neck_twist0",
    "type": "transform",
    "parent": "Neck_rot",
    "world_matrix": [
@@ -22830,7 +22830,7 @@
   {
    "name": "L_Shoulder_rot",
    "type": "transform",
-   "parent": "L_Shoulder_rot_bnsdrv",
+   "parent": "L_Shoulder_rot_rigdrv",
    "world_matrix": [
     0.987223,
     -0.15259,
@@ -22872,7 +22872,7 @@
    "is_control": true
   },
   {
-   "name": "L_Shoulder_rot_bnsdrv",
+   "name": "L_Shoulder_rot_rigdrv",
    "type": "transform",
    "parent": "L_Shoulder_rot_L0_ik_cns",
    "world_matrix": [
@@ -22916,9 +22916,9 @@
    "is_control": false
   },
   {
-   "name": "bns_L_autoShoulder_aim",
+   "name": "rig_L_autoShoulder_aim",
    "type": "transform",
-   "parent": "bns_L_autoShoulder_rest",
+   "parent": "rig_L_autoShoulder_rest",
    "world_matrix": [
     0.987223,
     -0.15259,
@@ -22960,7 +22960,7 @@
    "is_control": false
   },
   {
-   "name": "bns_L_autoShoulder_rest",
+   "name": "rig_L_autoShoulder_rest",
    "type": "transform",
    "parent": "L_Shoulder_rot_L0_ik_cns",
    "world_matrix": [
@@ -23886,7 +23886,7 @@
   {
    "name": "L_Thumb1",
    "type": "transform",
-   "parent": "L_Thumb1_bnsopp_back",
+   "parent": "L_Thumb1_rigopp_back",
    "world_matrix": [
     -0.236777,
     -0.467446,
@@ -23928,9 +23928,9 @@
    "is_control": true
   },
   {
-   "name": "L_Thumb1_bnsopp_back",
+   "name": "L_Thumb1_rigopp_back",
    "type": "transform",
-   "parent": "L_Thumb1_bnsopp",
+   "parent": "L_Thumb1_rigopp",
    "world_matrix": [
     -0.236777,
     -0.467446,
@@ -23972,9 +23972,9 @@
    "is_control": false
   },
   {
-   "name": "L_Thumb1_bnsopp",
+   "name": "L_Thumb1_rigopp",
    "type": "transform",
-   "parent": "L_Thumb1_bnsopp_ofs",
+   "parent": "L_Thumb1_rigopp_ofs",
    "world_matrix": [
     -0.975389,
     0.219121,
@@ -24016,7 +24016,7 @@
    "is_control": false
   },
   {
-   "name": "L_Thumb1_bnsopp_ofs",
+   "name": "L_Thumb1_rigopp_ofs",
    "type": "transform",
    "parent": "L_Thumb1_L0_ik_cns",
    "world_matrix": [
@@ -24150,7 +24150,7 @@
   {
    "name": "L_Index3",
    "type": "transform",
-   "parent": "L_Index3_bnsdrv",
+   "parent": "L_Index3_rigdrv",
    "world_matrix": [
     -0.071879,
     -0.921402,
@@ -24192,7 +24192,7 @@
    "is_control": true
   },
   {
-   "name": "L_Index3_bnsdrv",
+   "name": "L_Index3_rigdrv",
    "type": "transform",
    "parent": "L_Index3_L0_ik_cns",
    "world_matrix": [
@@ -24326,7 +24326,7 @@
   {
    "name": "L_Index2",
    "type": "transform",
-   "parent": "L_Index2_bnsdrv",
+   "parent": "L_Index2_rigdrv",
    "world_matrix": [
     -0.071879,
     -0.921402,
@@ -24368,7 +24368,7 @@
    "is_control": true
   },
   {
-   "name": "L_Index2_bnsdrv",
+   "name": "L_Index2_rigdrv",
    "type": "transform",
    "parent": "L_Index2_L0_ik_cns",
    "world_matrix": [
@@ -24502,7 +24502,7 @@
   {
    "name": "L_Index1",
    "type": "transform",
-   "parent": "L_Index1_bnsdrv",
+   "parent": "L_Index1_rigdrv",
    "world_matrix": [
     0.112825,
     -0.833399,
@@ -24544,7 +24544,7 @@
    "is_control": true
   },
   {
-   "name": "L_Index1_bnsdrv",
+   "name": "L_Index1_rigdrv",
    "type": "transform",
    "parent": "L_Index1_L0_ik_cns",
    "world_matrix": [
@@ -24678,7 +24678,7 @@
   {
    "name": "L_Middle3",
    "type": "transform",
-   "parent": "L_Middle3_bnsdrv",
+   "parent": "L_Middle3_rigdrv",
    "world_matrix": [
     -0.234319,
     -0.94077,
@@ -24720,7 +24720,7 @@
    "is_control": true
   },
   {
-   "name": "L_Middle3_bnsdrv",
+   "name": "L_Middle3_rigdrv",
    "type": "transform",
    "parent": "L_Middle3_L0_ik_cns",
    "world_matrix": [
@@ -24854,7 +24854,7 @@
   {
    "name": "L_Middle2",
    "type": "transform",
-   "parent": "L_Middle2_bnsdrv",
+   "parent": "L_Middle2_rigdrv",
    "world_matrix": [
     -0.234319,
     -0.94077,
@@ -24896,7 +24896,7 @@
    "is_control": true
   },
   {
-   "name": "L_Middle2_bnsdrv",
+   "name": "L_Middle2_rigdrv",
    "type": "transform",
    "parent": "L_Middle2_L0_ik_cns",
    "world_matrix": [
@@ -25030,7 +25030,7 @@
   {
    "name": "L_Middle1",
    "type": "transform",
-   "parent": "L_Middle1_bnsdrv",
+   "parent": "L_Middle1_rigdrv",
    "world_matrix": [
     0.062226,
     -0.893591,
@@ -25072,7 +25072,7 @@
    "is_control": true
   },
   {
-   "name": "L_Middle1_bnsdrv",
+   "name": "L_Middle1_rigdrv",
    "type": "transform",
    "parent": "L_Middle1_L0_ik_cns",
    "world_matrix": [
@@ -25206,7 +25206,7 @@
   {
    "name": "L_Middle0",
    "type": "transform",
-   "parent": "L_Middle0_bnsdrv",
+   "parent": "L_Middle0_rigdrv",
    "world_matrix": [
     0.512116,
     -0.550735,
@@ -25248,7 +25248,7 @@
    "is_control": true
   },
   {
-   "name": "L_Middle0_bnsdrv",
+   "name": "L_Middle0_rigdrv",
    "type": "transform",
    "parent": "L_Middle0_L0_ik_cns",
    "world_matrix": [
@@ -25382,7 +25382,7 @@
   {
    "name": "L_Ring3",
    "type": "transform",
-   "parent": "L_Ring3_bnsdrv",
+   "parent": "L_Ring3_rigdrv",
    "world_matrix": [
     -0.13914,
     -0.959038,
@@ -25424,7 +25424,7 @@
    "is_control": true
   },
   {
-   "name": "L_Ring3_bnsdrv",
+   "name": "L_Ring3_rigdrv",
    "type": "transform",
    "parent": "L_Ring3_L0_ik_cns",
    "world_matrix": [
@@ -25558,7 +25558,7 @@
   {
    "name": "L_Ring2",
    "type": "transform",
-   "parent": "L_Ring2_bnsdrv",
+   "parent": "L_Ring2_rigdrv",
    "world_matrix": [
     -0.13914,
     -0.959038,
@@ -25600,7 +25600,7 @@
    "is_control": true
   },
   {
-   "name": "L_Ring2_bnsdrv",
+   "name": "L_Ring2_rigdrv",
    "type": "transform",
    "parent": "L_Ring2_L0_ik_cns",
    "world_matrix": [
@@ -25734,7 +25734,7 @@
   {
    "name": "L_Ring1",
    "type": "transform",
-   "parent": "L_Ring1_bnsdrv",
+   "parent": "L_Ring1_rigdrv",
    "world_matrix": [
     0.156238,
     -0.909931,
@@ -25776,7 +25776,7 @@
    "is_control": true
   },
   {
-   "name": "L_Ring1_bnsdrv",
+   "name": "L_Ring1_rigdrv",
    "type": "transform",
    "parent": "L_Ring1_L0_ik_cns",
    "world_matrix": [
@@ -25910,7 +25910,7 @@
   {
    "name": "L_Ring0",
    "type": "transform",
-   "parent": "L_Ring0_bnsdrv",
+   "parent": "L_Ring0_rigdrv",
    "world_matrix": [
     0.512116,
     -0.550735,
@@ -25952,7 +25952,7 @@
    "is_control": true
   },
   {
-   "name": "L_Ring0_bnsdrv",
+   "name": "L_Ring0_rigdrv",
    "type": "transform",
    "parent": "L_Ring0_L0_ik_cns",
    "world_matrix": [
@@ -26086,7 +26086,7 @@
   {
    "name": "L_Pinky3",
    "type": "transform",
-   "parent": "L_Pinky3_bnsdrv",
+   "parent": "L_Pinky3_rigdrv",
    "world_matrix": [
     -0.092201,
     -0.972497,
@@ -26128,7 +26128,7 @@
    "is_control": true
   },
   {
-   "name": "L_Pinky3_bnsdrv",
+   "name": "L_Pinky3_rigdrv",
    "type": "transform",
    "parent": "L_Pinky3_L0_ik_cns",
    "world_matrix": [
@@ -26262,7 +26262,7 @@
   {
    "name": "L_Pinky2",
    "type": "transform",
-   "parent": "L_Pinky2_bnsdrv",
+   "parent": "L_Pinky2_rigdrv",
    "world_matrix": [
     -0.092201,
     -0.972497,
@@ -26304,7 +26304,7 @@
    "is_control": true
   },
   {
-   "name": "L_Pinky2_bnsdrv",
+   "name": "L_Pinky2_rigdrv",
    "type": "transform",
    "parent": "L_Pinky2_L0_ik_cns",
    "world_matrix": [
@@ -26438,7 +26438,7 @@
   {
    "name": "L_Pinky1",
    "type": "transform",
-   "parent": "L_Pinky1_bnsdrv",
+   "parent": "L_Pinky1_rigdrv",
    "world_matrix": [
     0.263541,
     -0.917789,
@@ -26480,7 +26480,7 @@
    "is_control": true
   },
   {
-   "name": "L_Pinky1_bnsdrv",
+   "name": "L_Pinky1_rigdrv",
    "type": "transform",
    "parent": "L_Pinky1_L0_ik_cns",
    "world_matrix": [
@@ -26614,7 +26614,7 @@
   {
    "name": "L_Pinky0",
    "type": "transform",
-   "parent": "L_Pinky0_bnsdrv",
+   "parent": "L_Pinky0_rigdrv",
    "world_matrix": [
     0.512116,
     -0.550735,
@@ -26656,7 +26656,7 @@
    "is_control": true
   },
   {
-   "name": "L_Pinky0_bnsdrv",
+   "name": "L_Pinky0_rigdrv",
    "type": "transform",
    "parent": "L_Pinky0_L0_ik_cns",
    "world_matrix": [
@@ -27582,7 +27582,7 @@
   {
    "name": "R_Shoulder_rot",
    "type": "transform",
-   "parent": "R_Shoulder_rot_bnsdrv",
+   "parent": "R_Shoulder_rot_rigdrv",
    "world_matrix": [
     0.98722,
     0.152614,
@@ -27624,7 +27624,7 @@
    "is_control": true
   },
   {
-   "name": "R_Shoulder_rot_bnsdrv",
+   "name": "R_Shoulder_rot_rigdrv",
    "type": "transform",
    "parent": "R_Shoulder_rot_R0_ik_cns",
    "world_matrix": [
@@ -27668,9 +27668,9 @@
    "is_control": false
   },
   {
-   "name": "bns_R_autoShoulder_aim",
+   "name": "rig_R_autoShoulder_aim",
    "type": "transform",
-   "parent": "bns_R_autoShoulder_rest",
+   "parent": "rig_R_autoShoulder_rest",
    "world_matrix": [
     0.98722,
     0.152614,
@@ -27712,7 +27712,7 @@
    "is_control": false
   },
   {
-   "name": "bns_R_autoShoulder_rest",
+   "name": "rig_R_autoShoulder_rest",
    "type": "transform",
    "parent": "R_Shoulder_rot_R0_ik_cns",
    "world_matrix": [
@@ -28638,7 +28638,7 @@
   {
    "name": "R_Thumb1",
    "type": "transform",
-   "parent": "R_Thumb1_bnsopp_back",
+   "parent": "R_Thumb1_rigopp_back",
    "world_matrix": [
     0.236784,
     -0.467355,
@@ -28680,9 +28680,9 @@
    "is_control": true
   },
   {
-   "name": "R_Thumb1_bnsopp_back",
+   "name": "R_Thumb1_rigopp_back",
    "type": "transform",
-   "parent": "R_Thumb1_bnsopp",
+   "parent": "R_Thumb1_rigopp",
    "world_matrix": [
     0.236784,
     -0.467355,
@@ -28724,9 +28724,9 @@
    "is_control": false
   },
   {
-   "name": "R_Thumb1_bnsopp",
+   "name": "R_Thumb1_rigopp",
    "type": "transform",
-   "parent": "R_Thumb1_bnsopp_ofs",
+   "parent": "R_Thumb1_rigopp_ofs",
    "world_matrix": [
     0.975391,
     0.219117,
@@ -28768,7 +28768,7 @@
    "is_control": false
   },
   {
-   "name": "R_Thumb1_bnsopp_ofs",
+   "name": "R_Thumb1_rigopp_ofs",
    "type": "transform",
    "parent": "R_Thumb1_R0_ik_cns",
    "world_matrix": [
@@ -28902,7 +28902,7 @@
   {
    "name": "R_Index3",
    "type": "transform",
-   "parent": "R_Index3_bnsdrv",
+   "parent": "R_Index3_rigdrv",
    "world_matrix": [
     0.071867,
     -0.921399,
@@ -28944,7 +28944,7 @@
    "is_control": true
   },
   {
-   "name": "R_Index3_bnsdrv",
+   "name": "R_Index3_rigdrv",
    "type": "transform",
    "parent": "R_Index3_R0_ik_cns",
    "world_matrix": [
@@ -29078,7 +29078,7 @@
   {
    "name": "R_Index2",
    "type": "transform",
-   "parent": "R_Index2_bnsdrv",
+   "parent": "R_Index2_rigdrv",
    "world_matrix": [
     0.071867,
     -0.921399,
@@ -29120,7 +29120,7 @@
    "is_control": true
   },
   {
-   "name": "R_Index2_bnsdrv",
+   "name": "R_Index2_rigdrv",
    "type": "transform",
    "parent": "R_Index2_R0_ik_cns",
    "world_matrix": [
@@ -29254,7 +29254,7 @@
   {
    "name": "R_Index1",
    "type": "transform",
-   "parent": "R_Index1_bnsdrv",
+   "parent": "R_Index1_rigdrv",
    "world_matrix": [
     -0.112821,
     -0.833396,
@@ -29296,7 +29296,7 @@
    "is_control": true
   },
   {
-   "name": "R_Index1_bnsdrv",
+   "name": "R_Index1_rigdrv",
    "type": "transform",
    "parent": "R_Index1_R0_ik_cns",
    "world_matrix": [
@@ -29430,7 +29430,7 @@
   {
    "name": "R_Middle3",
    "type": "transform",
-   "parent": "R_Middle3_bnsdrv",
+   "parent": "R_Middle3_rigdrv",
    "world_matrix": [
     0.234312,
     -0.940766,
@@ -29472,7 +29472,7 @@
    "is_control": true
   },
   {
-   "name": "R_Middle3_bnsdrv",
+   "name": "R_Middle3_rigdrv",
    "type": "transform",
    "parent": "R_Middle3_R0_ik_cns",
    "world_matrix": [
@@ -29606,7 +29606,7 @@
   {
    "name": "R_Middle2",
    "type": "transform",
-   "parent": "R_Middle2_bnsdrv",
+   "parent": "R_Middle2_rigdrv",
    "world_matrix": [
     0.234312,
     -0.940766,
@@ -29648,7 +29648,7 @@
    "is_control": true
   },
   {
-   "name": "R_Middle2_bnsdrv",
+   "name": "R_Middle2_rigdrv",
    "type": "transform",
    "parent": "R_Middle2_R0_ik_cns",
    "world_matrix": [
@@ -29782,7 +29782,7 @@
   {
    "name": "R_Middle1",
    "type": "transform",
-   "parent": "R_Middle1_bnsdrv",
+   "parent": "R_Middle1_rigdrv",
    "world_matrix": [
     -0.062217,
     -0.893598,
@@ -29824,7 +29824,7 @@
    "is_control": true
   },
   {
-   "name": "R_Middle1_bnsdrv",
+   "name": "R_Middle1_rigdrv",
    "type": "transform",
    "parent": "R_Middle1_R0_ik_cns",
    "world_matrix": [
@@ -29958,7 +29958,7 @@
   {
    "name": "R_Middle0",
    "type": "transform",
-   "parent": "R_Middle0_bnsdrv",
+   "parent": "R_Middle0_rigdrv",
    "world_matrix": [
     -0.512138,
     -0.550711,
@@ -30000,7 +30000,7 @@
    "is_control": true
   },
   {
-   "name": "R_Middle0_bnsdrv",
+   "name": "R_Middle0_rigdrv",
    "type": "transform",
    "parent": "R_Middle0_R0_ik_cns",
    "world_matrix": [
@@ -30134,7 +30134,7 @@
   {
    "name": "R_Ring3",
    "type": "transform",
-   "parent": "R_Ring3_bnsdrv",
+   "parent": "R_Ring3_rigdrv",
    "world_matrix": [
     0.139119,
     -0.959039,
@@ -30176,7 +30176,7 @@
    "is_control": true
   },
   {
-   "name": "R_Ring3_bnsdrv",
+   "name": "R_Ring3_rigdrv",
    "type": "transform",
    "parent": "R_Ring3_R0_ik_cns",
    "world_matrix": [
@@ -30310,7 +30310,7 @@
   {
    "name": "R_Ring2",
    "type": "transform",
-   "parent": "R_Ring2_bnsdrv",
+   "parent": "R_Ring2_rigdrv",
    "world_matrix": [
     0.139119,
     -0.959039,
@@ -30352,7 +30352,7 @@
    "is_control": true
   },
   {
-   "name": "R_Ring2_bnsdrv",
+   "name": "R_Ring2_rigdrv",
    "type": "transform",
    "parent": "R_Ring2_R0_ik_cns",
    "world_matrix": [
@@ -30486,7 +30486,7 @@
   {
    "name": "R_Ring1",
    "type": "transform",
-   "parent": "R_Ring1_bnsdrv",
+   "parent": "R_Ring1_rigdrv",
    "world_matrix": [
     -0.156237,
     -0.909933,
@@ -30528,7 +30528,7 @@
    "is_control": true
   },
   {
-   "name": "R_Ring1_bnsdrv",
+   "name": "R_Ring1_rigdrv",
    "type": "transform",
    "parent": "R_Ring1_R0_ik_cns",
    "world_matrix": [
@@ -30662,7 +30662,7 @@
   {
    "name": "R_Ring0",
    "type": "transform",
-   "parent": "R_Ring0_bnsdrv",
+   "parent": "R_Ring0_rigdrv",
    "world_matrix": [
     -0.512138,
     -0.550711,
@@ -30704,7 +30704,7 @@
    "is_control": true
   },
   {
-   "name": "R_Ring0_bnsdrv",
+   "name": "R_Ring0_rigdrv",
    "type": "transform",
    "parent": "R_Ring0_R0_ik_cns",
    "world_matrix": [
@@ -30838,7 +30838,7 @@
   {
    "name": "R_Pinky3",
    "type": "transform",
-   "parent": "R_Pinky3_bnsdrv",
+   "parent": "R_Pinky3_rigdrv",
    "world_matrix": [
     0.092206,
     -0.9725,
@@ -30880,7 +30880,7 @@
    "is_control": true
   },
   {
-   "name": "R_Pinky3_bnsdrv",
+   "name": "R_Pinky3_rigdrv",
    "type": "transform",
    "parent": "R_Pinky3_R0_ik_cns",
    "world_matrix": [
@@ -31014,7 +31014,7 @@
   {
    "name": "R_Pinky2",
    "type": "transform",
-   "parent": "R_Pinky2_bnsdrv",
+   "parent": "R_Pinky2_rigdrv",
    "world_matrix": [
     0.092206,
     -0.9725,
@@ -31056,7 +31056,7 @@
    "is_control": true
   },
   {
-   "name": "R_Pinky2_bnsdrv",
+   "name": "R_Pinky2_rigdrv",
    "type": "transform",
    "parent": "R_Pinky2_R0_ik_cns",
    "world_matrix": [
@@ -31190,7 +31190,7 @@
   {
    "name": "R_Pinky1",
    "type": "transform",
-   "parent": "R_Pinky1_bnsdrv",
+   "parent": "R_Pinky1_rigdrv",
    "world_matrix": [
     -0.263546,
     -0.917785,
@@ -31232,7 +31232,7 @@
    "is_control": true
   },
   {
-   "name": "R_Pinky1_bnsdrv",
+   "name": "R_Pinky1_rigdrv",
    "type": "transform",
    "parent": "R_Pinky1_R0_ik_cns",
    "world_matrix": [
@@ -31366,7 +31366,7 @@
   {
    "name": "R_Pinky0",
    "type": "transform",
-   "parent": "R_Pinky0_bnsdrv",
+   "parent": "R_Pinky0_rigdrv",
    "world_matrix": [
     -0.512138,
     -0.550711,
@@ -31408,7 +31408,7 @@
    "is_control": true
   },
   {
-   "name": "R_Pinky0_bnsdrv",
+   "name": "R_Pinky0_rigdrv",
    "type": "transform",
    "parent": "R_Pinky0_R0_ik_cns",
    "world_matrix": [
@@ -32464,9 +32464,9 @@
    "is_control": true
   },
   {
-   "name": "bns_L_arm_ik",
+   "name": "rig_L_arm_ik",
    "type": "ikHandle",
-   "parent": "bns_ik",
+   "parent": "rig_ik",
    "world_matrix": [
     1.0,
     0.0,
@@ -32508,9 +32508,9 @@
    "is_control": false
   },
   {
-   "name": "bns_L_leg_ik",
+   "name": "rig_L_leg_ik",
    "type": "ikHandle",
-   "parent": "bns_ik",
+   "parent": "rig_ik",
    "world_matrix": [
     1.0,
     0.0,
@@ -32552,9 +32552,9 @@
    "is_control": false
   },
   {
-   "name": "bns_R_arm_ik",
+   "name": "rig_R_arm_ik",
    "type": "ikHandle",
-   "parent": "bns_ik",
+   "parent": "rig_ik",
    "world_matrix": [
     1.0,
     0.0,
@@ -32596,9 +32596,9 @@
    "is_control": false
   },
   {
-   "name": "bns_R_leg_ik",
+   "name": "rig_R_leg_ik",
    "type": "ikHandle",
-   "parent": "bns_ik",
+   "parent": "rig_ik",
    "world_matrix": [
     1.0,
     0.0,
@@ -32640,9 +32640,9 @@
    "is_control": false
   },
   {
-   "name": "bns_ik",
+   "name": "rig_ik",
    "type": "transform",
-   "parent": "bns_world_follow",
+   "parent": "rig_world_follow",
    "world_matrix": [
     1.0,
     0.0,
@@ -34284,7 +34284,7 @@
    ]
   },
   {
-   "name": "bns_L_arm_end_fk",
+   "name": "rig_L_arm_end_fk",
    "type": "transform",
    "parent": "drv_lowerarm_l",
    "world_matrix": [
@@ -34584,9 +34584,9 @@
    ]
   },
   {
-   "name": "bnsik_hand_l",
+   "name": "rigik_hand_l",
    "type": "joint",
-   "parent": "bnsik_lowerarm_l",
+   "parent": "rigik_lowerarm_l",
    "world_matrix": [
     0.457766,
     -0.634867,
@@ -34648,9 +34648,9 @@
    ]
   },
   {
-   "name": "bnsik_lowerarm_l",
+   "name": "rigik_lowerarm_l",
    "type": "joint",
-   "parent": "bnsik_upperarm_l",
+   "parent": "rigik_upperarm_l",
    "world_matrix": [
     0.468298,
     -0.602744,
@@ -34712,7 +34712,7 @@
    ]
   },
   {
-   "name": "bnsik_upperarm_l",
+   "name": "rigik_upperarm_l",
    "type": "joint",
    "parent": "drv_clavicle_l",
    "world_matrix": [
@@ -34776,9 +34776,9 @@
    ]
   },
   {
-   "name": "bnsfk_hand_l",
+   "name": "rigfk_hand_l",
    "type": "joint",
-   "parent": "bnsfk_lowerarm_l",
+   "parent": "rigfk_lowerarm_l",
    "world_matrix": [
     0.457766,
     -0.634867,
@@ -34840,9 +34840,9 @@
    ]
   },
   {
-   "name": "bnsfk_lowerarm_l",
+   "name": "rigfk_lowerarm_l",
    "type": "joint",
-   "parent": "bnsfk_upperarm_l",
+   "parent": "rigfk_upperarm_l",
    "world_matrix": [
     0.468298,
     -0.602744,
@@ -34904,7 +34904,7 @@
    ]
   },
   {
-   "name": "bnsfk_upperarm_l",
+   "name": "rigfk_upperarm_l",
    "type": "joint",
    "parent": "drv_clavicle_l",
    "world_matrix": [
@@ -36376,7 +36376,7 @@
    ]
   },
   {
-   "name": "bns_L_arm_end_space3",
+   "name": "rig_L_arm_end_space3",
    "type": "transform",
    "parent": "drv_hand_r",
    "world_matrix": [
@@ -36484,7 +36484,7 @@
    ]
   },
   {
-   "name": "bns_R_arm_end_fk",
+   "name": "rig_R_arm_end_fk",
    "type": "transform",
    "parent": "drv_lowerarm_r",
    "world_matrix": [
@@ -36784,9 +36784,9 @@
    ]
   },
   {
-   "name": "bnsik_hand_r",
+   "name": "rigik_hand_r",
    "type": "joint",
-   "parent": "bnsik_lowerarm_r",
+   "parent": "rigik_lowerarm_r",
    "world_matrix": [
     0.457766,
     0.634867,
@@ -36848,9 +36848,9 @@
    ]
   },
   {
-   "name": "bnsik_lowerarm_r",
+   "name": "rigik_lowerarm_r",
    "type": "joint",
-   "parent": "bnsik_upperarm_r",
+   "parent": "rigik_upperarm_r",
    "world_matrix": [
     0.468298,
     0.602744,
@@ -36912,7 +36912,7 @@
    ]
   },
   {
-   "name": "bnsik_upperarm_r",
+   "name": "rigik_upperarm_r",
    "type": "joint",
    "parent": "drv_clavicle_r",
    "world_matrix": [
@@ -36976,9 +36976,9 @@
    ]
   },
   {
-   "name": "bnsfk_hand_r",
+   "name": "rigfk_hand_r",
    "type": "joint",
-   "parent": "bnsfk_lowerarm_r",
+   "parent": "rigfk_lowerarm_r",
    "world_matrix": [
     0.457766,
     0.634867,
@@ -37040,9 +37040,9 @@
    ]
   },
   {
-   "name": "bnsfk_lowerarm_r",
+   "name": "rigfk_lowerarm_r",
    "type": "joint",
-   "parent": "bnsfk_upperarm_r",
+   "parent": "rigfk_upperarm_r",
    "world_matrix": [
     0.468298,
     0.602744,
@@ -37104,7 +37104,7 @@
    ]
   },
   {
-   "name": "bnsfk_upperarm_r",
+   "name": "rigfk_upperarm_r",
    "type": "joint",
    "parent": "drv_clavicle_r",
    "world_matrix": [
@@ -37232,7 +37232,7 @@
    ]
   },
   {
-   "name": "bns_L_arm_end_space1",
+   "name": "rig_L_arm_end_space1",
    "type": "transform",
    "parent": "drv_spine_05",
    "world_matrix": [
@@ -37276,7 +37276,7 @@
    "is_control": false
   },
   {
-   "name": "bns_R_arm_end_space1",
+   "name": "rig_R_arm_end_space1",
    "type": "transform",
    "parent": "drv_spine_05",
    "world_matrix": [
@@ -37896,7 +37896,7 @@
    ]
   },
   {
-   "name": "bns_R_leg_end_fk",
+   "name": "rig_R_leg_end_fk",
    "type": "transform",
    "parent": "drv_calf_r",
    "world_matrix": [
@@ -38452,7 +38452,7 @@
    ]
   },
   {
-   "name": "bns_L_leg_end_fk",
+   "name": "rig_L_leg_end_fk",
    "type": "transform",
    "parent": "drv_calf_l",
    "world_matrix": [
@@ -38752,7 +38752,7 @@
    ]
   },
   {
-   "name": "bns_L_arm_end_space2",
+   "name": "rig_L_arm_end_space2",
    "type": "transform",
    "parent": "drv_pelvis",
    "world_matrix": [
@@ -38796,9 +38796,9 @@
    "is_control": false
   },
   {
-   "name": "bnsik_foot_l",
+   "name": "rigik_foot_l",
    "type": "joint",
-   "parent": "bnsik_calf_l",
+   "parent": "rigik_calf_l",
    "world_matrix": [
     0.00465,
     0.999502,
@@ -38860,9 +38860,9 @@
    ]
   },
   {
-   "name": "bnsik_calf_l",
+   "name": "rigik_calf_l",
    "type": "joint",
-   "parent": "bnsik_thigh_l",
+   "parent": "rigik_thigh_l",
    "world_matrix": [
     -0.041578,
     0.99551,
@@ -38924,7 +38924,7 @@
    ]
   },
   {
-   "name": "bnsik_thigh_l",
+   "name": "rigik_thigh_l",
    "type": "joint",
    "parent": "drv_pelvis",
    "world_matrix": [
@@ -38988,9 +38988,9 @@
    ]
   },
   {
-   "name": "bnsfk_foot_l",
+   "name": "rigfk_foot_l",
    "type": "joint",
-   "parent": "bnsfk_calf_l",
+   "parent": "rigfk_calf_l",
    "world_matrix": [
     0.00465,
     0.999502,
@@ -39052,9 +39052,9 @@
    ]
   },
   {
-   "name": "bnsfk_calf_l",
+   "name": "rigfk_calf_l",
    "type": "joint",
-   "parent": "bnsfk_thigh_l",
+   "parent": "rigfk_thigh_l",
    "world_matrix": [
     -0.041578,
     0.99551,
@@ -39116,7 +39116,7 @@
    ]
   },
   {
-   "name": "bnsfk_thigh_l",
+   "name": "rigfk_thigh_l",
    "type": "joint",
    "parent": "drv_pelvis",
    "world_matrix": [
@@ -39180,7 +39180,7 @@
    ]
   },
   {
-   "name": "bns_L_leg_end_space1",
+   "name": "rig_L_leg_end_space1",
    "type": "transform",
    "parent": "drv_pelvis",
    "world_matrix": [
@@ -39224,7 +39224,7 @@
    "is_control": false
   },
   {
-   "name": "bns_L_kneepv_aim",
+   "name": "rig_L_kneepv_aim",
    "type": "transform",
    "parent": "drv_pelvis",
    "world_matrix": [
@@ -39268,7 +39268,7 @@
    "is_control": false
   },
   {
-   "name": "bns_R_arm_end_space2",
+   "name": "rig_R_arm_end_space2",
    "type": "transform",
    "parent": "drv_pelvis",
    "world_matrix": [
@@ -39312,9 +39312,9 @@
    "is_control": false
   },
   {
-   "name": "bnsik_foot_r",
+   "name": "rigik_foot_r",
    "type": "joint",
-   "parent": "bnsik_calf_r",
+   "parent": "rigik_calf_r",
    "world_matrix": [
     0.00465,
     -0.999502,
@@ -39376,9 +39376,9 @@
    ]
   },
   {
-   "name": "bnsik_calf_r",
+   "name": "rigik_calf_r",
    "type": "joint",
-   "parent": "bnsik_thigh_r",
+   "parent": "rigik_thigh_r",
    "world_matrix": [
     -0.041578,
     -0.99551,
@@ -39440,7 +39440,7 @@
    ]
   },
   {
-   "name": "bnsik_thigh_r",
+   "name": "rigik_thigh_r",
    "type": "joint",
    "parent": "drv_pelvis",
    "world_matrix": [
@@ -39504,9 +39504,9 @@
    ]
   },
   {
-   "name": "bnsfk_foot_r",
+   "name": "rigfk_foot_r",
    "type": "joint",
-   "parent": "bnsfk_calf_r",
+   "parent": "rigfk_calf_r",
    "world_matrix": [
     0.00465,
     -0.999502,
@@ -39568,9 +39568,9 @@
    ]
   },
   {
-   "name": "bnsfk_calf_r",
+   "name": "rigfk_calf_r",
    "type": "joint",
-   "parent": "bnsfk_thigh_r",
+   "parent": "rigfk_thigh_r",
    "world_matrix": [
     -0.041578,
     -0.99551,
@@ -39632,7 +39632,7 @@
    ]
   },
   {
-   "name": "bnsfk_thigh_r",
+   "name": "rigfk_thigh_r",
    "type": "joint",
    "parent": "drv_pelvis",
    "world_matrix": [
@@ -39696,7 +39696,7 @@
    ]
   },
   {
-   "name": "bns_R_leg_end_space1",
+   "name": "rig_R_leg_end_space1",
    "type": "transform",
    "parent": "drv_pelvis",
    "world_matrix": [
@@ -39740,7 +39740,7 @@
    "is_control": false
   },
   {
-   "name": "bns_R_kneepv_aim",
+   "name": "rig_R_kneepv_aim",
    "type": "transform",
    "parent": "drv_pelvis",
    "world_matrix": [
@@ -40426,7 +40426,7 @@
   {
    "name": "drv_root",
    "type": "joint",
-   "parent": "bns_drv_skeleton",
+   "parent": "rig_drv_skeleton",
    "world_matrix": [
     1.0,
     0.0,
@@ -40488,9 +40488,9 @@
    ]
   },
   {
-   "name": "bns_drv_skeleton",
+   "name": "rig_drv_skeleton",
    "type": "transform",
-   "parent": "bns_world_follow",
+   "parent": "rig_world_follow",
    "world_matrix": [
     1.0,
     0.0,
@@ -40532,9 +40532,9 @@
    "is_control": false
   },
   {
-   "name": "bns_spine_rollbase",
+   "name": "rig_spine_rollbase",
    "type": "transform",
-   "parent": "bns_spine_base",
+   "parent": "rig_spine_base",
    "world_matrix": [
     -0.0,
     -0.067457,
@@ -40576,9 +40576,9 @@
    "is_control": false
   },
   {
-   "name": "bns_spine_mid_tgt",
+   "name": "rig_spine_mid_tgt",
    "type": "transform",
-   "parent": "bns_spine_base",
+   "parent": "rig_spine_base",
    "world_matrix": [
     1.0,
     0.0,
@@ -40620,9 +40620,9 @@
    "is_control": false
   },
   {
-   "name": "bns_spine_mid_up",
+   "name": "rig_spine_mid_up",
    "type": "transform",
-   "parent": "bns_spine_base",
+   "parent": "rig_spine_base",
    "world_matrix": [
     1.0,
     0.0,
@@ -40664,9 +40664,9 @@
    "is_control": false
   },
   {
-   "name": "bns_spine_seg2",
+   "name": "rig_spine_seg2",
    "type": "transform",
-   "parent": "bns_spine_seg1",
+   "parent": "rig_spine_seg1",
    "world_matrix": [
     1.0,
     0.0,
@@ -40708,9 +40708,9 @@
    "is_control": false
   },
   {
-   "name": "bns_spine_root_pos",
+   "name": "rig_spine_root_pos",
    "type": "transform",
-   "parent": "bns_spine_seg1",
+   "parent": "rig_spine_seg1",
    "world_matrix": [
     1.0,
     0.0,
@@ -40752,9 +40752,9 @@
    "is_control": false
   },
   {
-   "name": "bns_spine_seg1",
+   "name": "rig_spine_seg1",
    "type": "transform",
-   "parent": "bns_spine_base",
+   "parent": "rig_spine_base",
    "world_matrix": [
     1.0,
     0.0,
@@ -40796,9 +40796,9 @@
    "is_control": false
   },
   {
-   "name": "bns_spine_up_mid",
+   "name": "rig_spine_up_mid",
    "type": "transform",
-   "parent": "bns_spine_base",
+   "parent": "rig_spine_base",
    "world_matrix": [
     1.0,
     0.0,
@@ -40840,9 +40840,9 @@
    "is_control": false
   },
   {
-   "name": "bns_spine_base",
+   "name": "rig_spine_base",
    "type": "transform",
-   "parent": "bns_world_follow",
+   "parent": "rig_world_follow",
    "world_matrix": [
     1.0,
     0.0,
@@ -41018,7 +41018,7 @@
   {
    "name": "L_UpperArm_fk_ofs",
    "type": "transform",
-   "parent": "bns_L_arm_fk_root",
+   "parent": "rig_L_arm_fk_root",
    "world_matrix": [
     0.576034,
     -0.817091,
@@ -41060,9 +41060,9 @@
    "is_control": false
   },
   {
-   "name": "bns_L_arm_fk_root",
+   "name": "rig_L_arm_fk_root",
    "type": "transform",
-   "parent": "bns_fk_controls",
+   "parent": "rig_fk_controls",
    "world_matrix": [
     0.987223,
     -0.15259,
@@ -41238,7 +41238,7 @@
   {
    "name": "L_Thigh_fk_ofs",
    "type": "transform",
-   "parent": "bns_L_leg_fk_root",
+   "parent": "rig_L_leg_fk_root",
    "world_matrix": [
     -0.054524,
     0.998512,
@@ -41280,9 +41280,9 @@
    "is_control": false
   },
   {
-   "name": "bns_L_leg_fk_root",
+   "name": "rig_L_leg_fk_root",
    "type": "transform",
-   "parent": "bns_fk_controls",
+   "parent": "rig_fk_controls",
    "world_matrix": [
     0.0,
     0.99799,
@@ -41458,7 +41458,7 @@
   {
    "name": "R_UpperArm_fk_ofs",
    "type": "transform",
-   "parent": "bns_R_arm_fk_root",
+   "parent": "rig_R_arm_fk_root",
    "world_matrix": [
     0.576034,
     0.817091,
@@ -41500,9 +41500,9 @@
    "is_control": false
   },
   {
-   "name": "bns_R_arm_fk_root",
+   "name": "rig_R_arm_fk_root",
    "type": "transform",
-   "parent": "bns_fk_controls",
+   "parent": "rig_fk_controls",
    "world_matrix": [
     0.987223,
     0.15259,
@@ -41678,7 +41678,7 @@
   {
    "name": "R_Thigh_fk_ofs",
    "type": "transform",
-   "parent": "bns_R_leg_fk_root",
+   "parent": "rig_R_leg_fk_root",
    "world_matrix": [
     -0.054524,
     -0.998512,
@@ -41720,9 +41720,9 @@
    "is_control": false
   },
   {
-   "name": "bns_R_leg_fk_root",
+   "name": "rig_R_leg_fk_root",
    "type": "transform",
-   "parent": "bns_fk_controls",
+   "parent": "rig_fk_controls",
    "world_matrix": [
     0.0,
     0.99799,
@@ -41764,9 +41764,9 @@
    "is_control": false
   },
   {
-   "name": "bns_fk_controls",
+   "name": "rig_fk_controls",
    "type": "transform",
-   "parent": "bns_world_follow",
+   "parent": "rig_world_follow",
    "world_matrix": [
     1.0,
     0.0,
@@ -41808,9 +41808,9 @@
    "is_control": false
   },
   {
-   "name": "bns_L_arm_end_space0",
+   "name": "rig_L_arm_end_space0",
    "type": "transform",
-   "parent": "bns_world_follow",
+   "parent": "rig_world_follow",
    "world_matrix": [
     0.468298,
     -0.602744,
@@ -41852,9 +41852,9 @@
    "is_control": false
   },
   {
-   "name": "bns_L_leg_end_space0",
+   "name": "rig_L_leg_end_space0",
    "type": "transform",
-   "parent": "bns_world_follow",
+   "parent": "rig_world_follow",
    "world_matrix": [
     1.0,
     0.0,
@@ -41896,9 +41896,9 @@
    "is_control": false
   },
   {
-   "name": "bns_L_kneepv_world",
+   "name": "rig_L_kneepv_world",
    "type": "transform",
-   "parent": "bns_world_follow",
+   "parent": "rig_world_follow",
    "world_matrix": [
     1.0,
     0.0,
@@ -41940,9 +41940,9 @@
    "is_control": false
   },
   {
-   "name": "bns_R_arm_end_space0",
+   "name": "rig_R_arm_end_space0",
    "type": "transform",
-   "parent": "bns_world_follow",
+   "parent": "rig_world_follow",
    "world_matrix": [
     -0.468298,
     -0.602744,
@@ -41984,9 +41984,9 @@
    "is_control": false
   },
   {
-   "name": "bns_R_leg_end_space0",
+   "name": "rig_R_leg_end_space0",
    "type": "transform",
-   "parent": "bns_world_follow",
+   "parent": "rig_world_follow",
    "world_matrix": [
     1.0,
     0.0,
@@ -42028,9 +42028,9 @@
    "is_control": false
   },
   {
-   "name": "bns_R_kneepv_world",
+   "name": "rig_R_kneepv_world",
    "type": "transform",
-   "parent": "bns_world_follow",
+   "parent": "rig_world_follow",
    "world_matrix": [
     1.0,
     0.0,
@@ -42072,9 +42072,9 @@
    "is_control": false
   },
   {
-   "name": "bns_world_follow",
+   "name": "rig_world_follow",
    "type": "transform",
-   "parent": "bns_setup",
+   "parent": "rig_setup",
    "world_matrix": [
     1.0,
     0.0,
@@ -42116,7 +42116,7 @@
    "is_control": false
   },
   {
-   "name": "bns_setup",
+   "name": "rig_setup",
    "type": "transform",
    "parent": "setup",
    "world_matrix": [
@@ -47285,9 +47285,9 @@
    "type": "orientConstraint",
    "driven": "L_Foot_rot_L0_ik_cns",
    "targets": [
-    "bns_L_leg_end_space0",
-    "bns_L_leg_end_space1",
-    "bns_L_leg_end_fk"
+    "rig_L_leg_end_space0",
+    "rig_L_leg_end_space1",
+    "rig_L_leg_end_fk"
    ],
    "weights": [
     1.0,
@@ -47307,9 +47307,9 @@
    "interp_type": 2,
    "note": "driven world orientation = offset(rotate xyz) * blend(target world orientations); interp 2 = shortest (quaternion slerp)",
    "weight_inputs": [
-    "bns_L_leg_end_space0_w.output",
-    "bns_L_leg_end_space1_w.output",
-    "bns_L_leg_end_fk_w.outputX"
+    "rig_L_leg_end_space0_w.output",
+    "rig_L_leg_end_space1_w.output",
+    "rig_L_leg_end_fk_w.outputX"
    ],
    "weights_expr": [
     "((L_Foot_rot.follow == 0) * ((L_Foot_rot.ankleFollow == 1) * L_Foot_rot.IKFK))",
@@ -47350,7 +47350,7 @@
    "type": "parentConstraint",
    "driven": "L_Foot_trans_L0_ik_cns",
    "targets": [
-    "bns_world_follow",
+    "rig_world_follow",
     "drv_pelvis"
    ],
    "weights": [
@@ -47394,8 +47394,8 @@
    "interp_type": 1,
    "note": "driven.world = offset(TR, rotate xyz) * target.world ; offset is in the target's space",
    "weight_inputs": [
-    "bns_L_leg_follow0.outColorR",
-    "bns_L_leg_follow1.outColorR"
+    "rig_L_leg_follow0.outColorR",
+    "rig_L_leg_follow1.outColorR"
    ],
    "weights_expr": [
     "(L_Foot_rot.follow == 0)",
@@ -47407,11 +47407,11 @@
    "type": "orientConstraint",
    "driven": "L_Hand_rot_L0_ik_cns",
    "targets": [
-    "bns_L_arm_end_space0",
-    "bns_L_arm_end_space1",
-    "bns_L_arm_end_space2",
-    "bns_L_arm_end_space3",
-    "bns_L_arm_end_fk"
+    "rig_L_arm_end_space0",
+    "rig_L_arm_end_space1",
+    "rig_L_arm_end_space2",
+    "rig_L_arm_end_space3",
+    "rig_L_arm_end_fk"
    ],
    "weights": [
     0.0,
@@ -47433,11 +47433,11 @@
    "interp_type": 2,
    "note": "driven world orientation = offset(rotate xyz) * blend(target world orientations); interp 2 = shortest (quaternion slerp)",
    "weight_inputs": [
-    "bns_L_arm_end_space0_w.output",
-    "bns_L_arm_end_space1_w.output",
-    "bns_L_arm_end_space2_w.output",
-    "bns_L_arm_end_space3_w.output",
-    "bns_L_arm_end_fk_w.outputX"
+    "rig_L_arm_end_space0_w.output",
+    "rig_L_arm_end_space1_w.output",
+    "rig_L_arm_end_space2_w.output",
+    "rig_L_arm_end_space3_w.output",
+    "rig_L_arm_end_fk_w.outputX"
    ],
    "weights_expr": [
     "((L_Hand_rot.follow == 0) * ((L_Hand_rot.wristFollow == 1) * L_Hand_rot.IKFK))",
@@ -47490,7 +47490,7 @@
    "type": "parentConstraint",
    "driven": "L_Hand_trans_L0_ik_cns",
    "targets": [
-    "bns_world_follow",
+    "rig_world_follow",
     "drv_spine_05",
     "drv_pelvis",
     "drv_hand_r"
@@ -47562,10 +47562,10 @@
    "interp_type": 1,
    "note": "driven.world = offset(TR, rotate xyz) * target.world ; offset is in the target's space",
    "weight_inputs": [
-    "bns_L_arm_follow0.outColorR",
-    "bns_L_arm_follow1.outColorR",
-    "bns_L_arm_follow2.outColorR",
-    "bns_L_arm_follow3.outColorR"
+    "rig_L_arm_follow0.outColorR",
+    "rig_L_arm_follow1.outColorR",
+    "rig_L_arm_follow2.outColorR",
+    "rig_L_arm_follow3.outColorR"
    ],
    "weights_expr": [
     "(L_Hand_rot.follow == 0)",
@@ -47664,8 +47664,8 @@
    "interp_type": 1,
    "note": "driven.world = offset(TR, rotate xyz) * target.world ; offset is in the target's space",
    "weight_inputs": [
-    "bns_L_arm_pvfollow_off.outColorR",
-    "bns_L_arm_pvfollow_on.outColorR"
+    "rig_L_arm_pvfollow_off.outColorR",
+    "rig_L_arm_pvfollow_on.outColorR"
    ],
    "weights_expr": [
     "(L_Hand_rot.pvFollow == 0)",
@@ -47677,9 +47677,9 @@
    "type": "parentConstraint",
    "driven": "L_knee_pv_L0_ik_cns",
    "targets": [
-    "bns_L_kneepv_world",
+    "rig_L_kneepv_world",
     "drv_pelvis",
-    "bns_L_kneepv_aim"
+    "rig_L_kneepv_aim"
    ],
    "weights": [
     0.0,
@@ -47735,9 +47735,9 @@
    "interp_type": 1,
    "note": "driven.world = offset(TR, rotate xyz) * target.world ; offset is in the target's space",
    "weight_inputs": [
-    "bns_L_kneepv_body0_w.output",
-    "bns_L_kneepv_body1_w.output",
-    "bns_L_leg_pvfollow_on.outColorR"
+    "rig_L_kneepv_body0_w.output",
+    "rig_L_kneepv_body1_w.output",
+    "rig_L_leg_pvfollow_on.outColorR"
    ],
    "weights_expr": [
     "((L_Foot_rot.follow == 0) * (L_Foot_rot.pvFollow == 0))",
@@ -47791,9 +47791,9 @@
    "type": "orientConstraint",
    "driven": "R_Foot_rot_R0_ik_cns",
    "targets": [
-    "bns_R_leg_end_space0",
-    "bns_R_leg_end_space1",
-    "bns_R_leg_end_fk"
+    "rig_R_leg_end_space0",
+    "rig_R_leg_end_space1",
+    "rig_R_leg_end_fk"
    ],
    "weights": [
     1.0,
@@ -47813,9 +47813,9 @@
    "interp_type": 2,
    "note": "driven world orientation = offset(rotate xyz) * blend(target world orientations); interp 2 = shortest (quaternion slerp)",
    "weight_inputs": [
-    "bns_R_leg_end_space0_w.output",
-    "bns_R_leg_end_space1_w.output",
-    "bns_R_leg_end_fk_w.outputX"
+    "rig_R_leg_end_space0_w.output",
+    "rig_R_leg_end_space1_w.output",
+    "rig_R_leg_end_fk_w.outputX"
    ],
    "weights_expr": [
     "((R_Foot_rot.follow == 0) * ((R_Foot_rot.ankleFollow == 1) * R_Foot_rot.IKFK))",
@@ -47856,7 +47856,7 @@
    "type": "parentConstraint",
    "driven": "R_Foot_trans_R0_ik_cns",
    "targets": [
-    "bns_world_follow",
+    "rig_world_follow",
     "drv_pelvis"
    ],
    "weights": [
@@ -47900,8 +47900,8 @@
    "interp_type": 1,
    "note": "driven.world = offset(TR, rotate xyz) * target.world ; offset is in the target's space",
    "weight_inputs": [
-    "bns_R_leg_follow0.outColorR",
-    "bns_R_leg_follow1.outColorR"
+    "rig_R_leg_follow0.outColorR",
+    "rig_R_leg_follow1.outColorR"
    ],
    "weights_expr": [
     "(R_Foot_rot.follow == 0)",
@@ -47913,10 +47913,10 @@
    "type": "orientConstraint",
    "driven": "R_Hand_rot_R0_ik_cns",
    "targets": [
-    "bns_R_arm_end_space0",
-    "bns_R_arm_end_space1",
-    "bns_R_arm_end_space2",
-    "bns_R_arm_end_fk"
+    "rig_R_arm_end_space0",
+    "rig_R_arm_end_space1",
+    "rig_R_arm_end_space2",
+    "rig_R_arm_end_fk"
    ],
    "weights": [
     0.0,
@@ -47937,10 +47937,10 @@
    "interp_type": 2,
    "note": "driven world orientation = offset(rotate xyz) * blend(target world orientations); interp 2 = shortest (quaternion slerp)",
    "weight_inputs": [
-    "bns_R_arm_end_space0_w.output",
-    "bns_R_arm_end_space1_w.output",
-    "bns_R_arm_end_space2_w.output",
-    "bns_R_arm_end_fk_w.outputX"
+    "rig_R_arm_end_space0_w.output",
+    "rig_R_arm_end_space1_w.output",
+    "rig_R_arm_end_space2_w.output",
+    "rig_R_arm_end_fk_w.outputX"
    ],
    "weights_expr": [
     "((R_Hand_rot.follow == 0) * ((R_Hand_rot.wristFollow == 1) * R_Hand_rot.IKFK))",
@@ -47992,7 +47992,7 @@
    "type": "parentConstraint",
    "driven": "R_Hand_trans_R0_ik_cns",
    "targets": [
-    "bns_world_follow",
+    "rig_world_follow",
     "drv_spine_05",
     "drv_pelvis"
    ],
@@ -48050,9 +48050,9 @@
    "interp_type": 1,
    "note": "driven.world = offset(TR, rotate xyz) * target.world ; offset is in the target's space",
    "weight_inputs": [
-    "bns_R_arm_follow0.outColorR",
-    "bns_R_arm_follow1.outColorR",
-    "bns_R_arm_follow2.outColorR"
+    "rig_R_arm_follow0.outColorR",
+    "rig_R_arm_follow1.outColorR",
+    "rig_R_arm_follow2.outColorR"
    ],
    "weights_expr": [
     "(R_Hand_rot.follow == 0)",
@@ -48150,8 +48150,8 @@
    "interp_type": 1,
    "note": "driven.world = offset(TR, rotate xyz) * target.world ; offset is in the target's space",
    "weight_inputs": [
-    "bns_R_arm_pvfollow_off.outColorR",
-    "bns_R_arm_pvfollow_on.outColorR"
+    "rig_R_arm_pvfollow_off.outColorR",
+    "rig_R_arm_pvfollow_on.outColorR"
    ],
    "weights_expr": [
     "(R_Hand_rot.pvFollow == 0)",
@@ -48163,9 +48163,9 @@
    "type": "parentConstraint",
    "driven": "R_knee_pv_R0_ik_cns",
    "targets": [
-    "bns_R_kneepv_world",
+    "rig_R_kneepv_world",
     "drv_pelvis",
-    "bns_R_kneepv_aim"
+    "rig_R_kneepv_aim"
    ],
    "weights": [
     0.0,
@@ -48221,9 +48221,9 @@
    "interp_type": 1,
    "note": "driven.world = offset(TR, rotate xyz) * target.world ; offset is in the target's space",
    "weight_inputs": [
-    "bns_R_kneepv_body0_w.output",
-    "bns_R_kneepv_body1_w.output",
-    "bns_R_leg_pvfollow_on.outColorR"
+    "rig_R_kneepv_body0_w.output",
+    "rig_R_kneepv_body1_w.output",
+    "rig_R_leg_pvfollow_on.outColorR"
    ],
    "weights_expr": [
     "((R_Foot_rot.follow == 0) * (R_Foot_rot.pvFollow == 0))",
@@ -48236,7 +48236,7 @@
    "type": "parentConstraint",
    "driven": "Spine_rot_C0_ik_cns",
    "targets": [
-    "bns_spine_rollbase"
+    "rig_spine_rollbase"
    ],
    "weights": [
     1.0
@@ -48273,9 +48273,9 @@
    ]
   },
   {
-   "node": "bns_L_arm_fk_root_parentConstraint1",
+   "node": "rig_L_arm_fk_root_parentConstraint1",
    "type": "parentConstraint",
-   "driven": "bns_L_arm_fk_root",
+   "driven": "rig_L_arm_fk_root",
    "targets": [
     "drv_clavicle_l"
    ],
@@ -48314,9 +48314,9 @@
    ]
   },
   {
-   "node": "bns_L_arm_ik_pointConstraint1",
+   "node": "rig_L_arm_ik_pointConstraint1",
    "type": "pointConstraint",
-   "driven": "bns_L_arm_ik",
+   "driven": "rig_L_arm_ik",
    "targets": [
     "L_Hand_trans"
    ],
@@ -48342,9 +48342,9 @@
    ]
   },
   {
-   "node": "bns_L_arm_ik_poleVectorConstraint1",
+   "node": "rig_L_arm_ik_poleVectorConstraint1",
    "type": "poleVectorConstraint",
-   "driven": "bns_L_arm_ik",
+   "driven": "rig_L_arm_ik",
    "targets": [
     "L_elbow_pv"
    ],
@@ -48361,9 +48361,9 @@
    ]
   },
   {
-   "node": "bns_L_autoShoulder_aim_aimConstraint1",
+   "node": "rig_L_autoShoulder_aim_aimConstraint1",
    "type": "aimConstraint",
-   "driven": "bns_L_autoShoulder_aim",
+   "driven": "rig_L_autoShoulder_aim",
    "targets": [
     "L_Hand_trans"
    ],
@@ -48391,7 +48391,7 @@
     1.0,
     0.0
    ],
-   "world_up_object": "bns_L_autoShoulder_rest",
+   "world_up_object": "rig_L_autoShoulder_rest",
    "offset": [
     0.0,
     0.0,
@@ -48406,9 +48406,9 @@
    ]
   },
   {
-   "node": "bns_L_kneepv_aim_aimConstraint1",
+   "node": "rig_L_kneepv_aim_aimConstraint1",
    "type": "aimConstraint",
-   "driven": "bns_L_kneepv_aim",
+   "driven": "rig_L_kneepv_aim",
    "targets": [
     "L_Foot_trans"
    ],
@@ -48451,11 +48451,11 @@
    ]
   },
   {
-   "node": "bns_L_kneepv_world_pointConstraint1",
+   "node": "rig_L_kneepv_world_pointConstraint1",
    "type": "pointConstraint",
-   "driven": "bns_L_kneepv_world",
+   "driven": "rig_L_kneepv_world",
    "targets": [
-    "bns_spine_base"
+    "rig_spine_base"
    ],
    "weights": [
     1.0
@@ -48479,9 +48479,9 @@
    ]
   },
   {
-   "node": "bns_L_leg_fk_root_parentConstraint1",
+   "node": "rig_L_leg_fk_root_parentConstraint1",
    "type": "parentConstraint",
-   "driven": "bns_L_leg_fk_root",
+   "driven": "rig_L_leg_fk_root",
    "targets": [
     "drv_pelvis"
    ],
@@ -48520,9 +48520,9 @@
    ]
   },
   {
-   "node": "bns_L_leg_ik_pointConstraint1",
+   "node": "rig_L_leg_ik_pointConstraint1",
    "type": "pointConstraint",
-   "driven": "bns_L_leg_ik",
+   "driven": "rig_L_leg_ik",
    "targets": [
     "L_Foot_trans"
    ],
@@ -48548,9 +48548,9 @@
    ]
   },
   {
-   "node": "bns_L_leg_ik_poleVectorConstraint1",
+   "node": "rig_L_leg_ik_poleVectorConstraint1",
    "type": "poleVectorConstraint",
-   "driven": "bns_L_leg_ik",
+   "driven": "rig_L_leg_ik",
    "targets": [
     "L_knee_pv"
    ],
@@ -48567,9 +48567,9 @@
    ]
   },
   {
-   "node": "bns_R_arm_fk_root_parentConstraint1",
+   "node": "rig_R_arm_fk_root_parentConstraint1",
    "type": "parentConstraint",
-   "driven": "bns_R_arm_fk_root",
+   "driven": "rig_R_arm_fk_root",
    "targets": [
     "drv_clavicle_r"
    ],
@@ -48608,9 +48608,9 @@
    ]
   },
   {
-   "node": "bns_R_arm_ik_pointConstraint1",
+   "node": "rig_R_arm_ik_pointConstraint1",
    "type": "pointConstraint",
-   "driven": "bns_R_arm_ik",
+   "driven": "rig_R_arm_ik",
    "targets": [
     "R_Hand_trans"
    ],
@@ -48636,9 +48636,9 @@
    ]
   },
   {
-   "node": "bns_R_arm_ik_poleVectorConstraint1",
+   "node": "rig_R_arm_ik_poleVectorConstraint1",
    "type": "poleVectorConstraint",
-   "driven": "bns_R_arm_ik",
+   "driven": "rig_R_arm_ik",
    "targets": [
     "R_elbow_pv"
    ],
@@ -48655,9 +48655,9 @@
    ]
   },
   {
-   "node": "bns_R_autoShoulder_aim_aimConstraint1",
+   "node": "rig_R_autoShoulder_aim_aimConstraint1",
    "type": "aimConstraint",
-   "driven": "bns_R_autoShoulder_aim",
+   "driven": "rig_R_autoShoulder_aim",
    "targets": [
     "R_Hand_trans"
    ],
@@ -48685,7 +48685,7 @@
     1.0,
     0.0
    ],
-   "world_up_object": "bns_R_autoShoulder_rest",
+   "world_up_object": "rig_R_autoShoulder_rest",
    "offset": [
     0.0,
     0.0,
@@ -48700,9 +48700,9 @@
    ]
   },
   {
-   "node": "bns_R_kneepv_aim_aimConstraint1",
+   "node": "rig_R_kneepv_aim_aimConstraint1",
    "type": "aimConstraint",
-   "driven": "bns_R_kneepv_aim",
+   "driven": "rig_R_kneepv_aim",
    "targets": [
     "R_Foot_trans"
    ],
@@ -48745,11 +48745,11 @@
    ]
   },
   {
-   "node": "bns_R_kneepv_world_pointConstraint1",
+   "node": "rig_R_kneepv_world_pointConstraint1",
    "type": "pointConstraint",
-   "driven": "bns_R_kneepv_world",
+   "driven": "rig_R_kneepv_world",
    "targets": [
-    "bns_spine_base"
+    "rig_spine_base"
    ],
    "weights": [
     1.0
@@ -48773,9 +48773,9 @@
    ]
   },
   {
-   "node": "bns_R_leg_fk_root_parentConstraint1",
+   "node": "rig_R_leg_fk_root_parentConstraint1",
    "type": "parentConstraint",
-   "driven": "bns_R_leg_fk_root",
+   "driven": "rig_R_leg_fk_root",
    "targets": [
     "drv_pelvis"
    ],
@@ -48814,9 +48814,9 @@
    ]
   },
   {
-   "node": "bns_R_leg_ik_pointConstraint1",
+   "node": "rig_R_leg_ik_pointConstraint1",
    "type": "pointConstraint",
-   "driven": "bns_R_leg_ik",
+   "driven": "rig_R_leg_ik",
    "targets": [
     "R_Foot_trans"
    ],
@@ -48842,9 +48842,9 @@
    ]
   },
   {
-   "node": "bns_R_leg_ik_poleVectorConstraint1",
+   "node": "rig_R_leg_ik_poleVectorConstraint1",
    "type": "poleVectorConstraint",
-   "driven": "bns_R_leg_ik",
+   "driven": "rig_R_leg_ik",
    "targets": [
     "R_knee_pv"
    ],
@@ -48861,9 +48861,9 @@
    ]
   },
   {
-   "node": "bns_head_aim_aimConstraint1",
+   "node": "rig_head_aim_aimConstraint1",
    "type": "aimConstraint",
-   "driven": "bns_head_aim",
+   "driven": "rig_head_aim",
    "targets": [
     "Head_trans"
    ],
@@ -48906,9 +48906,9 @@
    ]
   },
   {
-   "node": "bns_spine_base_orientConstraint1",
+   "node": "rig_spine_base_orientConstraint1",
    "type": "orientConstraint",
-   "driven": "bns_spine_base",
+   "driven": "rig_spine_base",
    "targets": [
     "COG_ctl"
    ],
@@ -48935,9 +48935,9 @@
    ]
   },
   {
-   "node": "bns_spine_base_pointConstraint1",
+   "node": "rig_spine_base_pointConstraint1",
    "type": "pointConstraint",
-   "driven": "bns_spine_base",
+   "driven": "rig_spine_base",
    "targets": [
     "Hip_trans"
    ],
@@ -48963,12 +48963,12 @@
    ]
   },
   {
-   "node": "bns_spine_mid_tgt_pointConstraint1",
+   "node": "rig_spine_mid_tgt_pointConstraint1",
    "type": "pointConstraint",
-   "driven": "bns_spine_mid_tgt",
+   "driven": "rig_spine_mid_tgt",
    "targets": [
-    "bns_spine_chest_tgt",
-    "bns_spine_hip_tgt"
+    "rig_spine_chest_tgt",
+    "rig_spine_hip_tgt"
    ],
    "weights": [
     1.0,
@@ -48995,12 +48995,12 @@
    ]
   },
   {
-   "node": "bns_spine_mid_up_pointConstraint1",
+   "node": "rig_spine_mid_up_pointConstraint1",
    "type": "pointConstraint",
-   "driven": "bns_spine_mid_up",
+   "driven": "rig_spine_mid_up",
    "targets": [
-    "bns_spine_chest_up",
-    "bns_spine_hip_up"
+    "rig_spine_chest_up",
+    "rig_spine_hip_up"
    ],
    "weights": [
     1.0,
@@ -49027,9 +49027,9 @@
    ]
   },
   {
-   "node": "bns_spine_rollbase_aimConstraint1",
+   "node": "rig_spine_rollbase_aimConstraint1",
    "type": "aimConstraint",
-   "driven": "bns_spine_rollbase",
+   "driven": "rig_spine_rollbase",
    "targets": [
     "Spine_trans"
    ],
@@ -49057,7 +49057,7 @@
     0.0,
     0.0
    ],
-   "world_up_object": "bns_spine_base",
+   "world_up_object": "rig_spine_base",
    "offset": [
     0.0,
     0.0,
@@ -49072,11 +49072,11 @@
    ]
   },
   {
-   "node": "bns_spine_seg1_aimConstraint1",
+   "node": "rig_spine_seg1_aimConstraint1",
    "type": "aimConstraint",
-   "driven": "bns_spine_seg1",
+   "driven": "rig_spine_seg1",
    "targets": [
-    "bns_spine_mid_tgt"
+    "rig_spine_mid_tgt"
    ],
    "weights": [
     1.0
@@ -49102,7 +49102,7 @@
     0.0,
     0.0
    ],
-   "world_up_object": "bns_spine_up_mid",
+   "world_up_object": "rig_spine_up_mid",
    "offset": [
     2.224238,
     0.0,
@@ -49117,11 +49117,11 @@
    ]
   },
   {
-   "node": "bns_spine_seg2_aimConstraint1",
+   "node": "rig_spine_seg2_aimConstraint1",
    "type": "aimConstraint",
-   "driven": "bns_spine_seg2",
+   "driven": "rig_spine_seg2",
    "targets": [
-    "bns_spine_chest_tgt"
+    "rig_spine_chest_tgt"
    ],
    "weights": [
     1.0
@@ -49147,7 +49147,7 @@
     0.0,
     0.0
    ],
-   "world_up_object": "bns_spine_up_chest",
+   "world_up_object": "rig_spine_up_chest",
    "offset": [
     7.665792,
     0.0,
@@ -49162,12 +49162,12 @@
    ]
   },
   {
-   "node": "bns_spine_up_mid_orientConstraint1",
+   "node": "rig_spine_up_mid_orientConstraint1",
    "type": "orientConstraint",
-   "driven": "bns_spine_up_mid",
+   "driven": "rig_spine_up_mid",
    "targets": [
-    "bns_spine_up_chest",
-    "bns_spine_up_hip"
+    "rig_spine_up_chest",
+    "rig_spine_up_hip"
    ],
    "weights": [
     1.0,
@@ -49195,9 +49195,9 @@
    ]
   },
   {
-   "node": "bns_world_follow_parentConstraint1",
+   "node": "rig_world_follow_parentConstraint1",
    "type": "parentConstraint",
-   "driven": "bns_world_follow",
+   "driven": "rig_world_follow",
    "targets": [
     "world_ctl"
    ],
@@ -49236,9 +49236,9 @@
    ]
   },
   {
-   "node": "bnsfk_calf_l_orientConstraint1",
+   "node": "rigfk_calf_l_orientConstraint1",
    "type": "orientConstraint",
-   "driven": "bnsfk_calf_l",
+   "driven": "rigfk_calf_l",
    "targets": [
     "L_Calf_fk"
    ],
@@ -49265,9 +49265,9 @@
    ]
   },
   {
-   "node": "bnsfk_calf_r_orientConstraint1",
+   "node": "rigfk_calf_r_orientConstraint1",
    "type": "orientConstraint",
-   "driven": "bnsfk_calf_r",
+   "driven": "rigfk_calf_r",
    "targets": [
     "R_Calf_fk"
    ],
@@ -49294,9 +49294,9 @@
    ]
   },
   {
-   "node": "bnsfk_lowerarm_l_orientConstraint1",
+   "node": "rigfk_lowerarm_l_orientConstraint1",
    "type": "orientConstraint",
-   "driven": "bnsfk_lowerarm_l",
+   "driven": "rigfk_lowerarm_l",
    "targets": [
     "L_LowerArm_fk"
    ],
@@ -49323,9 +49323,9 @@
    ]
   },
   {
-   "node": "bnsfk_lowerarm_r_orientConstraint1",
+   "node": "rigfk_lowerarm_r_orientConstraint1",
    "type": "orientConstraint",
-   "driven": "bnsfk_lowerarm_r",
+   "driven": "rigfk_lowerarm_r",
    "targets": [
     "R_LowerArm_fk"
    ],
@@ -49352,9 +49352,9 @@
    ]
   },
   {
-   "node": "bnsfk_thigh_l_orientConstraint1",
+   "node": "rigfk_thigh_l_orientConstraint1",
    "type": "orientConstraint",
-   "driven": "bnsfk_thigh_l",
+   "driven": "rigfk_thigh_l",
    "targets": [
     "L_Thigh_fk"
    ],
@@ -49381,9 +49381,9 @@
    ]
   },
   {
-   "node": "bnsfk_thigh_r_orientConstraint1",
+   "node": "rigfk_thigh_r_orientConstraint1",
    "type": "orientConstraint",
-   "driven": "bnsfk_thigh_r",
+   "driven": "rigfk_thigh_r",
    "targets": [
     "R_Thigh_fk"
    ],
@@ -49410,9 +49410,9 @@
    ]
   },
   {
-   "node": "bnsfk_upperarm_l_orientConstraint1",
+   "node": "rigfk_upperarm_l_orientConstraint1",
    "type": "orientConstraint",
-   "driven": "bnsfk_upperarm_l",
+   "driven": "rigfk_upperarm_l",
    "targets": [
     "L_UpperArm_fk"
    ],
@@ -49439,9 +49439,9 @@
    ]
   },
   {
-   "node": "bnsfk_upperarm_r_orientConstraint1",
+   "node": "rigfk_upperarm_r_orientConstraint1",
    "type": "orientConstraint",
-   "driven": "bnsfk_upperarm_r",
+   "driven": "rigfk_upperarm_r",
    "targets": [
     "R_UpperArm_fk"
    ],
@@ -49530,8 +49530,8 @@
    "type": "orientConstraint",
    "driven": "drv_calf_l",
    "targets": [
-    "bnsik_calf_l",
-    "bnsfk_calf_l"
+    "rigik_calf_l",
+    "rigfk_calf_l"
    ],
    "weights": [
     1.0,
@@ -49551,7 +49551,7 @@
    "note": "driven world orientation = offset(rotate xyz) * blend(target world orientations); interp 2 = shortest (quaternion slerp)",
    "weight_inputs": [
     "L_Foot_rot.IKFK",
-    "bns_L_leg_ikfk_rev.outputX"
+    "rig_L_leg_ikfk_rev.outputX"
    ],
    "weights_expr": [
     "L_Foot_rot.IKFK",
@@ -49563,8 +49563,8 @@
    "type": "orientConstraint",
    "driven": "drv_calf_r",
    "targets": [
-    "bnsik_calf_r",
-    "bnsfk_calf_r"
+    "rigik_calf_r",
+    "rigfk_calf_r"
    ],
    "weights": [
     1.0,
@@ -49584,7 +49584,7 @@
    "note": "driven world orientation = offset(rotate xyz) * blend(target world orientations); interp 2 = shortest (quaternion slerp)",
    "weight_inputs": [
     "R_Foot_rot.IKFK",
-    "bns_R_leg_ikfk_rev.outputX"
+    "rig_R_leg_ikfk_rev.outputX"
    ],
    "weights_expr": [
     "R_Foot_rot.IKFK",
@@ -49770,7 +49770,7 @@
    "type": "orientConstraint",
    "driven": "drv_head",
    "targets": [
-    "bns_head_aim"
+    "rig_head_aim"
    ],
    "weights": [
     1.0
@@ -50332,8 +50332,8 @@
    "type": "orientConstraint",
    "driven": "drv_lowerarm_l",
    "targets": [
-    "bnsik_lowerarm_l",
-    "bnsfk_lowerarm_l"
+    "rigik_lowerarm_l",
+    "rigfk_lowerarm_l"
    ],
    "weights": [
     1.0,
@@ -50353,7 +50353,7 @@
    "note": "driven world orientation = offset(rotate xyz) * blend(target world orientations); interp 2 = shortest (quaternion slerp)",
    "weight_inputs": [
     "L_Hand_rot.IKFK",
-    "bns_L_arm_ikfk_rev.outputX"
+    "rig_L_arm_ikfk_rev.outputX"
    ],
    "weights_expr": [
     "L_Hand_rot.IKFK",
@@ -50365,8 +50365,8 @@
    "type": "orientConstraint",
    "driven": "drv_lowerarm_r",
    "targets": [
-    "bnsik_lowerarm_r",
-    "bnsfk_lowerarm_r"
+    "rigik_lowerarm_r",
+    "rigfk_lowerarm_r"
    ],
    "weights": [
     1.0,
@@ -50386,7 +50386,7 @@
    "note": "driven world orientation = offset(rotate xyz) * blend(target world orientations); interp 2 = shortest (quaternion slerp)",
    "weight_inputs": [
     "R_Hand_rot.IKFK",
-    "bns_R_arm_ikfk_rev.outputX"
+    "rig_R_arm_ikfk_rev.outputX"
    ],
    "weights_expr": [
     "R_Hand_rot.IKFK",
@@ -50726,7 +50726,7 @@
    "type": "orientConstraint",
    "driven": "drv_neck_01",
    "targets": [
-    "bns_neck_twist0"
+    "rig_neck_twist0"
    ],
    "weights": [
     1.0
@@ -50755,7 +50755,7 @@
    "type": "orientConstraint",
    "driven": "drv_neck_02",
    "targets": [
-    "bns_neck_twist1"
+    "rig_neck_twist1"
    ],
    "weights": [
     1.0
@@ -51481,7 +51481,7 @@
    "type": "orientConstraint",
    "driven": "drv_spine_01",
    "targets": [
-    "bns_spine_seg1"
+    "rig_spine_seg1"
    ],
    "weights": [
     1.0
@@ -51510,7 +51510,7 @@
    "type": "pointConstraint",
    "driven": "drv_spine_01",
    "targets": [
-    "bns_spine_root_pos"
+    "rig_spine_root_pos"
    ],
    "weights": [
     1.0
@@ -51538,7 +51538,7 @@
    "type": "orientConstraint",
    "driven": "drv_spine_02",
    "targets": [
-    "bns_spine_seg1"
+    "rig_spine_seg1"
    ],
    "weights": [
     1.0
@@ -51567,8 +51567,8 @@
    "type": "orientConstraint",
    "driven": "drv_spine_03",
    "targets": [
-    "bns_spine_seg1",
-    "bns_spine_seg2"
+    "rig_spine_seg1",
+    "rig_spine_seg2"
    ],
    "weights": [
     0.5,
@@ -51600,7 +51600,7 @@
    "type": "orientConstraint",
    "driven": "drv_spine_04",
    "targets": [
-    "bns_spine_seg2"
+    "rig_spine_seg2"
    ],
    "weights": [
     1.0
@@ -51629,7 +51629,7 @@
    "type": "orientConstraint",
    "driven": "drv_spine_05",
    "targets": [
-    "bns_spine_seg2"
+    "rig_spine_seg2"
    ],
    "weights": [
     1.0
@@ -51658,8 +51658,8 @@
    "type": "orientConstraint",
    "driven": "drv_thigh_l",
    "targets": [
-    "bnsik_thigh_l",
-    "bnsfk_thigh_l"
+    "rigik_thigh_l",
+    "rigfk_thigh_l"
    ],
    "weights": [
     1.0,
@@ -51679,7 +51679,7 @@
    "note": "driven world orientation = offset(rotate xyz) * blend(target world orientations); interp 2 = shortest (quaternion slerp)",
    "weight_inputs": [
     "L_Foot_rot.IKFK",
-    "bns_L_leg_ikfk_rev.outputX"
+    "rig_L_leg_ikfk_rev.outputX"
    ],
    "weights_expr": [
     "L_Foot_rot.IKFK",
@@ -51691,8 +51691,8 @@
    "type": "orientConstraint",
    "driven": "drv_thigh_r",
    "targets": [
-    "bnsik_thigh_r",
-    "bnsfk_thigh_r"
+    "rigik_thigh_r",
+    "rigfk_thigh_r"
    ],
    "weights": [
     1.0,
@@ -51712,7 +51712,7 @@
    "note": "driven world orientation = offset(rotate xyz) * blend(target world orientations); interp 2 = shortest (quaternion slerp)",
    "weight_inputs": [
     "R_Foot_rot.IKFK",
-    "bns_R_leg_ikfk_rev.outputX"
+    "rig_R_leg_ikfk_rev.outputX"
    ],
    "weights_expr": [
     "R_Foot_rot.IKFK",
@@ -51970,8 +51970,8 @@
    "type": "orientConstraint",
    "driven": "drv_upperarm_l",
    "targets": [
-    "bnsik_upperarm_l",
-    "bnsfk_upperarm_l"
+    "rigik_upperarm_l",
+    "rigfk_upperarm_l"
    ],
    "weights": [
     1.0,
@@ -51991,7 +51991,7 @@
    "note": "driven world orientation = offset(rotate xyz) * blend(target world orientations); interp 2 = shortest (quaternion slerp)",
    "weight_inputs": [
     "L_Hand_rot.IKFK",
-    "bns_L_arm_ikfk_rev.outputX"
+    "rig_L_arm_ikfk_rev.outputX"
    ],
    "weights_expr": [
     "L_Hand_rot.IKFK",
@@ -52003,8 +52003,8 @@
    "type": "orientConstraint",
    "driven": "drv_upperarm_r",
    "targets": [
-    "bnsik_upperarm_r",
-    "bnsfk_upperarm_r"
+    "rigik_upperarm_r",
+    "rigfk_upperarm_r"
    ],
    "weights": [
     1.0,
@@ -52024,7 +52024,7 @@
    "note": "driven world orientation = offset(rotate xyz) * blend(target world orientations); interp 2 = shortest (quaternion slerp)",
    "weight_inputs": [
     "R_Hand_rot.IKFK",
-    "bns_R_arm_ikfk_rev.outputX"
+    "rig_R_arm_ikfk_rev.outputX"
    ],
    "weights_expr": [
     "R_Hand_rot.IKFK",
@@ -52034,11 +52034,11 @@
  ],
  "ik_handles": [
   {
-   "node": "bns_L_arm_ik",
+   "node": "rig_L_arm_ik",
    "solver": "ikRPsolver",
-   "start_joint": "bnsik_upperarm_l",
-   "mid_joint": "bnsik_lowerarm_l",
-   "end_joint": "bnsik_hand_l",
+   "start_joint": "rigik_upperarm_l",
+   "mid_joint": "rigik_lowerarm_l",
+   "end_joint": "rigik_hand_l",
    "twist": 0.0,
    "pole_vector_rest": [
     20.78453,
@@ -52048,11 +52048,11 @@
    "stretch": false
   },
   {
-   "node": "bns_L_leg_ik",
+   "node": "rig_L_leg_ik",
    "solver": "ikRPsolver",
-   "start_joint": "bnsik_thigh_l",
-   "mid_joint": "bnsik_calf_l",
-   "end_joint": "bnsik_foot_l",
+   "start_joint": "rigik_thigh_l",
+   "mid_joint": "rigik_calf_l",
+   "end_joint": "rigik_foot_l",
    "twist": 0.0,
    "pole_vector_rest": [
     9.773336,
@@ -52062,11 +52062,11 @@
    "stretch": false
   },
   {
-   "node": "bns_R_arm_ik",
+   "node": "rig_R_arm_ik",
    "solver": "ikRPsolver",
-   "start_joint": "bnsik_upperarm_r",
-   "mid_joint": "bnsik_lowerarm_r",
-   "end_joint": "bnsik_hand_r",
+   "start_joint": "rigik_upperarm_r",
+   "mid_joint": "rigik_lowerarm_r",
+   "end_joint": "rigik_hand_r",
    "twist": 0.0,
    "pole_vector_rest": [
     -20.784314,
@@ -52076,11 +52076,11 @@
    "stretch": false
   },
   {
-   "node": "bns_R_leg_ik",
+   "node": "rig_R_leg_ik",
    "solver": "ikRPsolver",
-   "start_joint": "bnsik_thigh_r",
-   "mid_joint": "bnsik_calf_r",
-   "end_joint": "bnsik_foot_r",
+   "start_joint": "rigik_thigh_r",
+   "mid_joint": "rigik_calf_r",
+   "end_joint": "rigik_foot_r",
    "twist": 0.0,
    "pole_vector_rest": [
     -9.773334,
@@ -52092,17 +52092,17 @@
  ],
  "expressions": [
   {
-   "node": "bns_exp_fin_L",
-   "code": "float $tz = 0.1 * finger_ratio_L_TRN.translateZ + 1.0;\nfloat $mtz = 0.035 * finger_ratio_L_TRN.translateZ + 1.0;\nfloat $bx = 0.1 * finger_ratio_L_TRN.translateX + 1.0;\nfloat $rtz = 2.0 - $tz;\nfloat $rmtz = 2.0 - $mtz;\nfloat $bRx = finger_base_L_ROT.rotateX;\nfloat $bRy = finger_base_L_ROT.rotateY;\nfloat $bRz = finger_base_L_ROT.rotateZ;\nfloat $bRxP = max($bRx, 0.0);\nL_Thumb1_bnsopp.rotateX = 1 * clamp(-65, 80, $bRx);\nL_Index1_bnsdrv.rotateX = 0 * $bRx;\nL_Index1_bnsdrv.rotateY = clamp(-12, 2, -0.8 * $bRy) + clamp(-30, 30, L_Index1.rotateY) - L_Index1.rotateY;\nL_Index1_bnsdrv.rotateZ = clamp(-35, 90, L_Index1.rotateZ + 0.95 * $bRz * $tz * $bx) - L_Index1.rotateZ;\nL_Index2_bnsdrv.rotateZ = clamp(-12, 120, L_Index2.rotateZ + $bRz * $tz) - L_Index2.rotateZ;\nL_Index3_bnsdrv.rotateZ = clamp(-15, 90, L_Index3.rotateZ + $bRz * $tz * (2.0 - $bx * 0.95)) - L_Index3.rotateZ;\nL_Middle0_bnsdrv.rotateX = clamp(0, 8, L_Middle0.rotateX + 0.2 * $bRx) - L_Middle0.rotateX;\nL_Middle0_bnsdrv.rotateY = clamp(-2, 4, L_Middle0.rotateY + 0.25 * $bRy) - L_Middle0.rotateY;\nL_Middle0_bnsdrv.rotateZ = clamp(0, 2, L_Middle0.rotateZ + 0.05 * $bRz) - L_Middle0.rotateZ;\nL_Middle1_bnsdrv.rotateX = 0 * $bRx;\nL_Middle1_bnsdrv.rotateY = 0 * $bRy + clamp(-30, 30, L_Middle1.rotateY) - L_Middle1.rotateY;\nL_Middle1_bnsdrv.rotateZ = clamp(-35, 90, L_Middle1.rotateZ + 0.95 * $bRz * $mtz * $bx) - L_Middle1.rotateZ;\nL_Middle2_bnsdrv.rotateZ = clamp(-12, 120, L_Middle2.rotateZ + $bRz * $mtz) - L_Middle2.rotateZ;\nL_Middle3_bnsdrv.rotateZ = clamp(-15, 90, L_Middle3.rotateZ + $bRz * $mtz * (2.0 - $bx * 0.95)) - L_Middle3.rotateZ;\nL_Ring0_bnsdrv.rotateX = clamp(0, 8, L_Middle0.rotateX + 0.2 * $bRx) + clamp(0, 12, L_Ring0.rotateX - L_Middle0.rotateX + 0.2 * $bRx) - L_Ring0.rotateX;\nL_Ring0_bnsdrv.rotateY = clamp(-2, 4, L_Middle0.rotateY + 0.25 * $bRy) + clamp(-2, 3, L_Ring0.rotateY - L_Middle0.rotateY + 0.2 * $bRy) - L_Ring0.rotateY;\nL_Ring0_bnsdrv.rotateZ = clamp(0, 2, L_Middle0.rotateZ + 0.05 * $bRz) + clamp(0, 4, L_Ring0.rotateZ - L_Middle0.rotateZ + 0.1 * $bRz) - L_Ring0.rotateZ + 0.35 * $bRxP;\nL_Ring1_bnsdrv.rotateX = clamp(-6, 0, -0.1 * $bRx);\nL_Ring1_bnsdrv.rotateY = clamp(-1, 14, 0.9 * $bRy) + clamp(-30, 30, L_Ring1.rotateY) - L_Ring1.rotateY;\nL_Ring1_bnsdrv.rotateZ = clamp(-35, 90, L_Ring1.rotateZ + 0.95 * $bRz * $rmtz * $bx) - L_Ring1.rotateZ;\nL_Ring2_bnsdrv.rotateZ = clamp(-12, 120, L_Ring2.rotateZ + $bRz * $rmtz) - L_Ring2.rotateZ;\nL_Ring3_bnsdrv.rotateZ = clamp(-15, 90, L_Ring3.rotateZ + $bRz * $rmtz * (2.0 - $bx * 0.95)) - L_Ring3.rotateZ;\nL_Pinky0_bnsdrv.rotateX = clamp(0, 8, L_Middle0.rotateX + 0.2 * $bRx) + clamp(0, 12, L_Ring0.rotateX - L_Middle0.rotateX + 0.2 * $bRx) + clamp(0, 20, L_Pinky0.rotateX - L_Ring0.rotateX + 0.4 * $bRx) - L_Pinky0.rotateX;\nL_Pinky0_bnsdrv.rotateY = clamp(-2, 4, L_Middle0.rotateY + 0.25 * $bRy) + clamp(-2, 3, L_Ring0.rotateY - L_Middle0.rotateY + 0.2 * $bRy) + clamp(-2, 4, L_Pinky0.rotateY - L_Ring0.rotateY + 0.3 * $bRy) - L_Pinky0.rotateY;\nL_Pinky0_bnsdrv.rotateZ = clamp(0, 2, L_Middle0.rotateZ + 0.05 * $bRz) + clamp(0, 4, L_Ring0.rotateZ - L_Middle0.rotateZ + 0.1 * $bRz) + clamp(0, 6, L_Pinky0.rotateZ - L_Ring0.rotateZ + 0.15 * $bRx) - L_Pinky0.rotateZ + 0.7 * $bRxP;\nL_Pinky1_bnsdrv.rotateX = clamp(-16, 0, -0.3 * $bRx);\nL_Pinky1_bnsdrv.rotateY = clamp(-2, 32, 2.2 * $bRy) + clamp(-30, 30, L_Pinky1.rotateY) - L_Pinky1.rotateY;\nL_Pinky1_bnsdrv.rotateZ = clamp(-35, 90, L_Pinky1.rotateZ + 0.95 * $bRz * $rtz * $bx) - L_Pinky1.rotateZ;\nL_Pinky2_bnsdrv.rotateZ = clamp(-12, 120, L_Pinky2.rotateZ + $bRz * $rtz) - L_Pinky2.rotateZ;\nL_Pinky3_bnsdrv.rotateZ = clamp(-15, 90, L_Pinky3.rotateZ + $bRz * $rtz * (2.0 - $bx * 0.95)) - L_Pinky3.rotateZ;"
+   "node": "rig_exp_fin_L",
+   "code": "float $tz = 0.1 * finger_ratio_L_TRN.translateZ + 1.0;\nfloat $mtz = 0.035 * finger_ratio_L_TRN.translateZ + 1.0;\nfloat $bx = 0.1 * finger_ratio_L_TRN.translateX + 1.0;\nfloat $rtz = 2.0 - $tz;\nfloat $rmtz = 2.0 - $mtz;\nfloat $bRx = finger_base_L_ROT.rotateX;\nfloat $bRy = finger_base_L_ROT.rotateY;\nfloat $bRz = finger_base_L_ROT.rotateZ;\nfloat $bRxP = max($bRx, 0.0);\nL_Thumb1_rigopp.rotateX = 1 * clamp(-65, 80, $bRx);\nL_Index1_rigdrv.rotateX = 0 * $bRx;\nL_Index1_rigdrv.rotateY = clamp(-12, 2, -0.8 * $bRy) + clamp(-30, 30, L_Index1.rotateY) - L_Index1.rotateY;\nL_Index1_rigdrv.rotateZ = clamp(-35, 90, L_Index1.rotateZ + 0.95 * $bRz * $tz * $bx) - L_Index1.rotateZ;\nL_Index2_rigdrv.rotateZ = clamp(-12, 120, L_Index2.rotateZ + $bRz * $tz) - L_Index2.rotateZ;\nL_Index3_rigdrv.rotateZ = clamp(-15, 90, L_Index3.rotateZ + $bRz * $tz * (2.0 - $bx * 0.95)) - L_Index3.rotateZ;\nL_Middle0_rigdrv.rotateX = clamp(0, 8, L_Middle0.rotateX + 0.2 * $bRx) - L_Middle0.rotateX;\nL_Middle0_rigdrv.rotateY = clamp(-2, 4, L_Middle0.rotateY + 0.25 * $bRy) - L_Middle0.rotateY;\nL_Middle0_rigdrv.rotateZ = clamp(0, 2, L_Middle0.rotateZ + 0.05 * $bRz) - L_Middle0.rotateZ;\nL_Middle1_rigdrv.rotateX = 0 * $bRx;\nL_Middle1_rigdrv.rotateY = 0 * $bRy + clamp(-30, 30, L_Middle1.rotateY) - L_Middle1.rotateY;\nL_Middle1_rigdrv.rotateZ = clamp(-35, 90, L_Middle1.rotateZ + 0.95 * $bRz * $mtz * $bx) - L_Middle1.rotateZ;\nL_Middle2_rigdrv.rotateZ = clamp(-12, 120, L_Middle2.rotateZ + $bRz * $mtz) - L_Middle2.rotateZ;\nL_Middle3_rigdrv.rotateZ = clamp(-15, 90, L_Middle3.rotateZ + $bRz * $mtz * (2.0 - $bx * 0.95)) - L_Middle3.rotateZ;\nL_Ring0_rigdrv.rotateX = clamp(0, 8, L_Middle0.rotateX + 0.2 * $bRx) + clamp(0, 12, L_Ring0.rotateX - L_Middle0.rotateX + 0.2 * $bRx) - L_Ring0.rotateX;\nL_Ring0_rigdrv.rotateY = clamp(-2, 4, L_Middle0.rotateY + 0.25 * $bRy) + clamp(-2, 3, L_Ring0.rotateY - L_Middle0.rotateY + 0.2 * $bRy) - L_Ring0.rotateY;\nL_Ring0_rigdrv.rotateZ = clamp(0, 2, L_Middle0.rotateZ + 0.05 * $bRz) + clamp(0, 4, L_Ring0.rotateZ - L_Middle0.rotateZ + 0.1 * $bRz) - L_Ring0.rotateZ + 0.35 * $bRxP;\nL_Ring1_rigdrv.rotateX = clamp(-6, 0, -0.1 * $bRx);\nL_Ring1_rigdrv.rotateY = clamp(-1, 14, 0.9 * $bRy) + clamp(-30, 30, L_Ring1.rotateY) - L_Ring1.rotateY;\nL_Ring1_rigdrv.rotateZ = clamp(-35, 90, L_Ring1.rotateZ + 0.95 * $bRz * $rmtz * $bx) - L_Ring1.rotateZ;\nL_Ring2_rigdrv.rotateZ = clamp(-12, 120, L_Ring2.rotateZ + $bRz * $rmtz) - L_Ring2.rotateZ;\nL_Ring3_rigdrv.rotateZ = clamp(-15, 90, L_Ring3.rotateZ + $bRz * $rmtz * (2.0 - $bx * 0.95)) - L_Ring3.rotateZ;\nL_Pinky0_rigdrv.rotateX = clamp(0, 8, L_Middle0.rotateX + 0.2 * $bRx) + clamp(0, 12, L_Ring0.rotateX - L_Middle0.rotateX + 0.2 * $bRx) + clamp(0, 20, L_Pinky0.rotateX - L_Ring0.rotateX + 0.4 * $bRx) - L_Pinky0.rotateX;\nL_Pinky0_rigdrv.rotateY = clamp(-2, 4, L_Middle0.rotateY + 0.25 * $bRy) + clamp(-2, 3, L_Ring0.rotateY - L_Middle0.rotateY + 0.2 * $bRy) + clamp(-2, 4, L_Pinky0.rotateY - L_Ring0.rotateY + 0.3 * $bRy) - L_Pinky0.rotateY;\nL_Pinky0_rigdrv.rotateZ = clamp(0, 2, L_Middle0.rotateZ + 0.05 * $bRz) + clamp(0, 4, L_Ring0.rotateZ - L_Middle0.rotateZ + 0.1 * $bRz) + clamp(0, 6, L_Pinky0.rotateZ - L_Ring0.rotateZ + 0.15 * $bRx) - L_Pinky0.rotateZ + 0.7 * $bRxP;\nL_Pinky1_rigdrv.rotateX = clamp(-16, 0, -0.3 * $bRx);\nL_Pinky1_rigdrv.rotateY = clamp(-2, 32, 2.2 * $bRy) + clamp(-30, 30, L_Pinky1.rotateY) - L_Pinky1.rotateY;\nL_Pinky1_rigdrv.rotateZ = clamp(-35, 90, L_Pinky1.rotateZ + 0.95 * $bRz * $rtz * $bx) - L_Pinky1.rotateZ;\nL_Pinky2_rigdrv.rotateZ = clamp(-12, 120, L_Pinky2.rotateZ + $bRz * $rtz) - L_Pinky2.rotateZ;\nL_Pinky3_rigdrv.rotateZ = clamp(-15, 90, L_Pinky3.rotateZ + $bRz * $rtz * (2.0 - $bx * 0.95)) - L_Pinky3.rotateZ;"
   },
   {
-   "node": "bns_exp_fin_R",
-   "code": "float $tz = 0.1 * finger_ratio_R_TRN.translateZ + 1.0;\nfloat $mtz = 0.035 * finger_ratio_R_TRN.translateZ + 1.0;\nfloat $bx = 0.1 * finger_ratio_R_TRN.translateX + 1.0;\nfloat $rtz = 2.0 - $tz;\nfloat $rmtz = 2.0 - $mtz;\nfloat $bRx = finger_base_R_ROT.rotateX;\nfloat $bRy = finger_base_R_ROT.rotateY;\nfloat $bRz = finger_base_R_ROT.rotateZ;\nfloat $bRxP = max($bRx, 0.0);\nR_Thumb1_bnsopp.rotateX = 1 * clamp(-65, 80, $bRx);\nR_Index1_bnsdrv.rotateX = 0 * $bRx;\nR_Index1_bnsdrv.rotateY = clamp(-12, 2, -0.8 * $bRy) + clamp(-30, 30, R_Index1.rotateY) - R_Index1.rotateY;\nR_Index1_bnsdrv.rotateZ = clamp(-35, 90, R_Index1.rotateZ + 0.95 * $bRz * $tz * $bx) - R_Index1.rotateZ;\nR_Index2_bnsdrv.rotateZ = clamp(-12, 120, R_Index2.rotateZ + $bRz * $tz) - R_Index2.rotateZ;\nR_Index3_bnsdrv.rotateZ = clamp(-15, 90, R_Index3.rotateZ + $bRz * $tz * (2.0 - $bx * 0.95)) - R_Index3.rotateZ;\nR_Middle0_bnsdrv.rotateX = clamp(0, 8, R_Middle0.rotateX + 0.2 * $bRx) - R_Middle0.rotateX;\nR_Middle0_bnsdrv.rotateY = clamp(-2, 4, R_Middle0.rotateY + 0.25 * $bRy) - R_Middle0.rotateY;\nR_Middle0_bnsdrv.rotateZ = clamp(0, 2, R_Middle0.rotateZ + 0.05 * $bRz) - R_Middle0.rotateZ;\nR_Middle1_bnsdrv.rotateX = 0 * $bRx;\nR_Middle1_bnsdrv.rotateY = 0 * $bRy + clamp(-30, 30, R_Middle1.rotateY) - R_Middle1.rotateY;\nR_Middle1_bnsdrv.rotateZ = clamp(-35, 90, R_Middle1.rotateZ + 0.95 * $bRz * $mtz * $bx) - R_Middle1.rotateZ;\nR_Middle2_bnsdrv.rotateZ = clamp(-12, 120, R_Middle2.rotateZ + $bRz * $mtz) - R_Middle2.rotateZ;\nR_Middle3_bnsdrv.rotateZ = clamp(-15, 90, R_Middle3.rotateZ + $bRz * $mtz * (2.0 - $bx * 0.95)) - R_Middle3.rotateZ;\nR_Ring0_bnsdrv.rotateX = clamp(0, 8, R_Middle0.rotateX + 0.2 * $bRx) + clamp(0, 12, R_Ring0.rotateX - R_Middle0.rotateX + 0.2 * $bRx) - R_Ring0.rotateX;\nR_Ring0_bnsdrv.rotateY = clamp(-2, 4, R_Middle0.rotateY + 0.25 * $bRy) + clamp(-2, 3, R_Ring0.rotateY - R_Middle0.rotateY + 0.2 * $bRy) - R_Ring0.rotateY;\nR_Ring0_bnsdrv.rotateZ = clamp(0, 2, R_Middle0.rotateZ + 0.05 * $bRz) + clamp(0, 4, R_Ring0.rotateZ - R_Middle0.rotateZ + 0.1 * $bRz) - R_Ring0.rotateZ + 0.35 * $bRxP;\nR_Ring1_bnsdrv.rotateX = clamp(-6, 0, -0.1 * $bRx);\nR_Ring1_bnsdrv.rotateY = clamp(-1, 14, 0.9 * $bRy) + clamp(-30, 30, R_Ring1.rotateY) - R_Ring1.rotateY;\nR_Ring1_bnsdrv.rotateZ = clamp(-35, 90, R_Ring1.rotateZ + 0.95 * $bRz * $rmtz * $bx) - R_Ring1.rotateZ;\nR_Ring2_bnsdrv.rotateZ = clamp(-12, 120, R_Ring2.rotateZ + $bRz * $rmtz) - R_Ring2.rotateZ;\nR_Ring3_bnsdrv.rotateZ = clamp(-15, 90, R_Ring3.rotateZ + $bRz * $rmtz * (2.0 - $bx * 0.95)) - R_Ring3.rotateZ;\nR_Pinky0_bnsdrv.rotateX = clamp(0, 8, R_Middle0.rotateX + 0.2 * $bRx) + clamp(0, 12, R_Ring0.rotateX - R_Middle0.rotateX + 0.2 * $bRx) + clamp(0, 20, R_Pinky0.rotateX - R_Ring0.rotateX + 0.4 * $bRx) - R_Pinky0.rotateX;\nR_Pinky0_bnsdrv.rotateY = clamp(-2, 4, R_Middle0.rotateY + 0.25 * $bRy) + clamp(-2, 3, R_Ring0.rotateY - R_Middle0.rotateY + 0.2 * $bRy) + clamp(-2, 4, R_Pinky0.rotateY - R_Ring0.rotateY + 0.3 * $bRy) - R_Pinky0.rotateY;\nR_Pinky0_bnsdrv.rotateZ = clamp(0, 2, R_Middle0.rotateZ + 0.05 * $bRz) + clamp(0, 4, R_Ring0.rotateZ - R_Middle0.rotateZ + 0.1 * $bRz) + clamp(0, 6, R_Pinky0.rotateZ - R_Ring0.rotateZ + 0.15 * $bRx) - R_Pinky0.rotateZ + 0.7 * $bRxP;\nR_Pinky1_bnsdrv.rotateX = clamp(-16, 0, -0.3 * $bRx);\nR_Pinky1_bnsdrv.rotateY = clamp(-2, 32, 2.2 * $bRy) + clamp(-30, 30, R_Pinky1.rotateY) - R_Pinky1.rotateY;\nR_Pinky1_bnsdrv.rotateZ = clamp(-35, 90, R_Pinky1.rotateZ + 0.95 * $bRz * $rtz * $bx) - R_Pinky1.rotateZ;\nR_Pinky2_bnsdrv.rotateZ = clamp(-12, 120, R_Pinky2.rotateZ + $bRz * $rtz) - R_Pinky2.rotateZ;\nR_Pinky3_bnsdrv.rotateZ = clamp(-15, 90, R_Pinky3.rotateZ + $bRz * $rtz * (2.0 - $bx * 0.95)) - R_Pinky3.rotateZ;"
+   "node": "rig_exp_fin_R",
+   "code": "float $tz = 0.1 * finger_ratio_R_TRN.translateZ + 1.0;\nfloat $mtz = 0.035 * finger_ratio_R_TRN.translateZ + 1.0;\nfloat $bx = 0.1 * finger_ratio_R_TRN.translateX + 1.0;\nfloat $rtz = 2.0 - $tz;\nfloat $rmtz = 2.0 - $mtz;\nfloat $bRx = finger_base_R_ROT.rotateX;\nfloat $bRy = finger_base_R_ROT.rotateY;\nfloat $bRz = finger_base_R_ROT.rotateZ;\nfloat $bRxP = max($bRx, 0.0);\nR_Thumb1_rigopp.rotateX = 1 * clamp(-65, 80, $bRx);\nR_Index1_rigdrv.rotateX = 0 * $bRx;\nR_Index1_rigdrv.rotateY = clamp(-12, 2, -0.8 * $bRy) + clamp(-30, 30, R_Index1.rotateY) - R_Index1.rotateY;\nR_Index1_rigdrv.rotateZ = clamp(-35, 90, R_Index1.rotateZ + 0.95 * $bRz * $tz * $bx) - R_Index1.rotateZ;\nR_Index2_rigdrv.rotateZ = clamp(-12, 120, R_Index2.rotateZ + $bRz * $tz) - R_Index2.rotateZ;\nR_Index3_rigdrv.rotateZ = clamp(-15, 90, R_Index3.rotateZ + $bRz * $tz * (2.0 - $bx * 0.95)) - R_Index3.rotateZ;\nR_Middle0_rigdrv.rotateX = clamp(0, 8, R_Middle0.rotateX + 0.2 * $bRx) - R_Middle0.rotateX;\nR_Middle0_rigdrv.rotateY = clamp(-2, 4, R_Middle0.rotateY + 0.25 * $bRy) - R_Middle0.rotateY;\nR_Middle0_rigdrv.rotateZ = clamp(0, 2, R_Middle0.rotateZ + 0.05 * $bRz) - R_Middle0.rotateZ;\nR_Middle1_rigdrv.rotateX = 0 * $bRx;\nR_Middle1_rigdrv.rotateY = 0 * $bRy + clamp(-30, 30, R_Middle1.rotateY) - R_Middle1.rotateY;\nR_Middle1_rigdrv.rotateZ = clamp(-35, 90, R_Middle1.rotateZ + 0.95 * $bRz * $mtz * $bx) - R_Middle1.rotateZ;\nR_Middle2_rigdrv.rotateZ = clamp(-12, 120, R_Middle2.rotateZ + $bRz * $mtz) - R_Middle2.rotateZ;\nR_Middle3_rigdrv.rotateZ = clamp(-15, 90, R_Middle3.rotateZ + $bRz * $mtz * (2.0 - $bx * 0.95)) - R_Middle3.rotateZ;\nR_Ring0_rigdrv.rotateX = clamp(0, 8, R_Middle0.rotateX + 0.2 * $bRx) + clamp(0, 12, R_Ring0.rotateX - R_Middle0.rotateX + 0.2 * $bRx) - R_Ring0.rotateX;\nR_Ring0_rigdrv.rotateY = clamp(-2, 4, R_Middle0.rotateY + 0.25 * $bRy) + clamp(-2, 3, R_Ring0.rotateY - R_Middle0.rotateY + 0.2 * $bRy) - R_Ring0.rotateY;\nR_Ring0_rigdrv.rotateZ = clamp(0, 2, R_Middle0.rotateZ + 0.05 * $bRz) + clamp(0, 4, R_Ring0.rotateZ - R_Middle0.rotateZ + 0.1 * $bRz) - R_Ring0.rotateZ + 0.35 * $bRxP;\nR_Ring1_rigdrv.rotateX = clamp(-6, 0, -0.1 * $bRx);\nR_Ring1_rigdrv.rotateY = clamp(-1, 14, 0.9 * $bRy) + clamp(-30, 30, R_Ring1.rotateY) - R_Ring1.rotateY;\nR_Ring1_rigdrv.rotateZ = clamp(-35, 90, R_Ring1.rotateZ + 0.95 * $bRz * $rmtz * $bx) - R_Ring1.rotateZ;\nR_Ring2_rigdrv.rotateZ = clamp(-12, 120, R_Ring2.rotateZ + $bRz * $rmtz) - R_Ring2.rotateZ;\nR_Ring3_rigdrv.rotateZ = clamp(-15, 90, R_Ring3.rotateZ + $bRz * $rmtz * (2.0 - $bx * 0.95)) - R_Ring3.rotateZ;\nR_Pinky0_rigdrv.rotateX = clamp(0, 8, R_Middle0.rotateX + 0.2 * $bRx) + clamp(0, 12, R_Ring0.rotateX - R_Middle0.rotateX + 0.2 * $bRx) + clamp(0, 20, R_Pinky0.rotateX - R_Ring0.rotateX + 0.4 * $bRx) - R_Pinky0.rotateX;\nR_Pinky0_rigdrv.rotateY = clamp(-2, 4, R_Middle0.rotateY + 0.25 * $bRy) + clamp(-2, 3, R_Ring0.rotateY - R_Middle0.rotateY + 0.2 * $bRy) + clamp(-2, 4, R_Pinky0.rotateY - R_Ring0.rotateY + 0.3 * $bRy) - R_Pinky0.rotateY;\nR_Pinky0_rigdrv.rotateZ = clamp(0, 2, R_Middle0.rotateZ + 0.05 * $bRz) + clamp(0, 4, R_Ring0.rotateZ - R_Middle0.rotateZ + 0.1 * $bRz) + clamp(0, 6, R_Pinky0.rotateZ - R_Ring0.rotateZ + 0.15 * $bRx) - R_Pinky0.rotateZ + 0.7 * $bRxP;\nR_Pinky1_rigdrv.rotateX = clamp(-16, 0, -0.3 * $bRx);\nR_Pinky1_rigdrv.rotateY = clamp(-2, 32, 2.2 * $bRy) + clamp(-30, 30, R_Pinky1.rotateY) - R_Pinky1.rotateY;\nR_Pinky1_rigdrv.rotateZ = clamp(-35, 90, R_Pinky1.rotateZ + 0.95 * $bRz * $rtz * $bx) - R_Pinky1.rotateZ;\nR_Pinky2_rigdrv.rotateZ = clamp(-12, 120, R_Pinky2.rotateZ + $bRz * $rtz) - R_Pinky2.rotateZ;\nR_Pinky3_rigdrv.rotateZ = clamp(-15, 90, R_Pinky3.rotateZ + $bRz * $rtz * (2.0 - $bx * 0.95)) - R_Pinky3.rotateZ;"
   }
  ],
  "twist_joints": [
   {
-   "name": "bns_L_upperarm_twist",
+   "name": "rig_L_upperarm_twist",
    "source_joint": "drv_upperarm_l",
    "mode": "self_local",
    "formula": "D = local_rotation * inverse(rest_local_rotation)   (row vectors: v' = v * M)",
@@ -52138,7 +52138,7 @@
    ]
   },
   {
-   "name": "bns_L_lowerarm_twist",
+   "name": "rig_L_lowerarm_twist",
    "source_joint": "drv_hand_l",
    "mode": "child_in_parent",
    "formula": "D = inverse(rest_local_rotation) * local_rotation   (row vectors: v' = v * M)",
@@ -52174,7 +52174,7 @@
    ]
   },
   {
-   "name": "bns_L_thigh_twist",
+   "name": "rig_L_thigh_twist",
    "source_joint": "drv_thigh_l",
    "mode": "self_local",
    "formula": "D = local_rotation * inverse(rest_local_rotation)   (row vectors: v' = v * M)",
@@ -52210,7 +52210,7 @@
    ]
   },
   {
-   "name": "bns_L_calf_twist",
+   "name": "rig_L_calf_twist",
    "source_joint": "drv_foot_l",
    "mode": "child_in_parent",
    "formula": "D = inverse(rest_local_rotation) * local_rotation   (row vectors: v' = v * M)",
@@ -52246,7 +52246,7 @@
    ]
   },
   {
-   "name": "bns_R_upperarm_twist",
+   "name": "rig_R_upperarm_twist",
    "source_joint": "drv_upperarm_r",
    "mode": "self_local",
    "formula": "D = local_rotation * inverse(rest_local_rotation)   (row vectors: v' = v * M)",
@@ -52282,7 +52282,7 @@
    ]
   },
   {
-   "name": "bns_R_lowerarm_twist",
+   "name": "rig_R_lowerarm_twist",
    "source_joint": "drv_hand_r",
    "mode": "child_in_parent",
    "formula": "D = inverse(rest_local_rotation) * local_rotation   (row vectors: v' = v * M)",
@@ -52318,7 +52318,7 @@
    ]
   },
   {
-   "name": "bns_R_thigh_twist",
+   "name": "rig_R_thigh_twist",
    "source_joint": "drv_thigh_r",
    "mode": "self_local",
    "formula": "D = local_rotation * inverse(rest_local_rotation)   (row vectors: v' = v * M)",
@@ -52354,7 +52354,7 @@
    ]
   },
   {
-   "name": "bns_R_calf_twist",
+   "name": "rig_R_calf_twist",
    "source_joint": "drv_foot_r",
    "mode": "child_in_parent",
    "formula": "D = inverse(rest_local_rotation) * local_rotation   (row vectors: v' = v * M)",
@@ -52798,8 +52798,8 @@
   ],
   "sources": [
    "drv_pelvis",
-   "bns_spine_seg1",
-   "bns_spine_seg2"
+   "rig_spine_seg1",
+   "rig_spine_seg2"
   ],
   "weights": [
    [

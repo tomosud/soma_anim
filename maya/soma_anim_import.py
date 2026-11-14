@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Bring a SOMA Anim bake (soma_anim_bake.json, "Maya 用に書き出し") onto Rig_Manny_BNS in Maya.
+"""Bring a SOMA Anim bake (soma_anim_bake.json, "Maya 用に書き出し") onto Rig_Manny in Maya.
 
     import soma_anim_import
     soma_anim_import.load(r"C:/path/soma_anim_bake.json")              # every frame
     soma_anim_import.load(r"C:/path/soma_anim_bake.json", keys_only=True)  # only the key poses
 
 The file holds one value per control channel per frame.  The values are offsets from the rest
-value of the channel; every control of Rig_Manny_BNS rests at 0, so they are set as they are.
+value of the channel; every control of Rig_Manny rests at 0, so they are set as they are.
 """
 from __future__ import absolute_import, division, print_function
 

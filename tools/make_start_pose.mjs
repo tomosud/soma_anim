@@ -1,7 +1,7 @@
 // The pose a new scene starts in: a relaxed stand from the reference motion (not the rig's A-pose, which no
 // motion model has ever seen anybody move out of), feet flat on the floor.  node tools/make_start_pose.mjs
 import { readFileSync, writeFileSync } from 'node:fs';
-import { BnsRig } from '../src/rig.js';
+import { ControlRig } from '../src/rig.js';
 import { SomaRig, MotionDB } from '../src/motiondb.js';
 import { SomaToManny } from '../src/retarget.js';
 import { RigFitter } from '../src/fit.js';
@@ -10,7 +10,7 @@ import { Physical } from '../src/physical.js';
 import { Naturalizer } from '../src/natural.js';
 
 const read = p => readFileSync(new URL(p, import.meta.url));
-const rig = new BnsRig(JSON.parse(read('../assets/bns_rig.json')));
+const rig = new ControlRig(JSON.parse(read('../assets/rig.json')));
 const soma = new SomaRig(JSON.parse(read('../assets/soma_rig.json')));
 const bin = read('../assets/motiondb.bin');
 const db = new MotionDB(soma, JSON.parse(read('../assets/motiondb.json')), bin.buffer.slice(bin.byteOffset, bin.byteOffset + bin.byteLength));

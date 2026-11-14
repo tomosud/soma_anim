@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert';
 import { readFileSync } from 'node:fs';
-import { BnsRig } from '../src/rig.js';
+import { ControlRig } from '../src/rig.js';
 import { SomaRig, MotionDB } from '../src/motiondb.js';
 import { SomaToManny, queryFromRig } from '../src/retarget.js';
 import { RigFitter } from '../src/fit.js';
@@ -12,10 +12,10 @@ import { Inbetweener } from '../src/inbetween.js';
 import * as M from '../src/m4.js';
 
 const read = p => readFileSync(new URL(p, import.meta.url));
-const rig = new BnsRig(JSON.parse(read('../assets/bns_rig.json')));
+const rig = new ControlRig(JSON.parse(read('../assets/rig.json')));
 import { existsSync } from 'node:fs';
-const casesFile = new URL('../rigspec/bns_rig_cases.json', import.meta.url);
-const cases = existsSync(casesFile) ? JSON.parse(read('../rigspec/bns_rig_cases.json')).cases.filter(c => !Object.entries(c.controls).some(([k, v]) => /\.IKFK$/.test(k) && v !== 1)) : [];
+const casesFile = new URL('../rigspec/rig_cases.json', import.meta.url);
+const cases = existsSync(casesFile) ? JSON.parse(read('../rigspec/rig_cases.json')).cases.filter(c => !Object.entries(c.controls).some(([k, v]) => /\.IKFK$/.test(k) && v !== 1)) : [];
 const soma = new SomaRig(JSON.parse(read('../assets/soma_rig.json')));
 const bin = read('../assets/motiondb.bin');
 const db = new MotionDB(soma, JSON.parse(read('../assets/motiondb.json')), bin.buffer.slice(bin.byteOffset, bin.byteOffset + bin.byteLength));

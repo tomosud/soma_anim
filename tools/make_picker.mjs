@@ -4,8 +4,8 @@
 // buttons that run Maya tools this page does not have are left out.     node tools/make_picker.mjs
 import { readFileSync, writeFileSync } from 'node:fs';
 
-const src = JSON.parse(readFileSync(new URL('../rigspec/bns_picker.json', import.meta.url)));
-const spec = JSON.parse(readFileSync(new URL('../assets/bns_rig.json', import.meta.url)));
+const src = JSON.parse(readFileSync(new URL('../rigspec/picker_src.json', import.meta.url)));
+const spec = JSON.parse(readFileSync(new URL('../assets/rig.json', import.meta.url)));
 const hidden = new Set(spec.controls.filter(c => /_fk$/.test(c.name)).map(c => c.name));
 
 // Maya tool -> what the page does
@@ -33,7 +33,7 @@ const tabs = src.tabs.map(tab => {
     let op = null;
     if (it.kind === 'action' && !sw) {
       const o = (Array.isArray(it.operation) ? it.operation : []).find(o => o.module);
-      const name = o && OPS[o.module.replace(/^bns_rig\./, '') + '.' + o.function];
+      const name = o && OPS[o.module.replace(/^\w+\./, '') + '.' + o.function];
       if (!name) continue;
       op = name;
       if (LEAVE_OPS.has(name)) continue;
