@@ -58,5 +58,6 @@ SOMA Anim を続けるときは、まずこれを読む。仕組みの説明は 
 - 見本: `tools/make_poses.mjs` → `assets/poses.json`（クリップと、拳が遠い・足が高いなどで選んだフレーム）。DB に無い動き（ジャンプなど）は、Mixamo の FBX を soma-fighter-web の `tools/mixamo_clips.mjs` で JSON にして `node tools/add_clips.mjs <json> <tag> [名前…]` で足す。**MotionBricks 公式の BVH（乗り越え・椅子など）は NVIDIA Sample Data Evaluation License なので、公開リポには入れない。**
 - キーごとの `natural` / `feet`（既定 true、false のときだけ保存）: 画面の 2 つのチェック。`feet` が false のキーは見本を床に下ろさない・全キーの接地の対象外。
 - 中割りの使い回し: 区間の id に前の区間を含めず、作ったときの到着（前の区間の最後の 4 フレーム）を `seg.ctx` に持つ。今の到着と主な関節で 3 cm 以内なら作り直さない（`MotionBricks.sameContext`）。キーを 1 つ直しても作り直すのは 1〜3 区間。
+- COG（`src/cog.js`）: 見本を置いたキーは COG を腰に合わせ、中割りでは COG と腰のずれを前後のキーのずれの間でなだらかに変える。手順はリグの作者に聞いたもの（`rigspec/cog_answer.md`）: COG の回転は変えず位置だけ動かし、Hip_trans・Spine_trans・Head_trans を元の世界の位置に戻す（骨は動かない。`tests/cog.test.mjs`）。リグは 2026-11-14 に COG の回転が背骨に効くよう直った版（コンストレイント 125 本。Maya 側の共有先への反映は本人の判断待ち）。地面の動きは COG 0 で Hip_trans、ジャンプ・空中は COG に放物線と回転、空中の追従先は脚 Hip・腕 Chest がおすすめ。
 - ドラッグ中は生成を止める（`mb.hold`）。生成の当てはめは 8 ms ごとに画面に譲る（`Inbetweener.finishAsync`）。ドラッグの更新は描画 1 回に 1 度（`dragUpdate`）。
 - シェルの heredoc に長い Python を渡すと壊れることがある。Write でファイルにしてから実行する。

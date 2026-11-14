@@ -7,6 +7,7 @@ import * as M from './m4.js';
 import { BODY_FIT_CONTROLS } from './fit.js';
 import { wrap } from './natural.js';
 import { sameSwitches, switchesOf } from './switches.js';
+import { cogOffset, cogTo } from './cog.js';
 
 export class Inbetweener {
   constructor(rig, db, re, fitter) {
@@ -73,6 +74,10 @@ export class Inbetweener {
       out.push(v);
     }
     this.plantFeet(out, contact);
+    // The COG goes along with the hips (fitted, the body moves under the COG of the keys and leaves it behind): it
+    // keeps to the hips as far off them as it is in the keys, that distance changing evenly from key A to key B.
+    const offA = cogOffset(rig, A), offB = cogOffset(rig, B);
+    for (let k = 1; k < n; k++) { out[k] = cogTo(rig, out[k], M.lerp(offA, offB, k / n)); yield; }
     return { frames: out.slice(1, n), match: null };
   }
 

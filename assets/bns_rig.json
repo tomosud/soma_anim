@@ -34,7 +34,7 @@
   "counts": {
    "controls": 75,
    "bind_joints": 89,
-   "constraints": 124,
+   "constraints": 125,
    "utility_nodes": 234
   }
  },
@@ -48898,6 +48898,35 @@
     0.0
    ],
    "note": "aim: local aim_vector points to the target; up_vector is kept toward the up object (object: its position, objectrotation: world_up_vector in its space); then offset(rotate xyz) is applied on the local side",
+   "weight_inputs": [
+    null
+   ],
+   "weights_expr": [
+    null
+   ]
+  },
+  {
+   "node": "bns_spine_base_orientConstraint1",
+   "type": "orientConstraint",
+   "driven": "bns_spine_base",
+   "targets": [
+    "COG_ctl"
+   ],
+   "weights": [
+    1.0
+   ],
+   "drives": [
+    "rotateX",
+    "rotateY",
+    "rotateZ"
+   ],
+   "offset": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "interp_type": 1,
+   "note": "driven world orientation = offset(rotate xyz) * blend(target world orientations); interp 2 = shortest (quaternion slerp)",
    "weight_inputs": [
     null
    ],

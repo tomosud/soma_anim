@@ -17,6 +17,7 @@ import { FootReset, FOOT_CONTROLS } from './feet.js';
 import { writeFbx } from './fbx.js';
 import { Picker } from './picker.js';
 import { withOptions } from './switches.js';
+import { cogTo } from './cog.js';
 import { loadManny, makeMannequin } from './character.js';
 import { Timeline } from './timeline.js';
 
@@ -693,7 +694,7 @@ function bookPose(label, mirror = false) {
   rig.setVector(here);
   fitter.fit(re.targets(soma.place(pose, yaw, dx, dz)));
   // (feet left free: the pose as it is in the clip - in the air, lying down - not put on the floor)
-  if (!grounded) { rig.evaluate(); return recenter(rig.getVector()); }
+  if (!grounded) { rig.evaluate(); return cogTo(rig, recenter(rig.getVector())); }
   // (poses of an action are caught in mid move: only the floor and the reach of the legs are seen to)
   const v = physical.fix(rig.getVector(), new Set(), [], 999).vector;
   // a foot that stands in the pose (the ankle and the ball both near the floor) stands flat
@@ -703,7 +704,8 @@ function bookPose(label, mirror = false) {
     const flat = footReset.apply(v);
     rig.channelKeys.forEach((k, i) => { const m = /^([LR])_(Foot_trans|Foot_rot|Toe_rot)[.]/.exec(k); if (m && stands[m[1] === 'L' ? 0 : 1]) v[i] = flat[i]; });
   }
-  return recenter(physical.fix(v, new Set(), [], 999).vector);
+  // (the COG is put at the hips: the pose is fitted under the COG this frame had, which may be anywhere)
+  return cogTo(rig, recenter(physical.fix(v, new Set(), [], 999).vector));
 }
 
 /** Pointing at a pose of the book shows it on the character; leaving puts the frame's own pose back. */
