@@ -18,7 +18,7 @@ const ORDER = ['pelvis', 'spine_01', 'spine_02', 'spine_03', 'spine_04', 'spine_
 for (const s of 'lr') ORDER.push('clavicle_' + s, 'upperarm_' + s, 'lowerarm_' + s, 'hand_' + s, 'thigh_' + s, 'calf_' + s, 'foot_' + s, 'ball_' + s);
 
 export class SomaToManny {
-  /** cal: {joint: quaternion} from assets/retarget_cal.json - the roll of the limb bones going rig -> SOMA. */
+  /** cal: {joint: quaternion} from assets/retarget_cal.json - the roll of the limb bones between rig and SOMA. */
   constructor(rig, soma, cal = null) {
     this.soma = soma;
     const rest = Object.fromEntries(rig.joints.map(j => [j.name, j.rest]));
@@ -44,7 +44,11 @@ export class SomaToManny {
       // offset from the parent joint in the frame of the parent
       const p = parent[name];
       const off = rest[p] && MAP[p] ? M.xdir(M.sub(M.pos(rest[name]), M.pos(rest[p])), M.transpose3(M.rotation(rest[p]))) : null;
-      return { name, s, c, back: cal?.[name] ?? c, parent: MAP[p] ? p : null, off };
+      // (the calibrated roll both ways: rig -> SOMA -> rig gives the pose back.  With the rest one going to the rig
+      //  and the calibrated one coming from it, a straight arm came back with its elbow on the other side - the
+      //  whole arm turned over and the wrist twisted half a turn)
+      const k = cal?.[name] ?? c;
+      return { name, s, c: k, back: k, parent: MAP[p] ? p : null, off };
     });
   }
 

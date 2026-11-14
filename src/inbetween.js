@@ -78,7 +78,34 @@ export class Inbetweener {
     // keeps to the hips as far off them as it is in the keys, that distance changing evenly from key A to key B.
     const offA = cogOffset(rig, A), offB = cogOffset(rig, B);
     for (let k = 1; k < n; k++) { out[k] = cogTo(rig, out[k], M.lerp(offA, offB, k / n)); yield; }
+    // A hand or a foot that turns over in a frame or two (the model can flip a wrist on its way to a key) is turned
+    // evenly over the frames around the flip instead; then every frame is kept inside the joint ranges.
+    if (this.limits) {
+      for (let k = 1; k < n; k++) { out[k] = this.limits.apply(out[k]); yield; }
+      this.limits.smooth(out);
+    } else this.smoothTurns(out);
     return { frames: out.slice(1, n), match: null };
+  }
+
+  /** Turns of the hands and feet faster than SNAP degrees a frame spread over the frames around them. */
+  smoothTurns(out) {
+    const { rig, fitter } = this, n = out.length - 1;
+    for (const [ctl, joint] of [['L_Hand_rot', 'hand_l'], ['R_Hand_rot', 'hand_r'], ['L_Foot_rot', 'foot_l'], ['R_Foot_rot', 'foot_r']]) {
+      const R = out.map(v => (rig.setVector(v).evaluate(), M.toQuat(M.rotation(rig.jointWorld(joint)))));
+      for (let k = 1; k <= n; k++) {
+        if (angle(R[k - 1], R[k]) <= SNAP) continue;
+        const a = Math.max(0, k - 4), b = Math.min(n, k + 3);
+        for (let i = a + 1; i < b; i++) {
+          const q = M.qslerp(R[a], R[b], (i - a) / (b - a));
+          rig.setVector(out[i]).evaluate();
+          fitter._rot(ctl, M.mul(fitter.k[ctl], M.fromQuat(q)));
+          rig.evaluate();
+          out[i] = rig.getVector();
+          R[i] = q;
+        }
+        k = b;
+      }
+    }
   }
 
   /**
@@ -146,6 +173,9 @@ export class Inbetweener {
 }
 
 const ease = u => u * u * (3 - 2 * u);
+// (degrees a hand or a foot may turn in one frame: a fast wrist in a strike turns about 25)
+const SNAP = 35;
+const angle = (p, q) => 2 * Math.acos(Math.min(1, Math.abs(p[0] * q[0] + p[1] * q[1] + p[2] * q[2] + p[3] * q[3]))) * 180 / Math.PI;
 
 function lerpPose(a, b, t) {
   const q = new Float32Array(a.q.length);

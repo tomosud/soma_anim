@@ -69,6 +69,8 @@ export class Project {
     if (!keys.length) { for (let f = 0; f <= n; f++) out[f] = this.start(); this.baked = out; return; }
     for (let f = 0; f <= Math.min(n, keys[0].frame); f++) out[f] = keys[0].v;
     for (let f = keys[keys.length - 1].frame; f <= n; f++) out[f] = keys[keys.length - 1].v;
+    // (every key inside the joint ranges, however it was made: checked again only when its pose has changed)
+    if (this.limit) for (const k of keys) if (k.v !== k.limitedOf) { k.v = this.limit(k.v); k.limitedOf = k.v; }
     const used = new Set();
     const useMb = this.mode === 'mb' && inb && mb && mb.state === 'ready';
     // (ctx: how the motion arrives at key a - the last frames of the stretch before, null from standing.  A stretch

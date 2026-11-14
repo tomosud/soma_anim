@@ -18,6 +18,7 @@ import { writeFbx } from './fbx.js';
 import { Picker } from './picker.js';
 import { withOptions } from './switches.js';
 import { cogTo } from './cog.js';
+import { Limits } from './limits.js';
 import { loadManny, makeMannequin } from './character.js';
 import { Timeline } from './timeline.js';
 
@@ -86,6 +87,16 @@ orbit.addEventListener('change', () => { dirty = true; });
 let rig, project, character, nat = null, inb = null, mb = null, timeline, footReset, physical, env = null;
 let frame = 0, selected = null, playing = false, clipboard = null;
 let working = null; // pose being edited (not yet a key)
+// The joints kept inside what people do (assets/limits.json): every key, every in-between, every drag.
+let limits = null;
+const limitsOn = () => !!limits && $('jointLimits').checked;
+/** Pose v inside the joint ranges (the rig is put back as it was). */
+function limited(v) {
+  if (!limitsOn()) return v;
+  const held = rig.getVector(), out = limits.apply(v);
+  rig.setVector(held).evaluate();
+  return out;
+}
 const ctlView = new Map();
 const proxy = new T.Object3D();
 scene.add(proxy);
@@ -337,6 +348,8 @@ function dragUpdate(drop = false) {
   if (nat && dragStart && naturalHere() && CARRIES.has(selected)) {
     working = nat.follow(working, heldFor(project.keyAt(frame), [selected]), dragStart);
   }
+  // (a joint is not dragged past what it can do)
+  if (limitsOn()) { working = limits.apply(working); }
   syncView(); refreshChannels();
 }
 gizmo.addEventListener('change', () => { dirty = true; });
@@ -697,7 +710,7 @@ function bookPose(label, mirror = false) {
   rig.setVector(here);
   fitter.fit(re.targets(soma.place(pose, yaw, dx, dz)));
   // (feet left free: the pose as it is in the clip - in the air, lying down - not put on the floor)
-  if (!grounded) { rig.evaluate(); return cogTo(rig, recenter(rig.getVector())); }
+  if (!grounded) { rig.evaluate(); return limited(cogTo(rig, recenter(rig.getVector()))); }
   // (poses of an action are caught in mid move: only the floor and the reach of the legs are seen to)
   const v = physical.fix(rig.getVector(), new Set(), [], 999).vector;
   // a foot that stands in the pose (the ankle and the ball both near the floor) stands flat
@@ -708,7 +721,7 @@ function bookPose(label, mirror = false) {
     rig.channelKeys.forEach((k, i) => { const m = /^([LR])_(Foot_trans|Foot_rot|Toe_rot)[.]/.exec(k); if (m && stands[m[1] === 'L' ? 0 : 1]) v[i] = flat[i]; });
   }
   // (the COG is put at the hips: the pose is fitted under the COG this frame had, which may be anywhere)
-  return cogTo(rig, recenter(physical.fix(v, new Set(), [], 999).vector));
+  return limited(cogTo(rig, recenter(physical.fix(v, new Set(), [], 999).vector)));
 }
 
 /** Pointing at a pose of the book shows it on the character; leaving puts the frame's own pose back. */
@@ -763,6 +776,8 @@ function bindUI() {
   $('naturalize').onclick = naturalizeNow;
   $('auto').onchange = e => setFlag('natural', e.target.checked);
   $('lockFeet').onchange = e => setFlag('feet', e.target.checked);
+  // (turned on or off: every key looked at again and the in-betweens made again)
+  $('jointLimits').onchange = () => { if (inb) inb.limits = limitsOn() ? limits : null; for (const k of project.keys) k.limitedOf = null; project.cache.clear(); rebake(); showFrame(frame); };
   $('modeMove').onclick = () => setGizmoMode('translate');
   $('modeTurn').onclick = () => setGizmoMode('rotate');
   $('pickWorld').onclick = () => select('world_ctl');
@@ -884,6 +899,8 @@ async function start() {
   rig = new BnsRig(spec);
   project = new Project(rig);
   project.newFlags = looseFlags;
+  project.limit = v => limited(v);
+  fetch(asset('assets/limits.json')).then(r => r.json()).then(d => { limits = new Limits(rig, new RigFitter(rig), d); if (inb) inb.limits = limitsOn() ? limits : null; rebake(); showFrame(frame); }).catch(e => console.warn('limits', e));
   project.rest = rig.vectorFromValues((await fetch(asset('assets/start_pose.json')).then(r => r.json())).values);
   footReset = new FootReset(rig);
   physical = new Physical(rig);
@@ -932,6 +949,7 @@ async function start() {
     env = { rig, nat, db, re, fitter, physical, start: project.start() };
     fetch(asset('assets/poses.json')).then(r => r.json()).then(d => buildPoseBook(d.poses)).catch(() => {});
     inb = new Inbetweener(rig, db, re, fitter);
+    if (limits) inb.limits = limitsOn() ? limits : null;
     db.track();
     rebake(); showFrame(frame);
     status(`参考モーション ${db.clips.length} クリップ`);

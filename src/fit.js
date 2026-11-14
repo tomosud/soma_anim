@@ -11,14 +11,15 @@ function poleDir(a, b, c, fallback) {
   const ac = M.sub(c, a), l2 = M.dot(ac, ac);
   if (l2 < 1e-6) return fallback;
   const d = M.sub(b, M.add(a, M.scl(ac, M.dot(M.sub(b, a), ac) / l2)));
-  // nearly straight: the bend side is not defined by the positions
-  const w = Math.min(1, M.len(d) / 2);
+  // nearly straight: the bend side is not defined by the positions (a few cm off the line can be the noise of
+  // a straight limb: the side the bones are turned to decides until the bend is clear)
+  const w = Math.max(0, Math.min(1, (M.len(d) - 1) / 4));
   const f = M.norm(M.ortho(fallback, M.norm(ac)), fallback);
   return M.norm(M.add(M.scl(M.norm(d, f), w), M.scl(f, 1 - w)), f);
 }
 
 /** Angle (degrees) of a rotation about a unit axis (its twist). */
-function twistAbout(r, axis) {
+export function twistAbout(r, axis) {
   const q = M.toQuat(r);
   const a = 2 * Math.atan2(q[0] * axis[0] + q[1] * axis[1] + q[2] * axis[2], q[3]) / M.DEG;
   return a > 180 ? a - 360 : a < -180 ? a + 360 : a;

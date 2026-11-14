@@ -18,6 +18,9 @@ const ID = [0, 0, 0, 1];
 // ~90 ms); on the CPU one at a time (the worker says which: this.batch).
 export const BATCH = 8;
 
+// A turn of the page's event loop that a hidden page does not slow down (setTimeout there waits a second or more).
+const turn = () => new Promise(r => { const c = new MessageChannel(); c.port1.onmessage = () => { c.port1.close(); r(); }; c.port2.postMessage(0); });
+
 function emptyBatch(n) {
   return {
     global_root_values: new Float32Array(n * 8 * 5), local_root_values: new Float32Array(n * 8 * 4), local_poses: new Float32Array(n * 8 * 267),
@@ -182,7 +185,7 @@ export class MotionBricks {
   raw(context, targets, tokens) {
     return new Promise((resolve, reject) => {
       this.queue.push({ context, targets, tokens, resolve, reject });
-      if (!this.flushing) { this.flushing = true; setTimeout(() => this._flush(), 0); }
+      if (!this.flushing) { this.flushing = true; turn().then(() => this._flush()); }
     });
   }
 
@@ -201,7 +204,7 @@ export class MotionBricks {
         } catch (e) { j.reject(e); }
       });
       // (the answers just handed out ask their next pieces right away: wait a turn so that they share a batch)
-      await new Promise(r => setTimeout(r, 0));
+      await turn();
     }
     this.flushing = false;
   }
@@ -497,7 +500,7 @@ export class MotionBricks {
     if (this._pause) return this._pause;
     let since = performance.now();
     const p = async () => {
-      do await new Promise(r => setTimeout(r, this.hold?.() ? 30 : 0)); while (this.hold?.());
+      do await (this.hold?.() ? new Promise(r => setTimeout(r, 30)) : turn()); while (this.hold?.());
       since = performance.now();
     };
     p.due = () => this.hold?.() || performance.now() - since > 8;
