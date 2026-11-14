@@ -90,24 +90,36 @@ export class RigFitter {
     rig.evaluate();
 
     this._rot('Neck_rot', M.mul(k.Neck_rot, R('neck_01')));
-    for (const [S, s] of [['L', 'l'], ['R', 'r']]) {
-      this._rot(S + '_Shoulder_rot', M.mul(k[S + '_Shoulder_rot'], R('clavicle_' + s)));
-      this._pos(S + '_Hand_trans', P('hand_' + s));
-      this._pos(S + '_Foot_trans', P('foot_' + s));
-      const ea = poleDir(P('upperarm_' + s), P('lowerarm_' + s), P('hand_' + s), M.xdir(this.bend['upperarm_' + s], R('upperarm_' + s)));
-      this._pos(S + '_elbow_pv', M.add(P('lowerarm_' + s), M.scl(ea, this.pvArm)));
-      const ka = poleDir(P('thigh_' + s), P('calf_' + s), P('foot_' + s), M.xdir(this.bend['thigh_' + s], R('thigh_' + s)));
-      this._pos(S + '_knee_pv', M.add(P('calf_' + s), M.scl(ka, this.pvLeg)));
-    }
     rig.evaluate();
+    // The limbs, in the order their controls hang on one another: the goals (they may follow the chest, the
+    // hips or the other hand), the pole vectors (they may follow the hand or the foot), then the clavicles (the
+    // automatic shoulder turns them toward the hand), then the hands and feet.  Twice: a goal that follows the
+    // other hand needs that hand's final turn.
+    for (let round = 0; round < 2; round++) {
+      for (const [S, s] of [['L', 'l'], ['R', 'r']]) {
+        this._pos(S + '_Hand_trans', P('hand_' + s));
+        this._pos(S + '_Foot_trans', P('foot_' + s));
+      }
+      rig.evaluate();
+      for (const [S, s] of [['L', 'l'], ['R', 'r']]) {
+        const ea = poleDir(P('upperarm_' + s), P('lowerarm_' + s), P('hand_' + s), M.xdir(this.bend['upperarm_' + s], R('upperarm_' + s)));
+        this._pos(S + '_elbow_pv', M.add(P('lowerarm_' + s), M.scl(ea, this.pvArm)));
+        const ka = poleDir(P('thigh_' + s), P('calf_' + s), P('foot_' + s), M.xdir(this.bend['thigh_' + s], R('thigh_' + s)));
+        this._pos(S + '_knee_pv', M.add(P('calf_' + s), M.scl(ka, this.pvLeg)));
+      }
+      rig.evaluate();
+      for (const [S, s] of [['L', 'l'], ['R', 'r']]) this._rot(S + '_Shoulder_rot', M.mul(k[S + '_Shoulder_rot'], R('clavicle_' + s)));
+      rig.evaluate();
+      for (const [S, s] of [['L', 'l'], ['R', 'r']]) {
+        this._rot(S + '_Hand_rot', M.mul(k[S + '_Hand_rot'], R('hand_' + s)));
+        this._rot(S + '_Foot_rot', M.mul(k[S + '_Foot_rot'], R('foot_' + s)));
+      }
+      rig.evaluate();
+    }
 
     this._pos('Head_trans', M.add(P('head'), M.xdir(this.headAim, R('head'))));
-    for (const [S, s] of [['L', 'l'], ['R', 'r']]) {
-      this._rot(S + '_Hand_rot', M.mul(k[S + '_Hand_rot'], R('hand_' + s)));
-      this._rot(S + '_Foot_rot', M.mul(k[S + '_Foot_rot'], R('foot_' + s)));
-    }
-    rig.evaluate();
     for (const [S, s] of [['L', 'l'], ['R', 'r']]) this._rot(S + '_Toe_rot', M.mul(k[S + '_Toe_rot'], R('ball_' + s)));
+    rig.evaluate();
 
     // head roll about the line of sight
     const sight = M.norm(M.sub(M.pos(rig.controlWorld('Head_trans')), M.pos(rig.jointWorld('head'))));

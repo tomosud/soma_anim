@@ -9,7 +9,7 @@ export class FootReset {
     this.rig = rig;
     const rest = n => rig.joints[rig.jointIndex.get(n)].rest;
     this.sides = [['L', 'l'], ['R', 'r']].map(([S, s]) => {
-      const ik = rig.iks.find(k => k.start.name === 'drv_thigh_' + s);
+      const ik = rig.iks.find(k => k.start.name.endsWith('thigh_' + s));
       return {
         S, s, reach: (ik.la + ik.lb) * 0.985,
         footY: rest('foot_' + s)[13],

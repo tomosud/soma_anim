@@ -6,6 +6,7 @@
 import * as M from './m4.js';
 import { BODY_FIT_CONTROLS } from './fit.js';
 import { wrap } from './natural.js';
+import { sameSwitches, switchesOf } from './switches.js';
 
 export class Inbetweener {
   constructor(rig, db, re, fitter) {
@@ -24,6 +25,9 @@ export class Inbetweener {
   finish(A, B, n, placedAll, contact) {
     const { rig, re, fitter } = this;
     // everything the reference does not drive (fingers, the whole-body control): plain ease from A to B
+    // (the switches - follow, pvFollow ... - are not in-betweened: the stretch keeps those of key A, and key B
+    //  is seen through them, with its pose kept)
+    if (!sameSwitches(rig, A, B)) B = switchesOf(rig, A, B);
     const other = k => { const u = ease(k / n), v = new Float64Array(A.length); for (let i = 0; i < v.length; i++) v[i] = A[i] + (this.isRot[i] ? wrap(B[i] - A[i]) : B[i] - A[i]) * u; return v; };
     const V = [];
     for (let k = 0; k <= n; k++) {
@@ -107,6 +111,7 @@ export class Inbetweener {
   /** Plain eased interpolation (no reference motion). */
   interpolate(A, B, n) {
     const out = [];
+    if (!sameSwitches(this.rig, A, B)) { const held = this.rig.getVector(); B = switchesOf(this.rig, A, B); this.rig.setVector(held).evaluate(); }
     for (let k = 1; k < n; k++) {
       const u = ease(k / n), v = new Float64Array(A.length);
       for (let i = 0; i < v.length; i++) v[i] = A[i] + (this.isRot[i] ? wrap(B[i] - A[i]) : B[i] - A[i]) * u;

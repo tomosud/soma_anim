@@ -15,6 +15,8 @@ import { MotionBricks } from './motionbricks.js';
 import { loadState, saveState } from './store.js';
 import { FootReset, FOOT_CONTROLS } from './feet.js';
 import { writeFbx } from './fbx.js';
+import { Picker } from './picker.js';
+import { withOptions } from './switches.js';
 import { loadManny, makeMannequin } from './character.js';
 import { Timeline } from './timeline.js';
 
@@ -36,7 +38,7 @@ function wait(text, part = null, canSkip = false) {
 const CARRIES = new Set(['Hip_trans', 'Hip2_rot', 'Spine_trans', 'Spine_rot', 'Neck_rot']);
 const FOOT_PINS = ['L_Foot_trans', 'R_Foot_trans', 'L_Foot_rot', 'R_Foot_rot', 'L_Toe_rot', 'R_Toe_rot'];
 const LABEL = {
-  world_ctl: '全身', Hip_trans: '腰', Hip2_rot: '腰の向き', Spine_trans: '胸', Spine_rot: '胸のひねり', Neck_rot: '首', Head_rot: '頭の傾き', Head_trans: '視線',
+  world_ctl: '全身', COG_ctl: '重心', Hip_trans: '腰', Hip2_rot: '腰の向き', Spine_trans: '胸', Spine_rot: '胸のひねり', Neck_rot: '首', Head_rot: '頭の傾き', Head_trans: '視線',
   Shoulder_rot: '肩', elbow_pv: '肘の向き', Hand_trans: '手', Hand_rot: '手首', knee_pv: '膝の向き', Foot_trans: '足', Foot_rot: '足首', Toe_rot: 'つま先',
 };
 const label = n => { const m = n.match(/^([LR])_(.+)$/); const base = m ? m[2] : n; return LABEL[base] ? `${m ? (m[1] === 'L' ? '左' : '右') : ''}${LABEL[base]}` : n; };
@@ -100,6 +102,7 @@ const colorOf = c => (c.group === 'world' ? 0xc79bff : COLORS[c.side] ?? 0xfffff
 
 function buildControls() {
   for (const c of rig.controls) {
+    if (c.hidden) continue;
     const g = new T.Group();
     g.matrixAutoUpdate = false;
     const mat = new T.LineBasicMaterial({ color: colorOf(c), depthTest: false, transparent: true, opacity: 0.9 });
@@ -151,6 +154,7 @@ function showFrame(f, keepWorking = false) {
   if (!keepWorking) working = null;
   rig.setVector(currentPose()).evaluate();
   syncView(); syncProxy(); refreshPanel(); refreshGhosts();
+  picker?.refresh();
   $('frame').value = frame;
   timeline.draw();
 }
@@ -376,6 +380,8 @@ function refreshPanel() {
     d.classList.toggle('sel', d.dataset.name === selected);
     d.classList.toggle('pin', !!key && key.pins.has(d.dataset.name));
   }
+  if (selected) optionRows(box);
+  picker?.refresh();
   $('delKey').disabled = !key;
   $('addKey').classList.toggle('on', !!key);
   refreshControlLook();
@@ -384,7 +390,7 @@ function refreshPanel() {
 function buildList() {
   const list = $('list');
   for (const c of rig.controls) {
-    if (c.group === 'finger') continue;
+    if (c.group === 'finger' || c.hidden) continue;
     const d = document.createElement('div');
     d.dataset.name = c.name; d.textContent = label(c.name); d.title = c.name;
     d.onclick = () => select(c.name);
@@ -471,7 +477,9 @@ function recenter(v) {
   if (Math.hypot(d[0], d[2]) < 0.05) return v;
   // where every control that sits in the ring is now: it is put back there after the ring has moved
   // (a few passes: some of them hang on parts of the body that the others move)
-  const held = rig.controls.filter(c => c.parentControl === 'world_ctl' && c.hasT).map(c => [c, M.pos(c.node.world)]);
+  // (the goals that follow the world follow the ring, not the body: they are put back too; the finger
+  //  controls that move are ratios, not places)
+  const held = rig.controls.filter(c => c.hasT && c.name !== 'world_ctl' && c.group !== 'finger').map(c => [c, M.pos(c.node.world)]);
   const ring = rig.node('world_ctl'), dl = M.xdir(d, M.inv(ring.parent.world));
   for (const ch of ['tx', 'ty', 'tz']) rig.set('world_ctl.' + ch, rig.get('world_ctl.' + ch) + dl['xyz'.indexOf(ch[1])]);
   for (let pass = 0; pass < 4; pass++) {
@@ -490,6 +498,109 @@ function recenterAll() {
   for (const k of project.keys) k.v = recenter(k.v);
   working = null; rebake(); showFrame(frame);
   status('全身の輪を、すべてのキーで体の真下に置き直しました（ポーズは変わりません）');
+}
+
+// ---------------------------------------------------------------- picker and switches
+let picker = null;
+const LIMB_OF = name => { const m = /^([LR])_(Hand_trans|Hand_rot|elbow_pv|Shoulder_rot|Foot_trans|Foot_rot|knee_pv|Toe_rot)$/.exec(name || ''); return m ? m[1] + (/Foot|knee|Toe/.test(m[2]) ? '_Foot_rot' : '_Hand_rot') : null; };
+const OPTION_LABEL = { follow: 'IK の追従先', pvFollow: /Foot/ , wristFollow: '手首の向き', ankleFollow: '足首の向き', autoShoulder: '肩の追従' };
+const ENUM_LABEL = { World: 'ワールド', Chest: '胸', Hip: '腰', R_Hand: '右手', Body: '体', Hand: '手', Foot: '足', Arm: '腕', Shin: 'すね', Fixed: '固定' };
+
+/** The value of a channel or an option in the pose shown. */
+function poseValue(key) {
+  const i = rig.channelIndex.get(key);
+  return i === undefined ? rig.get(key) : currentPose()[i] + rig.channelBase[i];
+}
+
+/** A switch set on this frame, the pose kept (the Maya tools do the same). */
+function setOption(key, value) {
+  if (poseValue(key) === value) return;
+  const v = withOptions(rig, currentPose(), { [key]: value });
+  project.pushUndo();
+  project.setKey(frame, v, null, 'keep');
+  working = null; rebake(); showFrame(frame);
+  status(`${optionLabel(key)} を「${enumLabel(key, value)}」に（ポーズはそのまま）`);
+}
+
+function optionLabel(key) {
+  const [c, a] = key.split('.');
+  const side = c[0] === 'L' ? '左' : '右';
+  if (a === 'pvFollow') return side + (c.includes('Foot') ? '膝の向き' : '肘の向き');
+  if (a === 'follow') return side + (c.includes('Foot') ? '足' : '手') + 'の追従先';
+  return side + (OPTION_LABEL[a] || a);
+}
+
+function enumLabel(key, value) {
+  const [c, a] = key.split('.'), o = rig.node(c).opt[a];
+  return o.enum ? ENUM_LABEL[o.enum[value]] || o.enum[value] : String(+value.toFixed(2));
+}
+
+/** The switches of the limb of the selected control, under its channels. */
+function optionRows(box) {
+  const end = rig.controlByName.get(LIMB_OF(selected) || selected);
+  if (!end || !end.options.length) return;
+  for (const a of end.options) {
+    const key = end.name + '.' + a, o = end.node.opt[a];
+    const l = document.createElement('span'); l.textContent = optionLabel(key);
+    let input;
+    if (o.enum) {
+      input = document.createElement('select');
+      o.enum.forEach((e, i) => { const op = document.createElement('option'); op.value = i; op.textContent = ENUM_LABEL[e] || e; input.append(op); });
+      input.value = poseValue(key);
+      input.onchange = () => setOption(key, +input.value);
+    } else {
+      input = document.createElement('input');
+      input.type = 'number'; input.step = 0.1; input.min = o.min; input.max = o.max; input.value = +poseValue(key).toFixed(2);
+      input.onchange = () => { project.pushUndo(); const v = currentPose().slice(), i = rig.channelIndex.get(key); v[i] = Math.max(o.min, Math.min(o.max, +input.value || 0)) - rig.channelBase[i]; project.setKey(frame, v, null, 'keep'); working = null; rebake(); showFrame(frame); };
+    }
+    input.className = 'option';
+    box.append(l, input);
+  }
+}
+
+function sideFingers(side) { return rig.controls.filter(c => c.group === 'finger' && (c.side === side || c.name.includes('_' + side + '_'))); }
+let handClip = null;
+function handOp(op, side) {
+  const v = currentPose().slice(), fingers = sideFingers(side), idx = c => c.channels.map(ch => rig.channelIndex.get(c.name + '.' + ch));
+  if (op === 'copyHand') { handClip = { side, values: fingers.map(c => idx(c).map(i => v[i])) }; status('指のポーズをコピーしました'); return; }
+  if (op === 'pasteHand' && !handClip) return;
+  project.pushUndo();
+  if (op === 'resetHand') for (const c of fingers) for (const i of idx(c)) v[i] = 0;
+  if (op === 'pasteHand') {
+    // (pasted on the other hand: the mirror of the copied values)
+    const m = rig.mirrorVector(v);
+    fingers.forEach((c, k) => idx(c).forEach((i, j) => { v[i] = handClip.values[k][j]; }));
+    if (handClip.side !== side) { const src = sideFingers(handClip.side); const tmp = v.slice(); src.forEach((c, k) => idx(c).forEach((i, j) => { tmp[i] = handClip.values[k][j]; })); const mm = rig.mirrorVector(tmp); for (const c of fingers) for (const i of idx(c)) v[i] = mm[i]; void m; }
+  }
+  if (op === 'handToOther') {
+    const mm = rig.mirrorVector(v), other = sideFingers(side === 'L' ? 'R' : 'L');
+    for (const c of other) for (const i of idx(c)) v[i] = mm[i];
+  }
+  project.setKey(frame, v, null, 'keep');
+  working = null; rebake(); showFrame(frame);
+}
+
+function buildPicker(data) {
+  picker = new Picker($('picker'), data, {
+    get: poseValue,
+    selected: () => selected,
+    select: name => select(name),
+    setOption,
+    slide: (key, value, done) => {
+      const i = rig.channelIndex.get(key);
+      const v = currentPose().slice(); v[i] = value - rig.channelBase[i];
+      if (!done) { working = v; rig.setVector(v).evaluate(); syncView(); return; }
+      project.pushUndo(); project.setKey(frame, v, null, 'keep'); working = null; rebake(); showFrame(frame);
+    },
+    run: (op, side) => {
+      if (op === 'resetPose') actions.resetAll();
+      else if (op === 'mirror') actions.mirror();
+      else if (op === 'copy') actions.copy();
+      else if (op === 'paste') actions.paste(false);
+      else if (op === 'key') actions.addKey();
+      else handOp(op, side);
+    },
+  });
 }
 
 // ---------------------------------------------------------------- pose book
@@ -711,6 +822,7 @@ async function start() {
   const skip = /^(ik_|interaction|center_of_mass)/;
   for (const j of rig.joints) if (rig.jointIndex.has(j.parent) && j.parent !== 'root' && !skip.test(j.name)) BONES.push([j.parent, j.name]);
   buildControls(); buildList();
+  fetch(asset('assets/picker.json')).then(r => r.json()).then(buildPicker).catch(e => console.warn('picker', e));
   timeline = new Timeline($('timeline'), project, {
     frame: () => frame,
     seek: f => { if (playing) actions.play(); showFrame(f); },
@@ -761,6 +873,6 @@ async function start() {
     status('参考モーションを読み込めませんでした（単純な補間で動きます）');
     wait(null);
   }
-  window.app = { rig, project, actions, select, showFrame, commit, naturalizeNow, render: () => renderer.render(scene, camera), get frame() { return frame; }, get nat() { return nat; }, get env() { return env; }, startPose: () => project.start(), shot, recenter, applyPose, get poseBook() { return poseBook; }, get inb() { return inb; }, get mb() { return mb; } };
+  window.app = { rig, project, actions, select, showFrame, commit, naturalizeNow, render: () => renderer.render(scene, camera), get frame() { return frame; }, get nat() { return nat; }, get env() { return env; }, startPose: () => project.start(), shot, recenter, setOption, get picker() { return picker; }, applyPose, get poseBook() { return poseBook; }, get inb() { return inb; }, get mb() { return mb; } };
 }
 start().catch(e => { console.error(e); wait(null); status('起動に失敗: ' + e.message); });

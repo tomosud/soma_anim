@@ -3,3 +3,6 @@ eval_out/
 *.log
 # exported from the Maya scene for reference; the web app uses assets/manny.*
 rigspec/manny_bind.fbx
+
+# the rig materials from the Maya side stay local (not in this public repo)
+rigspec/
