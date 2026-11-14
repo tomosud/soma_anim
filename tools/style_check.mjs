@@ -1,4 +1,4 @@
-// The measures of the fighting-game style on clips of the reference motion: the length, the anchors, the strikes,
+// The measures of the anime style on clips of the reference motion: the length, the anchors, the strikes,
 // the feet.            node tools/style_check.mjs [clip-name-part ...]
 import { readFileSync } from 'node:fs';
 import { ControlRig } from '../src/rig.js';

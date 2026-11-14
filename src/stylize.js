@@ -1,4 +1,4 @@
-// Fighting-game style: a correct but flat motion made snappier - pose contrast, anticipation and follow-through,
+// Anime style: a correct but flat motion made snappier - pose contrast, anticipation and follow-through,
 // a steadier stance, fast strikes and stops, the striking limb left out for a moment, the feet kept planted.
 // The length of the animation and the times of its action peaks stay where they were (the keys can be kept as
 // such peaks too), so the result replaces the plain animation frame for frame.

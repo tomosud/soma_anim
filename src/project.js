@@ -17,7 +17,7 @@ export class Project {
     this.cache = new Map();
     this.undoStack = [];
     this.redoStack = [];
-    // the fighting-game style (src/stylize.js): on or off, how strong, the keys kept at their frames;
+    // the anime style (src/stylize.js): on or off, how strong, the keys kept at their frames;
     // styled: its frames (made by the page), what plays and what is written out
     this.style = { on: false, strength: 1, keepKeys: true };
     this.styled = null;

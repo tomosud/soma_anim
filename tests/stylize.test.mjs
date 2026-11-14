@@ -1,4 +1,4 @@
-// The fighting-game style: the time warp keeps the length and the anchors, and on a kick of the reference
+// The anime style: the time warp keeps the length and the anchors, and on a kick of the reference
 // motion the strikes are found, the limbs get faster, the feet stay planted, and with everything off the motion
 // comes back as it was.
 import test from 'node:test';

@@ -223,7 +223,7 @@ function syncProxy() {
 /** The pose shown at the current frame. */
 function currentPose() { return working ?? project.pose(frame); }
 
-// The fighting-game style (src/stylize.js) is what plays and what is written out; it is shown while playing and,
+// The anime style (src/stylize.js) is what plays and what is written out; it is shown while playing and,
 // when nothing is selected, on the frames between the keys.  The keys and anything being edited show the
 // animation as posed (an edit is made on that, never on the styled pose).
 let shownStyled = false;
@@ -926,7 +926,7 @@ function regenerate() {
   flash('regen');
 }
 
-// ---------------------------------------------------------------- fighting-game style
+// ---------------------------------------------------------------- anime style
 // Made on a rig of its own (the page keeps using its rig while this runs, a slice of the frames at a time), again
 // whenever the animation changes, and set aside while a control is dragged.
 let styleEnv = null, styleRun = 0, styleTimer = 0;
