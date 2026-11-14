@@ -26,6 +26,7 @@ SOMA Anim を続けるときは、まずこれを読む。仕組みの説明は 
 | `tools/posetest.js` | `draw()` で自然化 27 件の絵。`node tools/posetest.js` で数値だけ |
 | `tools/make_action_sample.js` | `make()` でサンプルを組み直し、`compare()` で補間と比べ、`dense(a, b, name)` で 1 フレームおきの連番 |
 | `tools/mblab.js` | 素の MotionBricks を条件を変えて呼ぶ実験 |
+| `tools/plainsweep.js` | 見本のポーズをランダムに置いたシーン（種で決まる）で、MotionBricks が作らなかった区間を数える。`run({ scenes: 6, tag })`、`run({ scenes: 3, first: 11, flow: true })` |
 
 ページの中の `window.app` に `rig`, `project`, `env`, `mb`, `shot`, `applyPose`, `recenter` などがある。
 
@@ -47,6 +48,6 @@ SOMA Anim を続けるときは、まずこれを読む。仕組みの説明は 
 ## 仕組みの要点（README に無いこと）
 
 - キー: `{frame, v, pins, ref}`。`ref = {clip, frame, mirror}` は見本から置いたキーで、MotionBricks に前後 3 フレームずつを渡す（`MotionBricks._around`）。
-- 中割り: `src/motionbricks.js` の `_generate` が作り方の候補（歩行・小分け・1 回）を試し、`_score` で採点して選ぶ。5 フレーム以上の間隔は生成（17 未満は最短の動きを速める）。
+- 中割り: `src/motionbricks.js` の `_generate` が作り方の候補（歩行・小分け・1 回）を試し、`_score` で採点して選ぶ。5 フレーム以上の間隔は生成（17 未満は最短の動きを速める）。どれも良くなければ追加の候補（長さ違い・間のポーズで 2〜3 分割・止まった状態から・腰の行き先だけ・長さをモデル任せ）を試す。補間にするのは、明らかに崩れていて補間がはっきり良いとき（差 0.5、補間は遠くへ運ぶほど減点）か、人に不可能な速さのとき（`src/why.js` の `infeasible`）だけ。理由は区間の `reason` に入り、タイムラインの帯（だいだい色）とツールチップ・クリックで出る。2026-11-14 の結果: ランダム 43 区間で plain 11 → 1、通過モード 28 区間で 7 → 0、自己テスト 64 区間で 1 → 1（3 m を 15 f。理由「速すぎる」）、STRESS の点 30.74 → 29.89。
 - 見本: `tools/make_poses.mjs` → `assets/poses.json`（クリップと、拳が遠い・足が高いなどで選んだフレーム）。
 - シェルの heredoc に長い Python を渡すと壊れることがある。Write でファイルにしてから実行する。
