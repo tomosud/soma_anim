@@ -108,6 +108,14 @@
       <label class="row"><input id="showMesh" type="checkbox" checked> メッシュ</label>
       <label class="row"><input id="showGhost" type="checkbox" checked> 前後のキーを薄く表示</label>
     </section>
+    <section>
+      <h2>格闘ゲーム風の仕上げ</h2>
+      <label class="row" title="できた動きを格闘ゲームらしくする: 決めポーズの誇張、予備動作と行き過ぎ、構えの揺れを抑える、緩急（速い所はより速く、決めポーズで止める）、打撃を速くして止める、打った手足を一瞬残す、足の接地を守る。尺と動作の山の時刻はそのまま。再生と書き出し（FBX・Maya 用）に効きます"><input id="styleOn" type="checkbox"> 格闘ゲーム風に仕上げる</label>
+      <label class="row">強さ <input id="styleStrength" type="range" min="0" max="1.5" step="0.05" value="1"><span id="styleStrengthV">100%</span></label>
+      <label class="row" title="キーのフレームで、キーのポーズの時刻をずらさない（緩急はキーとキーの間で付く）"><input id="styleKeys" type="checkbox" checked> キーの時刻を保つ</label>
+      <div class="note">再生中と、何も選んでいないときのキーの間のフレームで仕上げ後を表示します。キーのフレームとコントロールを選んでいるときは、元のポーズで編集します。</div>
+      <div id="styleNote" class="note"></div>
+    </section>
     </div>
   </aside>
 </main>

@@ -17,7 +17,14 @@ export class Project {
     this.cache = new Map();
     this.undoStack = [];
     this.redoStack = [];
+    // the fighting-game style (src/stylize.js): on or off, how strong, the keys kept at their frames;
+    // styled: its frames (made by the page), what plays and what is written out
+    this.style = { on: false, strength: 1, keepKeys: true };
+    this.styled = null;
   }
+
+  /** The frames that play and are written out: the styled ones when the style is on and made. */
+  output() { return this.style.on && this.styled && this.styled.length === this.baked.length ? this.styled : this.baked; }
 
   zero() { return new Float64Array(this.rig.channelKeys.length); }
   /** The pose a scene starts in (a relaxed stand; the rig's own rest pose until it is set). */
@@ -153,6 +160,7 @@ export class Project {
   toJSON() {
     return {
       format: 'soma_anim', version: 1, rig: 'Rig_Manny', fps: this.fps, length: this.length, mode: this.mode, flow: this.flow,
+      ...(this.style.on || this.style.strength !== 1 || !this.style.keepKeys ? { style: { ...this.style } } : {}),
       keys: this.keys.map(k => ({ frame: k.frame, pins: [...k.pins], ...(k.ref ? { ref: k.ref } : {}), ...(k.natural === false ? { natural: false } : {}), ...(k.feet === false ? { feet: false } : {}), values: this.rig.valuesFromVector(k.v) })),
     };
   }
@@ -160,6 +168,7 @@ export class Project {
   fromJSON(d) {
     if (d.format !== 'soma_anim') throw Error('soma_anim のファイルではありません');
     this.fps = d.fps || 30; this.length = d.length || 300; this.mode = d.mode === 'ease' ? 'ease' : 'mb'; this.flow = !!d.flow;
+    this.style = { on: false, strength: 1, keepKeys: true, ...(d.style || {}) };
     this.keys = d.keys.map(k => ({ frame: k.frame, pins: new Set(k.pins || []), ref: k.ref || null, natural: k.natural !== false, feet: k.feet !== false, v: this.rig.vectorFromValues(k.values) }));
     this.sort();
   }
@@ -170,7 +179,8 @@ export class Project {
       format: 'soma_anim_bake', version: 1, rig: 'Rig_Manny', fps: this.fps, start: 0, end: this.length,
       note: 'values are offsets from the rest value of each channel (the rest of every control of Rig_Manny is 0)',
       channels: this.rig.channelKeys, keys: this.keys.map(k => k.frame),
-      frames: this.baked.map(v => Array.from(v, x => +x.toFixed(4))),
+      ...(this.output() !== this.baked ? { style: { ...this.style } } : {}),
+      frames: this.output().map(v => Array.from(v, x => +x.toFixed(4))),
     };
   }
 }

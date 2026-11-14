@@ -21,6 +21,7 @@ import { cogTo } from './cog.js';
 import { Limits } from './limits.js';
 import { loadManny, makeMannequin } from './character.js';
 import { Timeline } from './timeline.js';
+import { stylizeSteps } from './stylize.js';
 
 const $ = id => document.getElementById(id);
 // cache busters: the commit for what changes with the code, a data version for the 20 MB motion database
@@ -222,13 +223,20 @@ function syncProxy() {
 /** The pose shown at the current frame. */
 function currentPose() { return working ?? project.pose(frame); }
 
+// The fighting-game style (src/stylize.js) is what plays and what is written out; it is shown while playing and,
+// when nothing is selected, on the frames between the keys.  The keys and anything being edited show the
+// animation as posed (an edit is made on that, never on the styled pose).
+let shownStyled = false;
+const styledHere = () => !!(project.style.on && project.styled && !working && (playing || (!project.keyAt(frame) && !selected)));
+
 function showFrame(f, keepWorking = false) {
   const to = Math.max(0, Math.min(project.length, Math.round(f)));
   // (on another frame a new key starts with both checks on again)
   if (to !== frame) { looseFlags.natural = true; looseFlags.feet = true; }
   frame = to;
   if (!keepWorking) working = null;
-  rig.setVector(currentPose()).evaluate();
+  shownStyled = styledHere() && !!project.styled[frame];
+  rig.setVector(shownStyled ? project.styled[frame] : currentPose()).evaluate();
   syncView(); syncProxy(); refreshPanel(); refreshGhosts();
   picker?.refresh();
   showFlags();
@@ -240,11 +248,13 @@ function rebake() {
   project.bake(inb, mb);
   save();
   refreshGhosts();
+  restyle();
   if (project.todo.length) {
     status('MotionBricks が中割りを生成中…');
     project.fill(inb, mb, error => {
       // (a stretch landed: show it, unless the animator is in the middle of a drag)
       if (gizmo.dragging) timeline.draw(); else showFrame(frame, !!working);
+      restyle();
       if (error) status('MotionBricks の生成に失敗しました（その区間は単純な補間）: ' + error);
       else if (!project.todo.length) status(mbLine() + plainLine());
     });
@@ -349,7 +359,9 @@ function naturalizeNow() {
 // ---------------------------------------------------------------- gizmo
 function select(name) {
   selected = name && ctlView.has(name) ? name : null;
-  if (!selected) { gizmo.detach(); $('gizmoMode').hidden = true; refreshPanel(); refreshControlLook(); dirty = true; return; }
+  // (a control is picked to be edited: the pose as posed, not the styled one)
+  if (selected && shownStyled) { shownStyled = false; rig.setVector(currentPose()).evaluate(); syncView(); }
+  if (!selected) { gizmo.detach(); $('gizmoMode').hidden = true; refreshPanel(); refreshControlLook(); dirty = true; if (styledHere() !== shownStyled) showFrame(frame, !!working); return; }
   const c = rig.controlByName.get(selected);
   if (c.group === 'finger' && !$('showFinger').checked) { $('showFinger').checked = true; }
   syncProxy();
@@ -540,7 +552,7 @@ const actions = {
   },
   undo() { if (project.undo()) { afterLoad(); wantMotionBricks(); } },
   redo() { if (project.redo()) { afterLoad(); wantMotionBricks(); } },
-  play() { playing = !playing; $('play').textContent = playing ? '⏸' : '▶'; last = 0; acc = 0; refreshGhosts(); $('pickerPanel').hidden = playing; },
+  play() { playing = !playing; $('play').textContent = playing ? '⏸' : '▶'; last = 0; acc = 0; refreshGhosts(); $('pickerPanel').hidden = playing; if (project.styled) showFrame(frame); },
   prevKey() { const k = [...project.keys].reverse().find(k => k.frame < frame); showFrame(k ? k.frame : 0); },
   nextKey() { const k = project.keys.find(k => k.frame > frame); if (k) showFrame(k.frame); },
   resetSel() {
@@ -851,6 +863,10 @@ function bindUI() {
   $('length').onchange = e => { project.pushUndo(); project.length = Math.max(10, Math.min(2000, +e.target.value || 300)); rebake(); showFrame(Math.min(frame, project.length)); };
   $('mode').onchange = e => { project.pushUndo(); project.mode = e.target.value; wantMotionBricks(); rebake(); showFrame(frame); };
   $('regen').onclick = regenerate;
+  $('styleOn').onchange = e => { project.pushUndo(); project.style.on = e.target.checked; save(); restyle(); showFrame(frame, !!working); };
+  $('styleStrength').oninput = e => { $('styleStrengthV').textContent = Math.round(e.target.value * 100) + '%'; };
+  $('styleStrength').onchange = e => { project.pushUndo(); project.style.strength = +e.target.value; save(); restyle(); };
+  $('styleKeys').onchange = e => { project.pushUndo(); project.style.keepKeys = e.target.checked; save(); restyle(); };
   $('flow').onchange = e => { project.pushUndo(); project.flow = e.target.checked; rebake(); showFrame(frame); };
   $('newScene').onclick = () => { project.pushUndo(); newScene(project); select(null); frame = 0; afterLoad(); status('新しいシーンにしました（Ctrl+Z で前のシーンに戻せます）'); };
   $('strength').oninput = e => { $('strengthV').textContent = Math.round(e.target.value * 100) + '%'; };
@@ -858,7 +874,7 @@ function bindUI() {
   $('showMesh').onchange = e => { if (character) character.visible = e.target.checked; dirty = true; };
   $('save').onclick = () => download('soma_anim_project.json', JSON.stringify(project.toJSON(), null, 1));
   $('export').onclick = () => download('soma_anim_bake.json', JSON.stringify(project.toBake()));
-  $('exportFbx').onclick = () => { const text = writeFbx(rig, project.baked, project.fps); showFrame(frame, !!working); download('soma_anim.fbx', text); };
+  $('exportFbx').onclick = () => { const text = writeFbx(rig, project.output(), project.fps); showFrame(frame, !!working); download('soma_anim.fbx', text); };
   $('feet').onclick = () => resetFeet(false);
   $('feetAll').onclick = () => resetFeet(true);
   $('recenter').onclick = recenterAll;
@@ -910,8 +926,47 @@ function regenerate() {
   flash('regen');
 }
 
+// ---------------------------------------------------------------- fighting-game style
+// Made on a rig of its own (the page keeps using its rig while this runs, a slice of the frames at a time), again
+// whenever the animation changes, and set aside while a control is dragged.
+let styleEnv = null, styleRun = 0, styleTimer = 0;
+const turn = () => new Promise(r => { const c = new MessageChannel(); c.port1.onmessage = () => { c.port1.close(); r(); }; c.port2.postMessage(0); });
+function showStyle() {
+  const s = project.style;
+  $('styleOn').checked = s.on; $('styleStrength').value = s.strength; $('styleKeys').checked = s.keepKeys;
+  $('styleStrengthV').textContent = Math.round(s.strength * 100) + '%';
+}
+function restyle() {
+  clearTimeout(styleTimer);
+  const run = ++styleRun;
+  if (!project.style.on) { project.styled = null; $('styleNote').textContent = ''; return; }
+  if (!styleEnv) return;
+  styleTimer = setTimeout(async () => {
+    const s = project.style, e = styleEnv;
+    const limit = limitsOn() && e.limits ? v => e.limits.apply(v) : null;
+    const it = stylizeSteps(e.rig, e.fitter, project.baked.slice(), project.fps, { strength: s.strength, anchors: s.keepKeys ? project.keys.map(k => k.frame) : [], limit });
+    $('styleNote').textContent = '仕上げ中…';
+    for (;;) {
+      const t0 = performance.now();
+      let r;
+      while (performance.now() - t0 < 10) { r = it.next(); if (r.done) break; }
+      if (run !== styleRun) return;
+      if (r.done) {
+        project.styled = r.value.frames;
+        const p = r.value.report;
+        $('styleNote').textContent = `打撃 ${p.strikes} 回・決めポーズ ${p.keyPoses}・時刻を固定 ${p.anchors} か所・接地 ${p.contacts} か所（足の滑り ${p.footSlipBefore.toFixed(1)} → ${p.footSlip.toFixed(1)} cm/s）`;
+        if (!gizmo.dragging && !working) showFrame(frame);
+        return;
+      }
+      await turn();
+      while (gizmo.dragging) await new Promise(res => setTimeout(res, 50));
+    }
+  }, 300);
+}
+
 function afterLoad() {
   $('length').value = project.length; $('mode').value = project.mode; $('flow').checked = project.flow;
+  showStyle(); project.styled = null;
   working = null; rebake(); showFrame(Math.min(frame, project.length));
 }
 
@@ -965,7 +1020,8 @@ async function start() {
   project = new Project(rig);
   project.newFlags = looseFlags;
   project.limit = v => limited(v);
-  fetch(asset('assets/limits.json')).then(r => r.json()).then(d => { limits = new Limits(rig, new RigFitter(rig), d); if (inb) inb.limits = limitsOn() ? limits : null; rebake(); showFrame(frame); }).catch(e => console.warn('limits', e));
+  { const r2 = new ControlRig(spec); styleEnv = { rig: r2, fitter: new RigFitter(r2), limits: null }; }
+  fetch(asset('assets/limits.json')).then(r => r.json()).then(d => { limits = new Limits(rig, new RigFitter(rig), d); styleEnv.limits = new Limits(styleEnv.rig, styleEnv.fitter, d); if (inb) inb.limits = limitsOn() ? limits : null; rebake(); showFrame(frame); }).catch(e => console.warn('limits', e));
   project.rest = rig.vectorFromValues((await fetch(asset('assets/start_pose.json')).then(r => r.json())).values);
   footReset = new FootReset(rig);
   physical = new Physical(rig);
