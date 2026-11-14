@@ -35,7 +35,7 @@ SOMA Anim を続けるときは、まずこれを読む。仕組みの説明は 
 
 - Maya リグのセッション（「IK/FK切り替え機能の検討」`local_778e9c6c-6190-41a7-a3b1-c151f7f7cfb0`）から受け取った資料は `rigspec/` に置いた。**このリポには上げない**（本人の指示 2026-11-14、`.gitignore`）。リグを変えたら、あちらに `export_spec.py` とピッカーの書き出しを頼み、`rigspec/` に置き直して `assets/bns_rig.json` にコピー、`node tools/make_picker.mjs`、`node tools/make_retarget_cal.mjs`、`node tools/make_start_pose.mjs`。分からない点はあちらに聞く。
 - IK/FK は IK に固定（本人の指示）。IK の中の切り替えは使う（`src/switches.js`）。照合は IK のケース 132 件が全件 0.01 cm 未満。
-- 残り: 骨格 → コントロール値（`src/fit.js`）が 1 回 10 ms（前は 2.6 ms。評価の回数が増えた）。Maya での一致の確認（`tools/maya_check.py`）は新しいリグでは未実施。サンプル（`assets/sample_action.json`）は古いリグで作ったまま。
+- 残り: 骨格 → コントロール値（`src/fit.js`）が 1 回 10 ms（前は 2.6 ms。評価の回数が増えた）。Maya での一致の確認（`tools/maya_check.py`）は新しいリグでは未実施。
 
 ### 2. 動きの質の残り
 
