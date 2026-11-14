@@ -39,7 +39,7 @@ export class Timeline {
     if (s.pending) return 'MotionBricks が生成中…';
     if (s.reason) return whyLine(s.reason);
     const m = s.match;
-    if (m?.clip === 'MotionBricks') return `MotionBricks（${{ walk: m.gait?.includes('run') ? '走り' : '歩行', hops: '小分け', single: '1 回の生成' }[m.kind] || m.kind}、採点 ${m.score}）`;
+    if (m?.clip === 'MotionBricks') return `MotionBricks（${{ walk: m.gait?.includes('run') ? '走り' : '歩行', hops: '小分け', single: '1 回の生成' }[m.kind] || m.kind}、採点 ${m.score}）` + (m.warn ? `。ただし ${whyLine(m.warn)}` : '');
     return this.project.mode === 'ease' ? '単純な補間（右上の「中割り」で選んだもの）' : '';
   }
 
@@ -49,7 +49,7 @@ export class Timeline {
     const k = this.keyNear(x, y);
     // (a band of the plain in-between, clicked: say why)
     const seg = k ? null : this.segmentAt(x, y);
-    if (seg?.reason) this.api.explain?.(this.describe(seg));
+    if (seg?.reason || seg?.match?.warn) this.api.explain?.(this.describe(seg));
     if (k) {
       this.drag = { key: k, started: false, copy: e.altKey, from: k.frame };
       this.api.seek(k.frame);
@@ -117,7 +117,7 @@ export class Timeline {
       const hold = s.match?.hold ? this.x(s.to - s.match.hold) : b;
       g.fillRect(a, y0, hold - a, bh);
       if (hold < b) { g.fillStyle = 'rgba(118,140,255,0.12)'; g.fillRect(hold, y0, b - hold, bh); g.fillStyle = '#8e9bff'; g.fillRect(hold - 0.5, y0, 1, bh); }
-      const name = s.pending ? '生成中…' : mb ? 'MotionBricks' : why ? why.label : '';
+      const name = s.pending ? '生成中…' : mb ? 'MotionBricks' + (s.match.warn ? '（' + whyText(s.match.warn).label.replace(/^補間: /, '') + '）' : '') : why ? why.label : '';
       if (name && b - a > 24) {
         g.save(); g.beginPath(); g.rect(a + 8, y0, b - a - 16, bh); g.clip();
         g.fillStyle = mb || s.pending ? '#c3ccff' : '#ffd29a'; g.textBaseline = 'middle';

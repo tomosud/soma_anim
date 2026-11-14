@@ -426,12 +426,14 @@ export class MotionBricks {
       if (n >= 51) more.push({ kind: 'hops', pieces: Math.max(2, Math.min(Math.floor(n / 17), Math.ceil(n / 50) + 1)) });
       if (dist > 0.6 && dist <= 0.9 && n >= 28 && this._gait(0, 1)) more.push({ kind: 'walk' });
       for (const d of [-2, 2, -3, 3]) if (whole + d >= 6 && whole + d <= 16 && n <= 57) more.push({ kind: 'single', tokens: [whole + d] });
-      if (refA || refB) more.push({ kind: 'single', tokens: [whole], plain: true });
+      // (and from standing still: the motion that arrives at key A - a run, a strike - may be what throws it off)
+      if (refA || refB || context) more.push({ kind: 'single', tokens: [whole], plain: true });
       more.push({ kind: 'single', tokens: [whole], free: true });
       if (n <= 57) more.push({ kind: 'single', tokens: range(Math.max(6, whole - 3), Math.min(16, whole + 3)) });
       await tryAll(more.filter(p => !seen.has(planName(p))));
     }
     const { made, r, plan, score } = best;
+    const impossible = infeasible(dist, Math.atan2(Math.sin(hb - ha), Math.cos(hb - ha)), n, FPS, flow);
     // The plain in-between moves the whole body at once and looks lifeless - yet it keeps its feet, so it scores
     // well.  It is taken only when what the model made is clearly broken (a leap, a fall, a spin) and the plain
     // one is clearly better; the timeline then says why (src/why.js).
@@ -443,7 +445,6 @@ export class MotionBricks {
       // Keys farther apart than a person goes in that time cannot be made as a person moves: the plain one is the
       // lesser evil whenever it scores better, and the reason is the speed.  Otherwise the plain one has to be
       // clearly better - and it cannot walk: carried farther than a step, the body skates, one stride per foot.
-      const impossible = infeasible(dist, Math.atan2(Math.sin(hb - ha), Math.cos(hb - ha)), n, FPS, flow);
       if (!impossible) plainScore.total += PLAIN_MARGIN + Math.max(0, Math.min(1, (dist - 0.6) / 0.9));
       if (plainScore.total < score.total) {
         const reason = impossible || { code: 'bad', parts: worst(score).split(' ').filter(Boolean), tried };
@@ -452,7 +453,8 @@ export class MotionBricks {
     }
     return {
       frames: made.frames,
-      match: { clip: 'MotionBricks', kind: plan.kind, gait: r.gait, frames: r.frames.length - 1, hold: made.hold, ms, tried, score: +score.total.toFixed(2), why: worst(score), flow, tries },
+      // (warn: made, but faster than a person goes - the timeline says so)
+      match: { clip: 'MotionBricks', warn: impossible || undefined, kind: plan.kind, gait: r.gait, frames: r.frames.length - 1, hold: made.hold, ms, tried, score: +score.total.toFixed(2), why: worst(score), flow, tries },
       // (the next stretch continues this movement only if it runs right up to the key)
       tail: made.hold ? null : r.frames.slice(-4),
     };
