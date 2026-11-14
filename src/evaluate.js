@@ -56,12 +56,16 @@ export class Evaluator {
     // (flat on the floor: within 1.5 cm at the ankle and at the ball. A foot swinging low over the floor is not planted)
     const planted = (s, side) => s.P['foot_' + side][1] - F['foot_' + side] < 1.5 && s.P['ball_' + side][1] - F['ball_' + side] < 1.5;
     let slide = 0, slideMax = 0, contact = 0, air = 0, airRun = 0, airLongest = 0, sink = 0;
+    // (off the floor = both feet 4 cm higher than the lower foot of the keys: a key that itself stands a few cm
+    //  above the floor - a crouch from the pose book on its toes - does not make every frame near it a leap)
+    const keyLift = Math.max(0, Math.min(...keys.filter(k => k >= 0 && k < n).map(k => Math.min(lift(S[k], 'l'), lift(S[k], 'r')))));
+    const airAt = 4 + (Number.isFinite(keyLift) ? Math.min(keyLift, 10) : 0);
     for (let k = 0; k < n; k++) {
       const s = S[k];
       const l = lift(s, 'l'), r = lift(s, 'r');
       sink = Math.min(sink, l, r);
       series.sink[k] = Math.max(0, -Math.min(l, r));
-      if (l > 4 && r > 4) { air++; airRun++; airLongest = Math.max(airLongest, airRun); } else airRun = 0;
+      if (l > airAt && r > airAt) { air++; airRun++; airLongest = Math.max(airLongest, airRun); } else airRun = 0;
       series.air[k] = airRun;
       if (!k) continue;
       for (const side of 'lr') {

@@ -1,5 +1,7 @@
 // The timeline: one row of whole-body keys.  Drag on the ruler to scrub, drag a key to move it
-// (Alt + drag copies it).  The band between two keys names the reference motion used for the in-between.
+// (Alt + drag copies it).  The band between two keys says how the in-between was made - and, where it is the
+// plain in-between, why (hover for the whole reason, click to see it in the status line).
+import { text as whyText, line as whyLine } from './why.js';
 export class Timeline {
   constructor(canvas, project, api) {
     this.canvas = canvas; this.project = project; this.api = api;
@@ -24,10 +26,30 @@ export class Timeline {
     return best;
   }
 
+  /** The in-between band under (x, y), or null. */
+  segmentAt(x, y) {
+    if (y < 40 || y > 66) return null;
+    const f = (x - this.pad) * this.project.length / (this.w - this.pad * 2);
+    return this.project.segments.find(s => f >= s.from && f <= s.to) || null;
+  }
+
+  /** What the band says when pointed at. */
+  describe(s) {
+    if (!s) return '';
+    if (s.pending) return 'MotionBricks が生成中…';
+    if (s.reason) return whyLine(s.reason);
+    const m = s.match;
+    if (m?.clip === 'MotionBricks') return `MotionBricks（${{ walk: m.gait?.includes('run') ? '走り' : '歩行', hops: '小分け', single: '1 回の生成' }[m.kind] || m.kind}、採点 ${m.score}）`;
+    return this.project.mode === 'ease' ? '単純な補間（右上の「中割り」で選んだもの）' : '';
+  }
+
   down(e) {
     const r = this.canvas.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
     this.canvas.setPointerCapture(e.pointerId);
     const k = this.keyNear(x, y);
+    // (a band of the plain in-between, clicked: say why)
+    const seg = k ? null : this.segmentAt(x, y);
+    if (seg?.reason) this.api.explain?.(this.describe(seg));
     if (k) {
       this.drag = { key: k, started: false, copy: e.altKey, from: k.frame };
       this.api.seek(k.frame);
@@ -42,6 +64,8 @@ export class Timeline {
     if (!this.drag) {
       const k = this.keyNear(x, y);
       this.canvas.style.cursor = k ? 'grab' : 'pointer';
+      const t = k ? '' : this.describe(this.segmentAt(x, y));
+      if (this.canvas.title !== t) this.canvas.title = t;
       return;
     }
     if (this.drag.scrub) { this.api.seek(this.f(x)); return; }
@@ -86,17 +110,18 @@ export class Timeline {
     const y0 = 40, bh = 26;
     for (const s of p.segments) {
       const a = this.x(s.from), b = this.x(s.to);
-      const mb = s.match?.clip === 'MotionBricks';
-      g.fillStyle = mb ? 'rgba(118,140,255,0.32)' : s.match ? 'rgba(63,174,122,0.28)' : 'rgba(120,130,150,0.2)';
+      const mb = s.match?.clip === 'MotionBricks', why = !s.pending && s.reason ? whyText(s.reason) : null;
+      // (blue: MotionBricks; amber: left to the plain in-between, with the reason written on it; grey: plain by choice)
+      g.fillStyle = mb ? 'rgba(118,140,255,0.32)' : why ? 'rgba(214,148,60,0.30)' : 'rgba(120,130,150,0.2)';
       // (MotionBricks: the move, then key B held)
       const hold = s.match?.hold ? this.x(s.to - s.match.hold) : b;
       g.fillRect(a, y0, hold - a, bh);
       if (hold < b) { g.fillStyle = 'rgba(118,140,255,0.12)'; g.fillRect(hold, y0, b - hold, bh); g.fillStyle = '#8e9bff'; g.fillRect(hold - 0.5, y0, 1, bh); }
-      if (s.match && b - a > 40) {
+      const name = s.pending ? '生成中…' : mb ? 'MotionBricks' : why ? why.label : '';
+      if (name && b - a > 24) {
         g.save(); g.beginPath(); g.rect(a + 8, y0, b - a - 16, bh); g.clip();
-        g.fillStyle = mb ? '#c3ccff' : '#9fd9bb'; g.textBaseline = 'middle';
-        const sp = Math.abs(s.match.speed - 1) > 0.05 ? ` ×${s.match.speed.toFixed(2)}` : '';
-        g.fillText((s.pending ? '生成中…  ' : '') + s.match.clip.replace(/_[0-9a-f]{6}$/, '').replace(/_/g, ' ') + sp, a + 12, y0 + bh / 2);
+        g.fillStyle = mb || s.pending ? '#c3ccff' : '#ffd29a'; g.textBaseline = 'middle';
+        g.fillText(name, a + 12, y0 + bh / 2);
         g.restore();
       }
     }

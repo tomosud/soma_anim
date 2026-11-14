@@ -165,7 +165,7 @@ function rebake() {
       // (a stretch landed: show it, unless the animator is in the middle of a drag)
       if (gizmo.dragging) timeline.draw(); else showFrame(frame, !!working);
       if (error) status('MotionBricks の生成に失敗しました（その区間は単純な補間）: ' + error);
-      else if (!project.todo.length) status(mbLine());
+      else if (!project.todo.length) status(mbLine() + plainLine());
     });
   }
 }
@@ -177,6 +177,8 @@ function save() {
 }
 
 const mbLine = () => (mb && mb.state === 'ready' ? `MotionBricks: ${mb.backend}` : '');
+// (stretches left to the plain in-between: how many, and that the band tells why)
+const plainLine = () => { const n = project.segments.filter(s => s.reason && !s.pending).length; return n ? ` ／ ${n} 区間は補間（タイムラインの帯をクリックすると理由が出ます）` : ''; };
 
 /**
  * Start MotionBricks when the in-betweens ask for it, and keep the animator waiting until it is there (what is
@@ -716,6 +718,7 @@ async function start() {
     seek: f => { if (playing) actions.play(); showFrame(f); },
     moved: () => { rebake(); showFrame(frame); },
     beforeMove: () => project.pushUndo(),
+    explain: t => status(t),
   });
   bindUI();
   try {

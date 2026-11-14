@@ -61,7 +61,7 @@ export class Project {
     let prevId = '';
     for (let i = 0; i + 1 < keys.length; i++) {
       const a = keys[i], b = keys[i + 1], len = b.frame - a.frame;
-      let seg = null, pending = false;
+      let seg = null, pending = false, reason = null;
       // (the model's shortest move is 17 frames: for keys closer than that it is played that much faster - a
       //  strike is a fast move; under 5 frames there is nothing to make)
       if (useMb && len >= 5) {
@@ -70,10 +70,15 @@ export class Project {
         const id = 'mb|' + len + '|' + sig(a.v) + '|' + sig(b.v) + '|' + refSig(a.ref) + refSig(b.ref) + '|' + hash(prevId) + (this.flow ? '|flow|' + (next ? sig(next.v) + '|' + (next.frame - b.frame) : '') : '');
         seg = this.cache.get(id);
         used.add(id);
-        if (seg && seg.failed) { if (seg.failed < 3) { this.cache.delete(id); this.tries.set(id, seg.failed); } seg = null; }
+        if (seg && seg.failed) { if (seg.failed < 3) { this.cache.delete(id); this.tries.set(id, seg.failed); } else reason = { code: 'failed', error: seg.error }; seg = null; }
         if (!this.cache.has(id)) { this.todo.push({ id, a: a.v, b: b.v, len, prevId, opts: { flow: this.flow, next: next?.v ?? null, nextLen: next ? next.frame - b.frame : 0, refA: a.ref || null, refB: b.ref || null } }); pending = true; }
         prevId = id;
-      } else prevId = '';
+        if (seg?.match?.reason) reason = seg.match.reason;
+      } else {
+        prevId = '';
+        // (why the model is not asked: what the timeline tells the animator)
+        if (this.mode === 'mb') reason = len < 5 ? { code: 'short', n: len } : mb?.state === 'failed' ? { code: 'unavailable' } : { code: 'loading' };
+      }
       if (!seg) {
         // (what MotionBricks has not made, or cannot make, is eased)
         const id = (this.mode === 'mb' ? 'steps|' : 'ease|') + len + '|' + sig(a.v) + '|' + sig(b.v);
@@ -86,7 +91,7 @@ export class Project {
       for (let k = 1; k < len; k++) if (a.frame + k <= n) out[a.frame + k] = seg.frames[k - 1];
       if (a.frame <= n) out[a.frame] = a.v;
       if (b.frame <= n) out[b.frame] = b.v;
-      this.segments.push({ from: a.frame, to: b.frame, match: seg.match, pending });
+      this.segments.push({ from: a.frame, to: b.frame, match: seg.match, pending, reason: pending ? null : reason });
     }
     if (this.cache.size > 80) for (const id of [...this.cache.keys()]) if (!used.has(id)) this.cache.delete(id);
     this.baked = out;

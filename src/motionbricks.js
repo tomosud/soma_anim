@@ -8,6 +8,7 @@
 import * as M from './m4.js';
 import { qmul, qinv, qrot, qyaw } from './motiondb.js';
 import { Evaluator, penalty } from './evaluate.js';
+import { infeasible } from './why.js';
 
 export const FPS = 30, NJ = 30, FEAT = 366, MAX_FRAMES = 64;
 const MB_REV = '54fc563aeaaf819a753d72cc9fdc6713989cdd43';
@@ -263,7 +264,10 @@ export class MotionBricks {
    */
   async _attempt(plan, a, b, c, n, ctx, nextLen, after = null) {
     const soma = this.soma;
-    const goal = after ? [b, ...after] : c && nextLen > 1 ? [b, lerpPose(b, c, 1 / nextLen)] : [b];
+    // (plan.plain: the key as a pose to stop in, without the frames around it; plan.free: only where the hips
+    //  end up and which way they face - the body is the model's, and is brought onto key B afterwards)
+    const goal = plan.free ? [{ ...b, free: true }] : after && !plan.plain ? [b, ...after] : c && nextLen > 1 ? [b, lerpPose(b, c, 1 / nextLen)] : [b];
+    if (plan.plain) ctx = [ctx[3], ctx[3], ctx[3], ctx[3]];
     let ms = 0;
     const one = async (context, targets, tokens) => { const r = await this.raw(context, targets, tokens); ms += r.ms; if (r.frames.length < 4) throw Error('MotionBricks returned no motion'); return r.frames; };
     if (plan.kind === 'single') {
@@ -394,28 +398,53 @@ export class MotionBricks {
     // otherwise the best - and if even that is bad, the plain in-between is better than what the model made.
     let best = null, tried = 0, ms = 0;
     const tries = [];
-    for (const plan of plans) {
-      let r;
-      try { r = await this._attempt(plan, a, b, c, n, ctx, nextLen, after); } catch (e) { if (plan.kind === 'single' && !best) throw e; continue; }
-      tried++; ms += r.ms;
-      const made = this._place(A, B, n, r.frames, true);
-      const score = this._score(A, B, made.frames, plan.kind === 'walk' ? (r.run ? 'run' : 'walk') : '');
-      tries.push(`${plan.kind}${plan.tokens ? ' ' + plan.tokens.join(',') : ''}: ${score.total.toFixed(2)} ${worst(score)}`);
-      // (a walk is preferred to a single move of about the same score: it does not leap)
-      const rank = score.total - (plan.kind === 'walk' ? 0.2 : 0);
-      if (!best || rank < best.rank) best = { plan, r, made, score, rank };
-      // (the plans are in the order of preference: one that is good enough is taken)
-      if (score.total < (plan.kind === 'walk' ? 0.9 : 0.6)) break;
+    const good = (score, plan) => score.total < (plan.kind === 'walk' ? 0.9 : 0.6);
+    const tryAll = async list => {
+      for (const plan of list) {
+        let r;
+        try { r = await this._attempt(plan, a, b, c, n, ctx, nextLen, after); } catch (e) { if (plan.kind === 'single' && !best && !tried) throw e; continue; }
+        tried++; ms += r.ms;
+        const made = this._place(A, B, n, r.frames, true);
+        const score = this._score(A, B, made.frames, plan.kind === 'walk' ? (r.run ? 'run' : 'walk') : '');
+        tries.push(`${planName(plan)}: ${score.total.toFixed(2)} ${worst(score)}`);
+        // (a walk is preferred to a single move of about the same score: it does not leap)
+        const rank = score.total - (plan.kind === 'walk' ? 0.2 : 0);
+        if (!best || rank < best.rank) best = { plan, r, made, score, rank };
+        // (the plans are in the order of preference: one that is good enough is taken)
+        if (good(score, plan)) return true;
+      }
+      return false;
+    };
+    // Nothing clean among the usual ways: more of them before giving up - the model is deterministic, so what
+    // changes the result is what it is asked: other lengths, the poses between the keys as stops on the way,
+    // the keys as plain stops (without the reference frames around them), a target that fixes only where the
+    // hips go and lets the model choose the body, and the length left to the model.
+    if (!(await tryAll(plans))) {
+      const more = [], seen = new Set(plans.map(planName));
+      if (n >= 30 && n <= 57) more.push({ kind: 'hops', pieces: 2 });
+      if (n >= 51) more.push({ kind: 'hops', pieces: Math.max(2, Math.min(Math.floor(n / 17), Math.ceil(n / 50) + 1)) });
+      if (dist > 0.6 && dist <= 0.9 && n >= 28 && this._gait(0, 1)) more.push({ kind: 'walk' });
+      for (const d of [-2, 2, -3, 3]) if (whole + d >= 6 && whole + d <= 16 && n <= 57) more.push({ kind: 'single', tokens: [whole + d] });
+      if (refA || refB) more.push({ kind: 'single', tokens: [whole], plain: true });
+      more.push({ kind: 'single', tokens: [whole], free: true });
+      if (n <= 57) more.push({ kind: 'single', tokens: range(Math.max(6, whole - 3), Math.min(16, whole + 3)) });
+      await tryAll(more.filter(p => !seen.has(planName(p))));
     }
     const { made, r, plan, score } = best;
-    // (keys too far apart for the time between them cannot be made as a person moves: what the model makes of
-    //  them is a leap or a spin, and the plain in-between with a step is the lesser evil)
+    // The plain in-between moves the whole body at once and looks lifeless - yet it keeps its feet, so it scores
+    // well.  It is taken only when what the model made is clearly broken (a leap, a fall, a spin) and the plain
+    // one is clearly better; the timeline then says why (src/why.js).
     if (score.total > 1.0) {
       held = rig.getVector();
       const plainFrames = this.inb.steps(A, B, n);
       rig.setVector(held).evaluate();
       const plainScore = this._score(A, B, plainFrames);
-      if (plainScore.total < score.total) return { frames: plainFrames, match: { clip: 'plain', why: worst(score), score: +plainScore.total.toFixed(2), tried, ms }, tail: null };
+      // (the plain in-between cannot walk: carried farther than a step, the body skates with one stride per foot)
+      plainScore.total += Math.max(0, Math.min(1, (dist - 0.6) / 0.9));
+      if (plainScore.total + PLAIN_MARGIN < score.total) {
+        const reason = infeasible(dist, Math.atan2(Math.sin(hb - ha), Math.cos(hb - ha)), n, FPS, flow) || { code: 'bad', parts: worst(score).split(' ').filter(Boolean), tried };
+        return { frames: plainFrames, match: { clip: 'plain', reason, why: worst(score), score: +plainScore.total.toFixed(2), mbScore: +score.total.toFixed(2), tried, ms, tries }, tail: null };
+      }
     }
     return {
       frames: made.frames,
@@ -453,6 +482,9 @@ export class MotionBricks {
   }
 }
 
+const planName = p => `${p.kind}${p.pieces ? ' ' + p.pieces : ''}${p.tokens ? ' ' + p.tokens.join(',') : ''}${p.plain ? ' plain-keys' : ''}${p.free ? ' free' : ''}`;
+// (how much worse than the plain in-between the best of the model may be and still be used)
+const PLAIN_MARGIN = 0.5;
 const worst = s => Object.entries(s.parts).filter(e => e[1] > 0.3 && e[0] !== 'ref' && e[0] !== 'kink').sort((x, y) => y[1] - x[1]).map(e => e[0]).join(' ');
 
 // The walks of the reference motion that the model is aimed at (clip name, the frame its cycle is read from).
