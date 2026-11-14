@@ -31,16 +31,11 @@ SOMA Anim を続けるときは、まずこれを読む。仕組みの説明は 
 
 ## 次にやること
 
-### 1. コントロールリグを Maya の最新の Rig_Manny_BNS と完全一致させる（本人の指示 2026-11-14）
+### 1. リグを Maya の最新と一致させる（2026-11-14 済み）
 
-リグは Maya の `Rig_Manny_BNS` のノードグラフを書き出して、`src/rig.js` で同じ規則で評価している。Maya 側（mgear_bns_rig）は 2026-11-14 に IK/FK 切り替えなどの作業があり、変わっている可能性が高い。
-
-- 聞く相手: Claude セッション「IK/FK切り替え機能の検討」（id `local_778e9c6c-6190-41a7-a3b1-c151f7f7cfb0`）。子セッションに「Rig_Manny_BNS IK/FK 切り替えの網羅試験」（`local_5cf60821-cb3f-4d60-88ca-04db6ae233c2`）。`SendMessage` の `to` にこの id を入れる。
-- 頼むこと: 最新のリグで `tools\export_spec.py` を回し、`bns_rig_spec.json` と照合ケース `bns_rig_cases.json`（今は 88 件。IK/FK・新しいコントロールのケースも足してもらう）と、評価の規則の文書（`bns_rig_solver.md`）を出してもらう。どこが変わったか（コントロール・チャンネル・ノード・コンストレイント・IK/FK のブレンド）も一覧で。
-- Maya のシーンや SourceAssets はこちらからは変えない。dvp の送信は本人がする。
-- 受け取ったら `rigspec/` に置き、`assets/bns_rig.json` にコピーし、`src/rig.js` を合わせる。`tests/rig_cases.test.mjs` が全件 0.01 cm 未満で通ること。
-- その後、リグに依存する所を全部確かめる: `src/fit.js`（骨格 → コントロール値。IK/FK が増えたら FK のときの扱い）、`src/feet.js`、`src/physical.js`、`src/natural.js`（`HOLD` / `CONTROLS` のコントロール名）、`src/app.js`（`CARRIES`, `FOOT_PINS`, ラベル）、`src/fbx.js`、`maya/soma_anim_import.py`。開始ポーズ・較正・見本は作り直す: `node tools/make_retarget_cal.mjs` → `node tools/make_start_pose.mjs` →（ページで）`make_action_sample.js` の `make()` → `assets/sample_action.json`。
-- Maya との一致の確認: `tools/maya_check.py`（ベイクを Maya に入れて関節位置を比べる）、`tools/maya_fbx_check.py`（FBX）。mayapy はリグ側リポの `tools\mayapy.ps1`。
+- Maya リグのセッション（「IK/FK切り替え機能の検討」`local_778e9c6c-6190-41a7-a3b1-c151f7f7cfb0`）から受け取った資料は `rigspec/` に置いた。**このリポには上げない**（本人の指示 2026-11-14、`.gitignore`）。リグを変えたら、あちらに `export_spec.py` とピッカーの書き出しを頼み、`rigspec/` に置き直して `assets/bns_rig.json` にコピー、`node tools/make_picker.mjs`、`node tools/make_retarget_cal.mjs`、`node tools/make_start_pose.mjs`。分からない点はあちらに聞く。
+- IK/FK は IK に固定（本人の指示）。IK の中の切り替えは使う（`src/switches.js`）。照合は IK のケース 132 件が全件 0.01 cm 未満。
+- 残り: 骨格 → コントロール値（`src/fit.js`）が 1 回 10 ms（前は 2.6 ms。評価の回数が増えた）。Maya での一致の確認（`tools/maya_check.py`）は新しいリグでは未実施。
 
 ### 2. 動きの質の残り
 

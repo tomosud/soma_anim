@@ -44,9 +44,9 @@ export class Physical {
     this.rig = rig;
     const rest = n => rig.joints[rig.jointIndex.get(n)].rest[13];
     this.floor = { foot_l: rest('foot_l'), foot_r: rest('foot_r'), ball_l: rest('ball_l'), ball_r: rest('ball_r') };
-    const reach = start => { const ik = rig.iks.find(k => k.start.name === start); return ik.la + ik.lb; };
-    this.leg = { l: reach('drv_thigh_l'), r: reach('drv_thigh_r') };
-    this.arm = { l: reach('drv_upperarm_l'), r: reach('drv_upperarm_r') };
+    const reach = start => { const ik = rig.iks.find(k => k.start.name.endsWith(start)); return ik.la + ik.lb; };
+    this.leg = { l: reach('_thigh_l'), r: reach('_thigh_r') };
+    this.arm = { l: reach('_upperarm_l'), r: reach('_upperarm_r') };
   }
 
   _p(n) { return M.pos(this.rig.jointWorld(n)); }
