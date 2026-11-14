@@ -434,27 +434,14 @@ export class MotionBricks {
     }
     const { made, r, plan, score } = best;
     const impossible = infeasible(dist, Math.atan2(Math.sin(hb - ha), Math.cos(hb - ha)), n, FPS, flow);
-    // The plain in-between moves the whole body at once and looks lifeless - yet it keeps its feet, so it scores
-    // well.  It is taken only when what the model made is clearly broken (a leap, a fall, a spin) and the plain
-    // one is clearly better; the timeline then says why (src/why.js).
-    if (score.total > 1.0) {
-      held = rig.getVector();
-      const plainFrames = this.inb.steps(A, B, n);
-      rig.setVector(held).evaluate();
-      const plainScore = this._score(A, B, plainFrames);
-      // Keys farther apart than a person goes in that time cannot be made as a person moves: the plain one is the
-      // lesser evil whenever it scores better, and the reason is the speed.  Otherwise the plain one has to be
-      // clearly better - and it cannot walk: carried farther than a step, the body skates, one stride per foot.
-      if (!impossible) plainScore.total += PLAIN_MARGIN + Math.max(0, Math.min(1, (dist - 0.6) / 0.9));
-      if (plainScore.total < score.total) {
-        const reason = impossible || { code: 'bad', parts: worst(score).split(' ').filter(Boolean), tried };
-        return { frames: plainFrames, match: { clip: 'plain', reason, why: worst(score), score: +plainScore.total.toFixed(2), mbScore: +score.total.toFixed(2), tried, ms, tries }, tail: null };
-      }
-    }
+    // The best the model made is always used, even when it leaps, falls or spins (the user's choice,
+    // 2026-11-14: a stretch filled with motion beats a lifeless plain one).  When it is broken, or the keys are
+    // farther apart than a person goes, the timeline warns and says why (src/why.js).
+    const broken = score.total > 1.0 ? { code: 'bad', parts: worst(score).split(' ').filter(Boolean), tried } : null;
     return {
       frames: made.frames,
-      // (warn: made, but faster than a person goes - the timeline says so)
-      match: { clip: 'MotionBricks', warn: impossible || undefined, kind: plan.kind, gait: r.gait, frames: r.frames.length - 1, hold: made.hold, ms, tried, score: +score.total.toFixed(2), why: worst(score), flow, tries },
+      // (warn: made, but faster than a person goes or broken - the timeline says so)
+      match: { clip: 'MotionBricks', warn: impossible || broken || undefined, kind: plan.kind, gait: r.gait, frames: r.frames.length - 1, hold: made.hold, ms, tried, score: +score.total.toFixed(2), why: worst(score), flow, tries },
       // (the next stretch continues this movement only if it runs right up to the key)
       tail: made.hold ? null : r.frames.slice(-4),
     };
@@ -489,8 +476,6 @@ export class MotionBricks {
 }
 
 const planName = p => `${p.kind}${p.pieces ? ' ' + p.pieces : ''}${p.tokens ? ' ' + p.tokens.join(',') : ''}${p.plain ? ' plain-keys' : ''}${p.free ? ' free' : ''}`;
-// (how much worse than the plain in-between the best of the model may be and still be used)
-const PLAIN_MARGIN = 0.5;
 const worst = s => Object.entries(s.parts).filter(e => e[1] > 0.3 && e[0] !== 'ref' && e[0] !== 'kink').sort((x, y) => y[1] - x[1]).map(e => e[0]).join(' ');
 
 // The walks of the reference motion that the model is aimed at (clip name, the frame its cycle is read from).

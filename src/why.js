@@ -1,5 +1,5 @@
-// Why a stretch between two keys is the plain in-between and not MotionBricks: a short label for the timeline
-// band, what is wrong, and what the animator can do about it.  A reason is {code, ...numbers}; text(reason)
+// Why a stretch between two keys is the plain in-between, or why the MotionBricks motion on it is warned about
+// (too fast for a person, broken): a short label for the timeline band, what is wrong, and what to do about it.  A reason is {code, ...numbers}; text(reason)
 // turns it into words.
 
 /** Fastest a person goes from standing to standing over `dist` metres (seconds): speeding up and slowing down
@@ -54,21 +54,21 @@ export function text(r) {
     case 'unavailable': return { label: '補間（モデルなし）', text: 'MotionBricks を使えないため単純な補間にしています', fix: 'WebGPU の使えるブラウザで開く' };
     case 'failed': return { label: '補間（生成エラー）', text: `MotionBricks の生成に 3 回失敗しました: ${r.error || ''}`, fix: '「R」で作り直す。直らなければキーを少し動かす' };
     case 'fast': return {
-      label: '補間: 速すぎる',
-      text: `${r.n} フレーム（${(r.n / 30).toFixed(1)} 秒）で ${r.dist.toFixed(1)} m 移動して止まるのは、人には速すぎます（平均 ${r.speed.toFixed(1)} m/s。走り出して止まるまでに約 ${r.frames} フレームかかる距離です）`,
+      label: '速すぎる',
+      text: `${r.n} フレーム（${(r.n / 30).toFixed(1)} 秒）で ${r.dist.toFixed(1)} m 移動して止まるのは、人には速すぎます。生成はしますが、跳んだり滑ったりします（平均 ${r.speed.toFixed(1)} m/s。走り出して止まるまでに約 ${r.frames} フレームかかる距離です）`,
       fix: `キーの間隔を ${r.frames} フレーム以上にする、または移動の距離を短くする`,
     };
     case 'spin': return {
-      label: '補間: 回るのが速すぎる',
-      text: `${r.n} フレームで ${Math.round(Math.abs(r.turn) * 180 / Math.PI)}° 向きを変えるのは速すぎます`,
+      label: '回るのが速すぎる',
+      text: `${r.n} フレームで ${Math.round(Math.abs(r.turn) * 180 / Math.PI)}° 向きを変えるのは速すぎます。生成はしますが、跳んだり崩れたりします`,
       fix: `キーの間隔を ${r.frames} フレーム以上にする`,
     };
     case 'bad': {
       const parts = (r.parts || []).filter(p => PART[p]);
       const main = parts[0];
       return {
-        label: main ? `補間: ${PART[main][0]}` : '補間',
-        text: `MotionBricks の動きは${parts.length ? parts.map(p => PART[p][1]).join('、') : '崩れる'}ため、単純な補間のほうがよいと判断しました（${r.tried} 通り試しました）`,
+        label: main ? PART[main][0] : '崩れる',
+        text: `MotionBricks の動きで、${parts.length ? parts.map(p => PART[p][1]).join('、') : '体が崩れる'}（${r.tried} 通り試した中で一番よいものを使っています）`,
         fix: main ? FIX[main] : '間にキーを足す',
       };
     }
