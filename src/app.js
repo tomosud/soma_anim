@@ -109,6 +109,67 @@ const ghosts = [0x4fb0ff, 0xffa24a].map(color => {
   return l;
 });
 
+// Shift + drag of the whole-body control: every key after this frame goes along (moved, or swung round where the
+// control is), its skeleton drawn while it is dragged.
+let shiftHeld = false, carry = null;
+addEventListener('keydown', e => { if (e.key === 'Shift') shiftHeld = true; });
+addEventListener('keyup', e => { if (e.key === 'Shift') shiftHeld = false; });
+addEventListener('blur', () => { shiftHeld = false; });
+const carryLines = new T.LineSegments(new T.BufferGeometry(), new T.LineBasicMaterial({ color: 0xc79bff, transparent: true, opacity: 0.6, depthTest: false }));
+carryLines.renderOrder = 5; carryLines.frustumCulled = false; carryLines.visible = false; scene.add(carryLines);
+
+function startCarry() {
+  carry = null;
+  if (selected !== 'world_ctl' || !shiftHeld) return;
+  const keys = project.keys.filter(k => k.frame > frame);
+  if (!keys.length) return;
+  const saved = rig.getVector(), W0 = rig.controlWorld('world_ctl').slice(), pts = [], W = [];
+  for (const k of keys) {
+    rig.setVector(k.v).evaluate();
+    W.push(rig.controlWorld('world_ctl').slice());
+    for (const [a, b] of BONES) { const p = rig.jointWorld(a), q = rig.jointWorld(b); pts.push(p[12], p[13], p[14], q[12], q[13], q[14]); }
+  }
+  rig.setVector(saved).evaluate();
+  carry = { keys, W0, W, pts: Float32Array.from(pts), shown: new Float32Array(pts.length) };
+  carryLines.geometry.setAttribute('position', new T.BufferAttribute(carry.shown, 3));
+  moveCarry();
+  carryLines.visible = true;
+  status(`Shift: このキーと後の ${keys.length} キーをまとめて動かします`);
+}
+
+/** The move of the whole-body control since the drag began (a point p on it goes to p * D). */
+const carryDelta = () => M.mul(M.inv(carry.W0), rig.controlWorld('world_ctl'));
+
+function moveCarry() {
+  const D = carryDelta(), s = carry.pts, d = carry.shown;
+  for (let i = 0; i < s.length; i += 3) {
+    const x = s[i], y = s[i + 1], z = s[i + 2];
+    d[i] = x * D[0] + y * D[4] + z * D[8] + D[12]; d[i + 1] = x * D[1] + y * D[5] + z * D[9] + D[13]; d[i + 2] = x * D[2] + y * D[6] + z * D[10] + D[14];
+  }
+  carryLines.geometry.attributes.position.needsUpdate = true;
+  dirty = true;
+}
+
+/** The keys after this frame moved as the whole-body control was (their own whole-body control changed). */
+function endCarry() {
+  carryLines.visible = false;
+  if (!carry) return false;
+  const D = carryDelta(), n = rig.node('world_ctl'), c = rig.controlByName.get('world_ctl'), saved = rig.getVector();
+  carry.keys.forEach((k, i) => {
+    const W = M.mul(carry.W[i], D);
+    rig.setVector(k.v).evaluate();
+    const t = M.sub(M.xpoint(M.pos(W), M.inv(n.parent.world)), n.restT);
+    const l = M.mul(M.mul(M.rotation(W), M.transpose3(M.rotation(n.parent.world))), M.transpose3(n.restR));
+    const e = M.toEuler(l, n.order);
+    for (const ch of c.channels) rig.set('world_ctl.' + ch, ch[0] === 't' ? t['xyz'.indexOf(ch[1])] : e['xyz'.indexOf(ch[1])]);
+    k.v = rig.getVector();
+  });
+  rig.setVector(saved).evaluate();
+  const n2 = carry.keys.length;
+  carry = null;
+  return n2;
+}
+
 const COLORS = { L: 0x4f9dff, R: 0xff5d5d, C: 0xffd24a };
 const colorOf = c => (c.group === 'world' ? 0xc79bff : COLORS[c.side] ?? 0xffffff);
 
@@ -250,12 +311,12 @@ function heldFor(key, touched) {
 }
 
 /** The rig holds an edited pose: make it the key of this frame. */
-function commit(touched, { natural = naturalHere(), before = null } = {}) {
+function commit(touched, { natural = naturalHere(), before = null, undo = true } = {}) {
   // (the pose before the edit: the body follows from it)
   before = before ?? dragStart ?? project.pose(frame);
   dragStart = null;
   const edited = rig.getVector();
-  project.pushUndo();
+  if (undo) project.pushUndo();
   // (moving the whole body, or a finger, changes nothing about the pose of the body)
   const posed = touched.some(n => n !== 'world_ctl' && rig.controlByName.get(n)?.group !== 'finger');
   const key = (project.setKey(frame, edited, null, posed ? null : 'keep'));
@@ -321,7 +382,10 @@ function setGizmoMode(mode) {
 gizmo.addEventListener('dragging-changed', e => {
   orbit.enabled = !e.value;
   if (!e.value && dragDue) dragUpdate(true); // (the last move before the drop)
-  if (e.value) { working = rig.getVector(); dragStart = working.slice(); moved = false; } else if (selected && moved) { commit([selected]); } else { working = null; dragStart = null; }
+  if (e.value) { working = rig.getVector(); dragStart = working.slice(); moved = false; startCarry(); }
+  else if (selected && moved) {
+    if (carry) { project.pushUndo(); const n = endCarry(); commit([selected], { undo: false }); status(`このキーと後の ${n} キーをまとめて動かしました`); } else commit([selected]);
+  } else { endCarry(); carry = null; working = null; dragStart = null; }
 });
 
 let moved = false, dragStart = null, dragDue = false;
@@ -350,6 +414,7 @@ function dragUpdate(drop = false) {
   }
   // (a joint is not dragged past what it can do)
   if (limitsOn()) { working = limits.apply(working); }
+  if (carry) moveCarry();
   syncView(); refreshChannels();
 }
 gizmo.addEventListener('change', () => { dirty = true; });
@@ -960,6 +1025,6 @@ async function start() {
     status('参考モーションを読み込めませんでした（単純な補間で動きます）');
     wait(null);
   }
-  window.app = { rig, project, actions, select, showFrame, commit, naturalizeNow, render: () => renderer.render(scene, camera), get frame() { return frame; }, get nat() { return nat; }, get env() { return env; }, startPose: () => project.start(), shot, recenter, setOption, get picker() { return picker; }, applyPose, get poseBook() { return poseBook; }, get inb() { return inb; }, get mb() { return mb; } };
+  window.app = { rig, project, actions, select, showFrame, commit, naturalizeNow, render: () => renderer.render(scene, camera), get frame() { return frame; }, get nat() { return nat; }, get env() { return env; }, startPose: () => project.start(), shot, recenter, setOption, get picker() { return picker; }, applyPose, get poseBook() { return poseBook; }, get inb() { return inb; }, get mb() { return mb; }, gizmo };
 }
 start().catch(e => { console.error(e); wait(null); status('起動に失敗: ' + e.message); });
