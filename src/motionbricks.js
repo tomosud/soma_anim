@@ -398,7 +398,8 @@ export class MotionBricks {
     // otherwise the best - and if even that is bad, the plain in-between is better than what the model made.
     let best = null, tried = 0, ms = 0;
     const tries = [];
-    const good = (score, plan) => score.total < (plan.kind === 'walk' ? 0.9 : 0.6);
+    // (a move whose feet slide is not taken as it is: the other ways are tried too, and the best is kept)
+    const good = (score, plan) => score.total < (plan.kind === 'walk' ? 0.9 : 0.6) && (plan.kind === 'walk' || score.parts.slide < 0.6);
     const tryAll = async list => {
       for (const plan of list) {
         let r;
@@ -439,10 +440,13 @@ export class MotionBricks {
       const plainFrames = this.inb.steps(A, B, n);
       rig.setVector(held).evaluate();
       const plainScore = this._score(A, B, plainFrames);
-      // (the plain in-between cannot walk: carried farther than a step, the body skates with one stride per foot)
-      plainScore.total += Math.max(0, Math.min(1, (dist - 0.6) / 0.9));
-      if (plainScore.total + PLAIN_MARGIN < score.total) {
-        const reason = infeasible(dist, Math.atan2(Math.sin(hb - ha), Math.cos(hb - ha)), n, FPS, flow) || { code: 'bad', parts: worst(score).split(' ').filter(Boolean), tried };
+      // Keys farther apart than a person goes in that time cannot be made as a person moves: the plain one is the
+      // lesser evil whenever it scores better, and the reason is the speed.  Otherwise the plain one has to be
+      // clearly better - and it cannot walk: carried farther than a step, the body skates, one stride per foot.
+      const impossible = infeasible(dist, Math.atan2(Math.sin(hb - ha), Math.cos(hb - ha)), n, FPS, flow);
+      if (!impossible) plainScore.total += PLAIN_MARGIN + Math.max(0, Math.min(1, (dist - 0.6) / 0.9));
+      if (plainScore.total < score.total) {
+        const reason = impossible || { code: 'bad', parts: worst(score).split(' ').filter(Boolean), tried };
         return { frames: plainFrames, match: { clip: 'plain', reason, why: worst(score), score: +plainScore.total.toFixed(2), mbScore: +score.total.toFixed(2), tried, ms, tries }, tail: null };
       }
     }
