@@ -70,7 +70,7 @@ node tools/serve.mjs 8080
 
 ### サンプル
 
-ヘッダーの「サンプル」で `assets/sample_action.json` を開きます。構え → ジャブ → クロス → 踏み込んでアッパー → 回し蹴り → 下がってガード → ダッキングからボディ → 膝からハイキック → 立ち、の 24 キーです。
+`assets/sample_action.json` は「開く」で開けます。構え → ジャブ → クロス → 踏み込んでアッパー → 回し蹴り → 下がってガード → ダッキングからボディ → 膝からハイキック → 立ち、の 24 キーです。
 このツールの操作だけで作っています（フレームへ移動 → 見本をクリック、キーのコピー、全身コントロールの移動）。手順は `tools/make_action_sample.js` にそのまま書いてあります。
 23 区間のうち 22 区間を MotionBricks が作っています（残りは 4 フレームの間隔）。
 
@@ -98,13 +98,12 @@ node tools/serve.mjs 8080
 
 ## 書き出し
 
-- アニメ風の仕上げがオンなら、どちらも仕上げ後の動きを書き出します。
+- アニメ風の仕上げがオンなら、仕上げ後の動きを書き出します。
 - **FBX 書き出し**: Manny の 89 骨のアニメーション（メッシュなし、全フレームをベイク、cm・Y-up・30 fps）。Maya で開けて、Unreal では Manny のスケルトンに取り込めます。Maya で読み込んで Web と一致することは `tools/maya_fbx_check.py` で確かめています（差 0.001 cm 未満）。
-- **Maya 用に書き出し**: リグのコントロール値のまま Maya の `Rig_Manny` に持っていく形式です（下）。
 
 ## Maya へ
 
-「Maya 用に書き出し」で `soma_anim_bake.json`（全フレームのコントロール値）が保存されます。Maya で `Rig_Manny.ma` を開いて:
+画面のボタンは外しました。`soma_anim_bake.json`（全フレームのコントロール値）は、ブラウザのコンソールで `copy(JSON.stringify(app.project.toBake()))` として取り出せます。Maya で `Rig_Manny.ma` を開いて:
 
 ```python
 import sys; sys.path.append(r"<このリポジトリ>/maya")

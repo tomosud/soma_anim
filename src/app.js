@@ -874,15 +874,11 @@ function bindUI() {
   for (const id of ['showCtl', 'showFinger', 'showGhost']) $(id).onchange = () => { refreshControlLook(); refreshGhosts(); dirty = true; };
   $('showMesh').onchange = e => { if (character) character.visible = e.target.checked; dirty = true; };
   $('save').onclick = () => download('soma_anim_project.json', JSON.stringify(project.toJSON(), null, 1));
-  $('export').onclick = () => download('soma_anim_bake.json', JSON.stringify(project.toBake()));
   $('exportFbx').onclick = () => { const text = writeFbx(rig, project.output(), project.fps); showFrame(frame, !!working); download('soma_anim.fbx', text); };
   $('feet').onclick = () => resetFeet(false);
   $('feetAll').onclick = () => resetFeet(true);
   $('recenter').onclick = recenterAll;
   $('load').onclick = () => $('file').click();
-  $('sample').onclick = async () => {
-    try { const d = await fetch(asset('assets/sample_action.json')).then(r => r.json()); project.pushUndo(); project.fromJSON(d); select(null); frame = 0; afterLoad(); status('サンプルを開きました（Ctrl+Z で前のシーンに戻せます）。Space で再生'); } catch (err) { status('サンプルを開けませんでした: ' + err.message); }
-  };
   $('file').onchange = async e => {
     const f = e.target.files[0];
     if (!f) return;
