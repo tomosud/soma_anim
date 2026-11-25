@@ -57,7 +57,6 @@ footer { background: var(--panel); border-top: 1px solid var(--line); }
 #loading .box { width: min(420px, 86vw); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; display: grid; gap: 12px; }
 #loading .track { height: 6px; background: #30343c; border-radius: 3px; overflow: hidden; }
 #loadBar { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
-#loadSkip { justify-self: start; font-size: 12px; }
 @media (max-width: 760px) {
   main { grid-template-columns: 1fr; grid-template-rows: 1fr 200px; }
   aside { border-left: 0; border-top: 1px solid var(--line); }

@@ -29,13 +29,12 @@ const VERSION = window.SOMA_ANIM_VERSION || 'dev', DB_VERSION = '1';
 const asset = p => (VERSION === 'dev' ? p : `${p}?v=${VERSION}`);
 const status = t => { $('status').textContent = t; };
 /** The wait screen: text and progress 0..1 (null = unknown); wait(null) takes it away. */
-function wait(text, part = null, canSkip = false) {
+function wait(text, part = null) {
   $('loading').hidden = text === null;
   if (text === null) return;
   $('loadText').textContent = text;
   $('loadBar').style.width = part === null ? '100%' : Math.round(part * 100) + '%';
   $('loadBar').style.opacity = part === null ? 0.35 : 1;
-  $('loadSkip').hidden = !canSkip;
 }
 /** Controls that carry other parts of the body with them. */
 const CARRIES = new Set(['Hip_trans', 'Hip2_rot', 'Spine_trans', 'Spine_rot', 'Neck_rot']);
@@ -281,14 +280,12 @@ function wantMotionBricks() {
   if (!mb) { mb = new MotionBricks(inb); mb.hold = () => gizmo.dragging; }
   if (mb.state !== 'idle') { if (mb.state !== 'loading') wait(null); return; }
   const mbytes = x => (x / 1048576).toFixed(0);
-  let skipped = false;
-  $('loadSkip').onclick = () => { skipped = true; wait(null); };
-  const show = (text, part, canSkip) => { status(text); if (!skipped) wait(text, part, canSkip); };
-  show('MotionBricks を準備中…', null, false);
+  const show = (text, part) => { status(text); wait(text, part); };
+  show('MotionBricks を準備中…');
   mb.load(p => {
-    if (p.phase === 'download') show(`MotionBricks のモデルを取得中… ${mbytes(p.loaded)}${p.total ? ' / ' + mbytes(p.total) : ''} MB（初回だけ）`, p.total ? p.loaded / p.total : null, true);
-    else if (p.phase === 'cache') show('MotionBricks のモデルを読み込み中…（保存済みのものを使用）', null, false);
-    else if (p.phase === 'session') show('MotionBricks を準備中…', null, false);
+    if (p.phase === 'download') show(`MotionBricks のモデルを取得中… ${mbytes(p.loaded)}${p.total ? ' / ' + mbytes(p.total) : ''} MB（初回だけ）`, p.total ? p.loaded / p.total : null);
+    else if (p.phase === 'cache') show('MotionBricks のモデルを読み込み中…（保存済みのものを使用）');
+    else if (p.phase === 'session') show('MotionBricks を準備中…');
   }).then(() => { wait(null); status(mbLine()); rebake(); if (!gizmo.dragging && !working) showFrame(frame); })
     .catch(e => { console.error(e); wait(null); status('MotionBricks を使えませんでした（単純な補間で中割りします）: ' + e.message); });
 }
